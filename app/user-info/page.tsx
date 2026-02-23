@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useUserStore } from '@/app/store/userStore';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { Crown, Zap, ArrowRight } from 'lucide-react';
+import { Crown, Zap, ArrowRight, Sparkles } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils';
 
@@ -207,6 +207,43 @@ export default function UserInfoPage() {
                 <p className="text-foreground font-light group-hover:text-gold transition">
                   {isKorean ? '저장한 음료 보기' : 'View saved drinks'}
                 </p>
+              </button>
+
+              {/* 수집한 스티커 */}
+              <button
+                onClick={() => router.push('/stickers')}
+                className="p-4 bg-gradient-to-br from-gold/10 to-gold/5 border border-gold/30 rounded-lg hover:border-gold/50 transition-all text-left group relative overflow-hidden"
+              >
+                {/* 반짝임 효과 */}
+                <motion.div
+                  className="absolute inset-0"
+                  animate={{
+                    background: [
+                      'radial-gradient(circle at 0% 0%, rgba(212, 175, 55, 0.1) 0%, transparent 50%)',
+                      'radial-gradient(circle at 100% 100%, rgba(212, 175, 55, 0.1) 0%, transparent 50%)',
+                      'radial-gradient(circle at 0% 0%, rgba(212, 175, 55, 0.1) 0%, transparent 50%)',
+                    ],
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "linear",
+                  }}
+                />
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className={cn(
+                      "text-xs text-gold uppercase tracking-widest font-light",
+                      isKorean && "font-[var(--font-noto-kr)] normal-case tracking-normal"
+                    )}>
+                      {isKorean ? '수집한 스티커' : 'Stickers'}
+                    </p>
+                    <Sparkles className="w-4 h-4 text-gold" />
+                  </div>
+                  <p className="text-foreground font-light group-hover:text-gold transition">
+                    {isKorean ? '요정의 선물 모아보기 ✨' : 'Collect fairy gifts ✨'}
+                  </p>
+                </div>
               </button>
             </div>
           </div>

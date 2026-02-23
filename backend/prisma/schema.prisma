@@ -25,6 +25,7 @@ model User {
   recommendations Recommendation[]
   paymentMethods PaymentMethod[]
   favorites Favorite[]
+  stickers UserSticker[]
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -170,6 +171,19 @@ model SupportMessage {
   createdAt DateTime @default(now())
   
   @@map("support_messages")
+}
+
+// ============ Stickers (수집형 배지) ============
+model UserSticker {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  stickerId String   // first-recommendation, wine-lover, night-owl, etc.
+  unlockedAt DateTime @default(now())
+  
+  @@unique([userId, stickerId])
+  @@map("user_stickers")
 }
 
 // ============ Standard Menu (정규화 테이블) ============
