@@ -68,6 +68,24 @@ export default function PairePage() {
 
   const handlePreferenceSubmit = async (prefs: { occasion: string; tastes: string[] }) => {
     setPreferences(prefs)
+    
+    // 비로그인 사용자 체크 - localStorage에서 사용 횟수 확인
+    if (!user) {
+      const guestUsageCount = parseInt(localStorage.getItem('guestRecommendationCount') || '0')
+      
+      if (guestUsageCount >= 1) {
+        // 비로그인 사용자는 1회만 가능
+        const confirmSignup = confirm(
+          '비회원은 1회만 무료로 이용 가능합니다.\n회원가입하시면 매일 1회 무료로 이용할 수 있어요!\n\n회원가입 하시겠어요?'
+        )
+        
+        if (confirmSignup) {
+          router.push('/signup')
+        }
+        return
+      }
+    }
+    
     setScreen("loading") // 로딩 화면 표시
     setIsLoadingRecommendation(true)
 
@@ -90,18 +108,39 @@ export default function PairePage() {
       setRecommendedDrinks(response.recommendation.drinks)
       setFairyMessage(response.recommendation.fairyMessage)
       setScreen("recommendation")
+      
+      // 비로그인 사용자의 경우 사용 횟수 증가
+      if (!user) {
+        const currentCount = parseInt(localStorage.getItem('guestRecommendationCount') || '0')
+        localStorage.setItem('guestRecommendationCount', String(currentCount + 1))
+      }
     } catch (error: any) {
       console.error('추천 생성 실패:', error)
 
       // 사용자 친화적 에러 메시지
       let errorMessage = '추천을 생성하는데 실패했습니다.'
-      if (error.message.includes('일일 추천 한도')) {
-        errorMessage = '오늘의 무료 추천을 모두 사용했습니다. PREMIUM으로 업그레이드하시겠어요?'
+      let showUpgradeOption = false
+      
+      if (error.message.includes('일일 추천 한도') || error.message.includes('limit')) {
+        if (user && user.membership === 'FREE') {
+          errorMessage = '오늘의 무료 추천을 모두 사용했습니다.\nPREMIUM으로 업그레이드하시면 무제한으로 이용할 수 있어요!'
+          showUpgradeOption = true
+        } else {
+          errorMessage = '오늘의 무료 추천을 모두 사용했습니다.'
+        }
       } else if (error.message.includes('로그인')) {
         errorMessage = '로그인이 필요한 서비스입니다.'
       }
 
-      alert(errorMessage)
+      if (showUpgradeOption) {
+        const confirmUpgrade = confirm(errorMessage + '\n\n업그레이드 페이지로 이동하시겠어요?')
+        if (confirmUpgrade) {
+          router.push('/subscription')
+        }
+      } else {
+        alert(errorMessage)
+      }
+      
       setScreen("preference")
     } finally {
       setIsLoadingRecommendation(false)
