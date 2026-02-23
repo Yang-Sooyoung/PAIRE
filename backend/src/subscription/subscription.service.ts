@@ -10,12 +10,12 @@ export class SubscriptionService {
   ) {}
 
   async getMethods(userId: string) {
-    // 사용자의 결제 수단 조회
-    const subscription = await this.prisma.subscription.findFirst({
-      where: { userId, status: 'ACTIVE' },
+    // 사용자의 결제 수단 조회 (PaymentMethod 테이블에서)
+    const paymentMethod = await this.prisma.paymentMethod.findFirst({
+      where: { userId },
     });
 
-    if (!subscription) {
+    if (!paymentMethod) {
       return { success: true, methods: [] };
     }
 
@@ -23,13 +23,38 @@ export class SubscriptionService {
       success: true,
       methods: [
         {
-          id: 'method_1',
-          billingKey: subscription.billingKey,
+          id: paymentMethod.id,
+          billingKey: paymentMethod.billingKey,
           cardLast4: '****',
-          createdAt: subscription.createdAt,
+          createdAt: paymentMethod.createdAt,
         },
       ],
     };
+  }
+
+  async registerPaymentMethod(userId: string, billingAuthKey: string) {
+    // 기존 결제 수단 확인
+    const existingMethod = await this.prisma.paymentMethod.findFirst({
+      where: { userId },
+    });
+
+    if (existingMethod) {
+      // 기존 결제 수단 업데이트
+      await this.prisma.paymentMethod.update({
+        where: { id: existingMethod.id },
+        data: { billingKey: billingAuthKey },
+      });
+    } else {
+      // 새 결제 수단 생성
+      await this.prisma.paymentMethod.create({
+        data: {
+          userId,
+          billingKey: billingAuthKey,
+        },
+      });
+    }
+
+    return { success: true, message: '결제 수단이 등록되었습니다.' };
   }
 
   async createSubscription(userId: string, dto: any) {

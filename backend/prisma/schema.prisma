@@ -23,6 +23,7 @@ model User {
   // Relations
   subscriptions Subscription[]
   recommendations Recommendation[]
+  paymentMethods PaymentMethod[]
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -64,6 +65,20 @@ enum SubscriptionStatus {
   ACTIVE
   CANCELLED
   FAILED
+}
+
+// ============ Payment Methods ============
+model PaymentMethod {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  billingKey String
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("payment_methods")
 }
 
 // ============ Recommendations ============

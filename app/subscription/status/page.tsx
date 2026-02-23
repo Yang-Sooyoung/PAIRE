@@ -12,7 +12,7 @@ import { motion } from 'framer-motion';
 
 export default function SubscriptionStatusPage() {
   const router = useRouter();
-  const { user, token } = useUserStore();
+  const { user, token, refreshTokenIfNeeded } = useUserStore();
   const { language, t } = useI18n();
   const isKorean = language === 'ko';
   const [loading, setLoading] = useState(false);
@@ -29,7 +29,7 @@ export default function SubscriptionStatusPage() {
     (async () => {
       try {
         const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
-        
+
         let currentToken = token;
         let response = await fetch(`${API_URL}/subscription/status`, {
           method: 'GET',
@@ -43,34 +43,22 @@ export default function SubscriptionStatusPage() {
         if (response.status === 401) {
           console.log('Token expired, attempting to refresh for status check...');
           
-          const storedRefreshToken = localStorage.getItem('refreshToken');
-          if (storedRefreshToken) {
-            try {
-              const refreshResponse = await fetch(`${API_URL}/auth/refresh`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ refreshToken: storedRefreshToken }),
-              });
-
-              if (refreshResponse.ok) {
-                const refreshData = await refreshResponse.json();
-                currentToken = refreshData.accessToken;
-                
-                localStorage.setItem('accessToken', refreshData.accessToken);
-                localStorage.setItem('refreshToken', refreshData.refreshToken);
-                
-                // 새 토큰으로 재시도
-                response = await fetch(`${API_URL}/subscription/status`, {
-                  method: 'GET',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${currentToken}`,
-                  },
-                });
-              }
-            } catch (refreshError) {
-              console.error('Token refresh failed:', refreshError);
-            }
+          const newToken = await refreshTokenIfNeeded();
+          if (newToken) {
+            currentToken = newToken;
+            
+            // 새 토큰으로 재시도
+            response = await fetch(`${API_URL}/subscription/status`, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${currentToken}`,
+              },
+            });
+          } else {
+            console.log('Token refresh failed, redirecting to login');
+            router.push('/login');
+            return;
           }
         }
 
@@ -81,10 +69,6 @@ export default function SubscriptionStatusPage() {
         } else if (response.status === 404) {
           // 404는 구독 정보가 없는 정상 상황
           setFetchError(false);
-        } else if (response.status === 401) {
-          // 토큰 갱신 후에도 401이면 로그인 필요
-          console.log('Authentication failed, redirecting to login');
-          setFetchError(true);
         } else {
           setFetchError(true);
         }
@@ -93,7 +77,7 @@ export default function SubscriptionStatusPage() {
         setFetchError(true);
       }
     })();
-  }, [user, token, router]);
+  }, [user, token, router, refreshTokenIfNeeded]);
 
   const handleCancel = async () => {
     if (!token) {
@@ -105,12 +89,11 @@ export default function SubscriptionStatusPage() {
 
     try {
       setLoading(true);
-      
+
       const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
-      
-      // 먼저 현재 토큰으로 시도
+
       let currentToken = token;
-      
+
       const response = await fetch(`${API_URL}/subscription/cancel`, {
         method: 'POST',
         headers: {
@@ -122,56 +105,33 @@ export default function SubscriptionStatusPage() {
       // 401 에러인 경우 토큰 갱신 후 재시도
       if (response.status === 401) {
         console.log('Token expired, attempting to refresh...');
-        
-        const storedRefreshToken = localStorage.getItem('refreshToken');
-        if (!storedRefreshToken) {
+
+        const newToken = await refreshTokenIfNeeded();
+        if (!newToken) {
           alert(isKorean ? '세션이 만료되었습니다. 다시 로그인해주세요.' : 'Session expired. Please login again.');
           router.push('/login');
           return;
         }
 
-        try {
-          // 토큰 갱신
-          const refreshResponse = await fetch(`${API_URL}/auth/refresh`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ refreshToken: storedRefreshToken }),
-          });
+        currentToken = newToken;
 
-          if (!refreshResponse.ok) {
-            throw new Error('Token refresh failed');
-          }
+        // 새 토큰으로 재시도
+        const retryResponse = await fetch(`${API_URL}/subscription/cancel`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${currentToken}`,
+          },
+        });
 
-          const refreshData = await refreshResponse.json();
-          currentToken = refreshData.accessToken;
-          
-          // 새 토큰 저장
-          localStorage.setItem('accessToken', refreshData.accessToken);
-          localStorage.setItem('refreshToken', refreshData.refreshToken);
-          
-          // 새 토큰으로 재시도
-          const retryResponse = await fetch(`${API_URL}/subscription/cancel`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${currentToken}`,
-            },
-          });
-
-          if (!retryResponse.ok) {
-            const error = await retryResponse.json().catch(() => ({ message: 'Unknown error' }));
-            throw new Error(error.message || (isKorean ? '구독 취소 실패' : 'Failed to cancel subscription'));
-          }
-
-          alert(isKorean ? '구독이 취소되었습니다.' : 'Subscription cancelled.');
-          router.push('/user-info');
-          return;
-        } catch (refreshError) {
-          console.error('Token refresh failed:', refreshError);
-          alert(isKorean ? '세션이 만료되었습니다. 다시 로그인해주세요.' : 'Session expired. Please login again.');
-          router.push('/login');
-          return;
+        if (!retryResponse.ok) {
+          const error = await retryResponse.json().catch(() => ({ message: 'Unknown error' }));
+          throw new Error(error.message || (isKorean ? '구독 취소 실패' : 'Failed to cancel subscription'));
         }
+
+        alert(isKorean ? '구독이 취소되었습니다.' : 'Subscription cancelled.');
+        router.push('/user-info');
+        return;
       }
 
       if (!response.ok) {
@@ -366,7 +326,7 @@ export default function SubscriptionStatusPage() {
                   "text-muted-foreground",
                   isKorean && "font-[var(--font-noto-kr)]"
                 )}>
-                  {isKorean 
+                  {isKorean
                     ? '구독을 취소하면 다음 갱신일부터 FREE 플랜으로 변경됩니다. 현재 남은 기간은 계속 사용할 수 있습니다.'
                     : 'If you cancel your subscription, it will change to the FREE plan from the next renewal date. You can continue using it for the remaining period.'}
                 </AlertDialogDescription>

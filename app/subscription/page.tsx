@@ -64,13 +64,11 @@ export default function SubscriptionPage() {
       setLoading(true);
       const tossPayments = await loadTossPayments(process.env.NEXT_PUBLIC_TOSS_TEST_CLIENT_KEY!);
       const customerKey = `user_${user.id}`;
-      const price = getPlanPrice(selectedPlan);
-      const interval = billingPeriod === 'monthly' ? 'MONTHLY' : 'ANNUALLY';
 
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:3001';
+      // 결제수단 등록만 하고 구독은 하지 않음
       await tossPayments.requestBillingAuth('카드', {
         customerKey,
-        successUrl: `${apiUrl}/api/subscription/billing-callback?plan=${selectedPlan.membership}&interval=${interval}&price=${price}`,
+        successUrl: `${window.location.origin}/subscription/register/done`,
         failUrl: `${window.location.origin}/subscription/fail`,
       });
     } catch (error) {

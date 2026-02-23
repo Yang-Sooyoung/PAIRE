@@ -11,33 +11,79 @@ export interface User {
   membership: 'FREE' | 'PREMIUM';
 }
 
-interface UserStore {
-  user: User | null;
-  token: string | null;
-  refreshToken: string | null;
-  loading: boolean;
-  initialized: boolean;
-
-  // Actions
-  setUser: (user: User | null) => void;
-  setToken: (token: string | null) => void;
-  setRefreshToken: (token: string | null) => void;
-  setLoading: (loading: boolean) => void;
-  initializeUser: () => Promise<void>;
-  logout: () => void;
+interface UserState {
+  user: User | null
+  token: string | null
+  refreshToken: string | null
+  loading: boolean
+  initialized: boolean
+  refreshing: boolean
+  setUser: (user: User | null) => void
+  setToken: (token: string | null) => void
+  setRefreshToken: (refreshToken: string | null) => void
+  setLoading: (loading: boolean) => void
+  logout: () => void
+  initializeUser: () => Promise<void>
+  refreshTokenIfNeeded: () => Promise<string | null>
 }
 
-export const useUserStore = create<UserStore>((set, get) => ({
+export const useUserStore = create<UserState>((set, get) => ({
   user: null,
   token: null,
   refreshToken: null,
   loading: false,
   initialized: false,
+  refreshing: false,
 
   setUser: (user) => set({ user }),
   setToken: (token) => set({ token }),
   setRefreshToken: (token) => set({ refreshToken: token }),
   setLoading: (loading) => set({ loading }),
+
+  refreshTokenIfNeeded: async () => {
+    const state = get();
+    
+    // 이미 갱신 중이면 대기
+    if (state.refreshing) {
+      console.log('Token refresh already in progress, waiting...');
+      return null;
+    }
+
+    const storedRefreshToken = state.refreshToken || localStorage.getItem('refreshToken');
+    if (!storedRefreshToken) {
+      console.log('No refresh token available');
+      return null;
+    }
+
+    try {
+      set({ refreshing: true });
+      console.log('Refreshing token...');
+
+      const response = await refreshTokenAPI(storedRefreshToken);
+      
+      localStorage.setItem('accessToken', response.accessToken);
+      localStorage.setItem('refreshToken', response.refreshToken);
+
+      set({
+        user: response.user,
+        token: response.accessToken,
+        refreshToken: response.refreshToken,
+        refreshing: false,
+      });
+
+      return response.accessToken;
+    } catch (error) {
+      console.error('Token refresh failed:', error);
+      set({ refreshing: false });
+      
+      // 갱신 실패 시 로그아웃
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      set({ user: null, token: null, refreshToken: null });
+      
+      return null;
+    }
+  },
 
   initializeUser: async () => {
     try {
