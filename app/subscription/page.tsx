@@ -25,10 +25,10 @@ export default function SubscriptionPage() {
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
   const [loading, setLoading] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
-  const [dialogConfig, setDialogConfig] = useState<{ type: 'info' | 'success' | 'warning' | 'error' | 'confirm', title: string, description: string }>({ 
-    type: 'info', 
-    title: '', 
-    description: '' 
+  const [dialogConfig, setDialogConfig] = useState<{ type: 'info' | 'success' | 'warning' | 'error' | 'confirm', title: string, description: string }>({
+    type: 'info',
+    title: '',
+    description: ''
   });
   const router = useRouter();
 
@@ -184,7 +184,7 @@ export default function SubscriptionPage() {
       setShowDialog(true);
       return;
     }
-    
+
     if (!methodRegistered && !billingKey) {
       setDialogConfig({
         type: 'warning',
@@ -209,8 +209,11 @@ export default function SubscriptionPage() {
         billingKey,
       };
 
-      const res = await axios.post(`${API_URL}/subscription/create`, payload, {
-        headers: { Authorization: `Bearer ${token}` },
+      // Get fresh token from store in case it was refreshed
+      let currentToken = useUserStore.getState().token || token;
+
+      let res = await axios.post(`${API_URL}/subscription/create`, payload, {
+        headers: { Authorization: `Bearer ${currentToken}` },
       });
 
       if (res.data?.subscription || res.data?.success) {
@@ -226,6 +229,44 @@ export default function SubscriptionPage() {
       }
     } catch (err: any) {
       console.error('subscribe error', err?.response?.data ?? err?.message);
+
+      // Handle 401 error with token refresh
+      if (err?.response?.status === 401) {
+        console.log('Token expired during subscribe, refreshing...');
+        const newToken = await refreshTokenIfNeeded();
+
+        if (newToken) {
+          try {
+            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+            const priceNumber = Number(getPlanPrice(selectedPlan));
+            const interval = billingPeriod === 'monthly' ? 'MONTHLY' : 'ANNUALLY';
+
+            const payload = {
+              planId: selectedPlan.id,
+              membership: selectedPlan.membership,
+              interval,
+              price: priceNumber,
+              billingKey,
+            };
+
+            const res = await axios.post(`${API_URL}/subscription/create`, payload, {
+              headers: { Authorization: `Bearer ${newToken}` },
+            });
+
+            if (res.data?.subscription || res.data?.success) {
+              setUser({ ...user, membership: 'PREMIUM' });
+              router.push('/subscription/success');
+              return;
+            }
+          } catch (retryErr: any) {
+            console.error('Retry subscribe error', retryErr?.response?.data ?? retryErr?.message);
+          }
+        } else {
+          router.push('/login');
+          return;
+        }
+      }
+
       setDialogConfig({
         type: 'error',
         title: '구독 요청 실패',
