@@ -27,6 +27,44 @@ export class TossService {
   }
 
   /**
+   * 결제 승인 (일반 결제용)
+   */
+  async confirmPayment(paymentKey: string, orderId: string, amount: number) {
+    try {
+      const response = await fetch(`${this.baseUrl}/payments/confirm`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Basic ${Buffer.from(`${this.secretKey}:`).toString('base64')}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          paymentKey,
+          orderId,
+          amount,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = (await response.json()) as { message?: string };
+        throw new Error(`결제 승인 실패: ${error.message || 'Unknown error'}`);
+      }
+
+      const data = (await response.json()) as TossPaymentResponse;
+      return {
+        success: true,
+        paymentKey: data.paymentKey,
+        orderId: data.orderId,
+        amount: data.totalAmount,
+        status: data.status,
+        approvedAt: data.approvedAt,
+      };
+    } catch (error) {
+      console.error('Toss 결제 승인 오류:', error);
+      throw error;
+    }
+  }
+
+  /**
    * 결제 승인 (Billing Auth)
    */
   async authorizePayment(paymentKey: string, orderId: string, amount: number) {

@@ -10,6 +10,36 @@ export class PaymentService {
   ) {}
 
   /**
+   * 결제 승인 (일반 결제용 - 후원 등)
+   */
+  async confirmPayment(userId: string, dto: { orderId: string; paymentKey: string; amount: number }) {
+    try {
+      // Toss Payments API로 결제 승인
+      const confirmResult = await this.tossService.confirmPayment(dto.paymentKey, dto.orderId, dto.amount);
+
+      if (!confirmResult.success) {
+        throw new Error('결제 승인 실패');
+      }
+
+      // 결제 정보 저장
+      await this.prisma.payment.create({
+        data: {
+          userId,
+          paymentKey: dto.paymentKey,
+          orderId: dto.orderId,
+          amount: dto.amount,
+          status: 'COMPLETED',
+        },
+      });
+
+      return { success: true, message: '결제가 완료되었습니다.' };
+    } catch (error) {
+      console.error('결제 승인 오류:', error);
+      throw error;
+    }
+  }
+
+  /**
    * 결제 웹훅 처리 (Toss Payments)
    */
   async handleWebhook(signature: string, body: string) {

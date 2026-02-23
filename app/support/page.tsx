@@ -18,6 +18,7 @@ export default function SupportPage() {
   const [message, setMessage] = useState('');
   const [email, setEmail] = useState('');
   const [sending, setSending] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
   const [dialogConfig, setDialogConfig] = useState<{ type: 'info' | 'success' | 'warning' | 'error', title: string, description: string }>({
     type: 'info',
@@ -39,7 +40,7 @@ export default function SupportPage() {
     setSending(true);
     try {
       const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
-      
+
       const response = await fetch(`${API_URL}/support/message`, {
         method: 'POST',
         headers: {
@@ -67,15 +68,49 @@ export default function SupportPage() {
     }
   };
 
-  const handleSupport = (amount: number) => {
-    setDialogConfig({
-      type: 'info',
-      title: isKorean ? '준비 중입니다' : 'Coming Soon',
-      description: isKorean 
-        ? `${amount.toLocaleString()}원 후원 기능은 곧 오픈됩니다! 💛` 
-        : `${amount.toLocaleString()}₩ support feature coming soon! 💛`
-    });
-    setShowDialog(true);
+  const handleSupport = async (amount: number) => {
+    if (!user) {
+      setDialogConfig({
+        type: 'warning',
+        title: isKorean ? '로그인 필요' : 'Login Required',
+        description: isKorean ? '후원하려면 로그인이 필요합니다.' : 'Please login to support.'
+      });
+      setShowDialog(true);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      
+      // 토스페이먼츠 SDK 로드
+      const { loadTossPayments } = await import('@tosspayments/sdk');
+      const tossPayments = await loadTossPayments(process.env.NEXT_PUBLIC_TOSS_TEST_CLIENT_KEY!);
+
+      // 주문 ID 생성 (고유해야 함)
+      const orderId = `support_${user.id}_${Date.now()}`;
+      const orderName = isKorean ? `PAIRÉ 개발자 후원 ${amount.toLocaleString()}원` : `PAIRÉ Developer Support ${amount.toLocaleString()}₩`;
+
+      // 결제 요청
+      await tossPayments.requestPayment('카드', {
+        amount,
+        orderId,
+        orderName,
+        customerName: user.nickname || user.username,
+        customerEmail: user.email,
+        successUrl: `${window.location.origin}/support/success?amount=${amount}`,
+        failUrl: `${window.location.origin}/support/fail`,
+      });
+    } catch (error) {
+      console.error('Support payment error:', error);
+      setDialogConfig({
+        type: 'error',
+        title: isKorean ? '결제 오류' : 'Payment Error',
+        description: isKorean ? '결제 중 오류가 발생했습니다.' : 'An error occurred during payment.'
+      });
+      setShowDialog(true);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -122,7 +157,7 @@ export default function SupportPage() {
             "text-muted-foreground",
             isKorean && "font-[var(--font-noto-kr)]"
           )}>
-            {isKorean 
+            {isKorean
               ? 'PAIRÉ를 만든 개발자입니다. 여러분의 응원이 큰 힘이 됩니다 💛'
               : "I'm the developer of PAIRÉ. Your support means a lot 💛"
             }
@@ -149,7 +184,7 @@ export default function SupportPage() {
             "text-muted-foreground text-sm mb-6",
             isKorean && "font-[var(--font-noto-kr)]"
           )}>
-            {isKorean 
+            {isKorean
               ? '커피 한 잔의 여유로 개발자를 응원해주세요! ☕'
               : 'Support the developer with a cup of coffee! ☕'
             }
@@ -214,7 +249,7 @@ export default function SupportPage() {
             "text-muted-foreground text-sm mb-4",
             isKorean && "font-[var(--font-noto-kr)]"
           )}>
-            {isKorean 
+            {isKorean
               ? '응원의 한마디, 개선 아이디어, 뭐든 좋아요! 📝'
               : 'Words of encouragement, ideas, anything! 📝'
             }
@@ -282,7 +317,7 @@ export default function SupportPage() {
             "text-muted-foreground text-sm mb-4",
             isKorean && "font-[var(--font-noto-kr)]"
           )}>
-            {isKorean 
+            {isKorean
               ? '제휴, 광고, 협업 제안은 이메일로 연락주세요! 💼'
               : 'For partnerships, ads, or collaborations, email me! 💼'
             }
@@ -351,7 +386,7 @@ export default function SupportPage() {
             "text-muted-foreground text-sm",
             isKorean && "font-[var(--font-noto-kr)]"
           )}>
-            {isKorean 
+            {isKorean
               ? 'PAIRÉ를 사용해주셔서 감사합니다 💛'
               : 'Thank you for using PAIRÉ 💛'
             }

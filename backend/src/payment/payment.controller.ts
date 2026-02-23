@@ -6,6 +6,15 @@ import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 export class PaymentController {
   constructor(private paymentService: PaymentService) {}
 
+  @Post('confirm')
+  @UseGuards(JwtAuthGuard)
+  async confirmPayment(
+    @Request() req: any,
+    @Body() dto: { orderId: string; paymentKey: string; amount: number },
+  ) {
+    return this.paymentService.confirmPayment(req.user.sub, dto);
+  }
+
   @Post('webhook')
   async handleWebhook(
     @Headers('x-toss-signature') signature: string,
