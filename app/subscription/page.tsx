@@ -133,8 +133,8 @@ export default function SubscriptionPage() {
             <button
               onClick={() => setBillingPeriod('monthly')}
               className={`flex-1 py-3 px-4 rounded-lg transition ${billingPeriod === 'monthly'
-                  ? 'bg-amber-600 text-white'
-                  : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                ? 'bg-amber-600 text-white'
+                : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
                 }`}
             >
               <div className="font-semibold">월간</div>
@@ -143,8 +143,8 @@ export default function SubscriptionPage() {
             <button
               onClick={() => setBillingPeriod('yearly')}
               className={`flex-1 py-3 px-4 rounded-lg transition ${billingPeriod === 'yearly'
-                  ? 'bg-amber-600 text-white'
-                  : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                ? 'bg-amber-600 text-white'
+                : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
                 }`}
             >
               <div className="font-semibold">연간</div>
