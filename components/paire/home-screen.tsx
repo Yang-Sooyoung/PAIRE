@@ -38,15 +38,21 @@ export function HomeScreen({
           <Button
               onClick={onLoginClick}
               variant="outline"
-              className="border-gold/40 text-gold hover:bg-gold/10 hover:border-gold"
+              className={cn(
+                "border-gold/40 text-gold hover:bg-gold/10 hover:border-gold",
+                isKorean && "font-[var(--font-noto-kr)]"
+              )}
           >
-            로그인
+            {t("auth.login")}
           </Button>
           <Button
               onClick={onSignupClick}
-              className="bg-gold hover:bg-gold-light text-background"
+              className={cn(
+                "bg-gold hover:bg-gold-light text-background",
+                isKorean && "font-[var(--font-noto-kr)]"
+              )}
           >
-            회원가입
+            {t("auth.signup")}
           </Button>
         </div>
       )}

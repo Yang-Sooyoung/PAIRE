@@ -8,11 +8,16 @@ import { PLANS, type Plan } from './constants/subscriptionPlans';
 import { loadTossPayments } from '@tosspayments/sdk';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { Check } from 'lucide-react';
+import { Check, ArrowLeft } from 'lucide-react';
 import { PaymentMethodCard } from '@/components/subscription/PaymentMethodCard';
+import { useI18n } from '@/lib/i18n/context';
+import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 
 export default function SubscriptionPage() {
   const { user, token, setUser } = useUserStore();
+  const { language, t } = useI18n();
+  const isKorean = language === 'ko';
   const [methodRegistered, setMethodRegistered] = useState(false);
   const [billingKey, setBillingKey] = useState('');
   const [selectedPlan] = useState<Plan>(PLANS[0]);
@@ -112,20 +117,68 @@ export default function SubscriptionPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-slate-900 to-slate-800 px-4 py-12">
-      <div className="w-full max-w-2xl">
-        {/* 헤더 */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-light text-white mb-2">PREMIUM 구독</h1>
-          <p className="text-slate-400">무제한 음료 추천으로 매 순간을 특별하게</p>
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* 배경 효과 */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gold/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-gold/3 rounded-full blur-3xl" />
+      </div>
+
+      {/* 헤더 */}
+      <div className="bg-card/50 backdrop-blur-sm border-b border-border sticky top-0 z-10">
+        <div className="max-w-2xl mx-auto px-4 py-4 flex items-center gap-4">
+          <button
+            onClick={() => router.back()}
+            className="text-gold hover:text-gold-light transition"
+            title={t('common.back')}
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <h1 className={cn(
+            "text-2xl font-light text-foreground tracking-wide",
+            isKorean && "font-[var(--font-noto-kr)] tracking-normal"
+          )}>
+            {t('subscription.title')}
+          </h1>
         </div>
+      </div>
+
+      <div className="max-w-2xl mx-auto px-4 py-12 relative z-10">
+        {/* 헤더 텍스트 */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-12"
+        >
+          <p className={cn(
+            "text-muted-foreground",
+            isKorean && "font-[var(--font-noto-kr)]"
+          )}>
+            {t('subscription.subtitle')}
+          </p>
+        </motion.div>
 
         {/* 플랜 카드 */}
-        <div className="bg-slate-800 border border-slate-700 rounded-lg p-8 mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-card border border-border rounded-xl p-8 mb-8"
+        >
           <div className="flex justify-between items-start mb-6">
             <div>
-              <h2 className="text-2xl font-light text-white mb-2">{selectedPlan.title}</h2>
-              <p className="text-slate-400">{selectedPlan.description}</p>
+              <h2 className={cn(
+                "text-2xl font-light text-foreground mb-2",
+                isKorean && "font-[var(--font-noto-kr)]"
+              )}>
+                {selectedPlan.title}
+              </h2>
+              <p className={cn(
+                "text-muted-foreground",
+                isKorean && "font-[var(--font-noto-kr)]"
+              )}>
+                {selectedPlan.description}
+              </p>
             </div>
           </div>
 
@@ -133,22 +186,28 @@ export default function SubscriptionPage() {
           <div className="flex gap-4 mb-8">
             <button
               onClick={() => setBillingPeriod('monthly')}
-              className={`flex-1 py-3 px-4 rounded-lg transition ${billingPeriod === 'monthly'
-                ? 'bg-amber-600 text-white'
-                : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                }`}
+              className={cn(
+                "flex-1 py-3 px-4 rounded-lg transition",
+                billingPeriod === 'monthly'
+                  ? 'bg-gold text-background'
+                  : 'bg-secondary text-foreground hover:bg-secondary/80',
+                isKorean && "font-[var(--font-noto-kr)]"
+              )}
             >
-              <div className="font-semibold">월간</div>
+              <div className="font-semibold">{t('subscription.monthly')}</div>
               <div className="text-sm">₩{selectedPlan.priceMonthly.toLocaleString()}</div>
             </button>
             <button
               onClick={() => setBillingPeriod('yearly')}
-              className={`flex-1 py-3 px-4 rounded-lg transition ${billingPeriod === 'yearly'
-                ? 'bg-amber-600 text-white'
-                : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                }`}
+              className={cn(
+                "flex-1 py-3 px-4 rounded-lg transition",
+                billingPeriod === 'yearly'
+                  ? 'bg-gold text-background'
+                  : 'bg-secondary text-foreground hover:bg-secondary/80',
+                isKorean && "font-[var(--font-noto-kr)]"
+              )}
             >
-              <div className="font-semibold">연간</div>
+              <div className="font-semibold">{t('subscription.yearly')}</div>
               <div className="text-sm">₩{selectedPlan.priceYearly.toLocaleString()}</div>
             </button>
           </div>
@@ -156,8 +215,11 @@ export default function SubscriptionPage() {
           {/* 기능 목록 */}
           <div className="space-y-3 mb-8">
             {selectedPlan.features.map((feature, idx) => (
-              <div key={idx} className="flex items-center gap-3 text-slate-300">
-                <Check className="w-5 h-5 text-amber-500 flex-shrink-0" />
+              <div key={idx} className={cn(
+                "flex items-center gap-3 text-foreground",
+                isKorean && "font-[var(--font-noto-kr)]"
+              )}>
+                <Check className="w-5 h-5 text-gold flex-shrink-0" />
                 <span>{feature}</span>
               </div>
             ))}
@@ -165,7 +227,12 @@ export default function SubscriptionPage() {
 
           {/* 결제 수단 */}
           <div className="mb-8">
-            <h3 className="text-sm font-semibold text-slate-300 mb-3">결제 수단</h3>
+            <h3 className={cn(
+              "text-sm font-semibold text-foreground mb-3",
+              isKorean && "font-[var(--font-noto-kr)]"
+            )}>
+              {t('subscription.paymentMethod')}
+            </h3>
             {methodRegistered ? (
               <PaymentMethodCard
                 billingKey={billingKey}
@@ -179,9 +246,12 @@ export default function SubscriptionPage() {
               <Button
                 onClick={handleRegisterBilling}
                 disabled={loading}
-                className="w-full bg-slate-700 hover:bg-slate-600 text-white"
+                className={cn(
+                  "w-full bg-secondary hover:bg-secondary/80 text-foreground border border-border",
+                  isKorean && "font-[var(--font-noto-kr)]"
+                )}
               >
-                {loading ? '등록 중...' : '결제수단 등록'}
+                {loading ? t('subscription.registering') : t('subscription.registerPayment')}
               </Button>
             )}
           </div>
@@ -190,19 +260,25 @@ export default function SubscriptionPage() {
           <Button
             onClick={handleSubscribe}
             disabled={loading || !methodRegistered}
-            className="w-full bg-amber-600 hover:bg-amber-700 text-white py-3 text-lg font-semibold"
+            className={cn(
+              "w-full bg-gold hover:bg-gold-light text-background py-3 text-lg font-semibold",
+              isKorean && "font-[var(--font-noto-kr)]"
+            )}
           >
-            {loading ? '처리 중...' : `구독하기 — ₩${getPlanPrice(selectedPlan).toLocaleString()}`}
+            {loading ? t('subscription.processing') : `${t('subscription.planPrice')}₩${getPlanPrice(selectedPlan).toLocaleString()}`}
           </Button>
-        </div>
+        </motion.div>
 
         {/* 취소 버튼 */}
         <div className="text-center">
           <button
             onClick={() => router.back()}
-            className="text-slate-400 hover:text-slate-300 transition"
+            className={cn(
+              "text-muted-foreground hover:text-foreground transition",
+              isKorean && "font-[var(--font-noto-kr)]"
+            )}
           >
-            돌아가기
+            {t('subscription.goBack')}
           </button>
         </div>
       </div>
