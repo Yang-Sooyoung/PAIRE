@@ -5,7 +5,7 @@ import { useUserStore } from '@/app/store/userStore';
 import { Button } from '@/components/ui/button';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { motion } from 'framer-motion';
-import { ChevronRight, LogOut, Trash2, Mail, FileText, ArrowLeft } from 'lucide-react';
+import { ChevronRight, LogOut, Trash2, Mail, FileText, ArrowLeft, Heart, Clock } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils';
 
@@ -88,49 +88,73 @@ export default function SettingsPage() {
 
       {/* 콘텐츠 */}
       <div className="max-w-2xl mx-auto px-4 py-8 space-y-6 relative z-10">
-        {/* 계정 정보 */}
+        {/* 내 활동 */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="bg-card backdrop-blur-sm border border-border rounded-xl p-6 space-y-4"
+          className="bg-card backdrop-blur-sm border border-border rounded-xl overflow-hidden"
         >
           <h2 className={cn(
-            "text-xs text-gold-dim uppercase tracking-widest font-light",
+            "text-xs text-gold-dim uppercase tracking-widest font-light px-6 pt-6 pb-4",
             isKorean && "font-[var(--font-noto-kr)] normal-case tracking-normal"
           )}>
-            {t('settings.accountInfo')}
+            {isKorean ? '내 활동' : 'My Activity'}
           </h2>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center p-3 bg-secondary rounded-lg border border-border">
-              <span className={cn(
-                "text-muted-foreground text-sm",
-                isKorean && "font-[var(--font-noto-kr)]"
-              )}>
-                {t('common.email')}
-              </span>
-              <span className="text-foreground font-light">{user.email}</span>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-secondary rounded-lg border border-border">
-              <span className={cn(
-                "text-muted-foreground text-sm",
-                isKorean && "font-[var(--font-noto-kr)]"
-              )}>
-                {t('common.nickname')}
-              </span>
-              <span className="text-foreground font-light">{user.nickname || user.username}</span>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-secondary rounded-lg border border-border">
-              <span className={cn(
-                "text-muted-foreground text-sm",
-                isKorean && "font-[var(--font-noto-kr)]"
-              )}>
-                {t('userInfo.membership')}
-              </span>
-              <span className={user.membership === 'PREMIUM' ? 'text-gold font-semibold' : 'text-muted-foreground'}>
-                {user.membership === 'PREMIUM' ? 'PREMIUM' : 'FREE'}
-              </span>
-            </div>
+          <div className="divide-y divide-border">
+            <button
+              onClick={() => {
+                if (user.membership === 'FREE') {
+                  router.push('/subscription');
+                } else {
+                  router.push('/history');
+                }
+              }}
+              className="w-full px-6 py-4 flex items-center justify-between hover:bg-gold/5 transition text-left group"
+            >
+              <div className="flex items-center gap-3">
+                <Clock className="w-5 h-5 text-gold/60 group-hover:text-gold transition" />
+                <span className={cn(
+                  "text-foreground/80 group-hover:text-foreground transition",
+                  isKorean && "font-[var(--font-noto-kr)]"
+                )}>
+                  {isKorean ? '추천 히스토리' : 'Recommendation History'}
+                </span>
+              </div>
+              {user.membership === 'FREE' && (
+                <span className="text-xs px-2 py-1 rounded-full bg-gold/10 text-gold mr-2">
+                  PREMIUM
+                </span>
+              )}
+              <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-gold/60 transition" />
+            </button>
+
+            <button
+              onClick={() => {
+                if (user.membership === 'FREE') {
+                  router.push('/subscription');
+                } else {
+                  router.push('/favorites');
+                }
+              }}
+              className="w-full px-6 py-4 flex items-center justify-between hover:bg-gold/5 transition text-left group"
+            >
+              <div className="flex items-center gap-3">
+                <Heart className="w-5 h-5 text-gold/60 group-hover:text-gold transition" />
+                <span className={cn(
+                  "text-foreground/80 group-hover:text-foreground transition",
+                  isKorean && "font-[var(--font-noto-kr)]"
+                )}>
+                  {isKorean ? '즐겨찾기' : 'Favorites'}
+                </span>
+              </div>
+              {user.membership === 'FREE' && (
+                <span className="text-xs px-2 py-1 rounded-full bg-gold/10 text-gold mr-2">
+                  PREMIUM
+                </span>
+              )}
+              <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-gold/60 transition" />
+            </button>
           </div>
         </motion.section>
 
@@ -138,7 +162,7 @@ export default function SettingsPage() {
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
+          transition={{ duration: 0.6, delay: 0.15 }}
           className="bg-card backdrop-blur-sm border border-border rounded-xl overflow-hidden"
         >
           <h2 className={cn(
@@ -202,7 +226,7 @@ export default function SettingsPage() {
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
+          transition={{ duration: 0.6, delay: 0.25 }}
           className="bg-card backdrop-blur-sm border border-border rounded-xl overflow-hidden"
         >
           <h2 className={cn(
@@ -232,7 +256,7 @@ export default function SettingsPage() {
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.25 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
           className="bg-gradient-to-r from-gold/10 to-gold/5 backdrop-blur-sm border border-gold/20 rounded-xl overflow-hidden"
         >
           <h2 className={cn(
@@ -270,7 +294,7 @@ export default function SettingsPage() {
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
+          transition={{ duration: 0.6, delay: 0.35 }}
           className="bg-card backdrop-blur-sm border border-destructive/20 rounded-xl overflow-hidden"
         >
           <h2 className={cn(
