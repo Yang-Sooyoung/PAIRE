@@ -32,12 +32,20 @@ export class RecommendationService {
     // Vision API로 음식 인식
     let detectedFoods: string[] = [];
     if (dto.imageUrl) {
-      try {
-        detectedFoods = await this.visionService.detectFoodLabels(dto.imageUrl);
-      } catch (error) {
-        console.error('Vision API 오류:', error);
+      // base64 이미지는 Vision API에서 처리 불가 - 일단 스킵
+      if (dto.imageUrl.startsWith('data:image')) {
+        console.log('Base64 image detected - skipping Vision API');
         detectedFoods = ['음식'];
+      } else {
+        try {
+          detectedFoods = await this.visionService.detectFoodLabels(dto.imageUrl);
+        } catch (error) {
+          console.error('Vision API 오류:', error);
+          detectedFoods = ['음식'];
+        }
       }
+    } else {
+      detectedFoods = ['음식'];
     }
 
     // 추천 엔진: 음식 + 상황 + 취향 → 음료
