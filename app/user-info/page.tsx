@@ -141,59 +141,73 @@ export default function UserInfoPage() {
             )}
           </div>
 
-          {/* 사용자 정보 */}
+          {/* 내 활동 */}
           <div className="space-y-4">
             <h3 className={cn(
               "text-xs text-gold-dim uppercase tracking-widest font-light",
               isKorean && "font-[var(--font-noto-kr)] normal-case tracking-normal"
             )}>
-              {t('userInfo.accountInfo')}
+              {isKorean ? '내 활동' : 'My Activity'}
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* 이메일 */}
-              <div className="p-4 bg-secondary border border-border rounded-lg">
-                <p className={cn(
-                  "text-xs text-muted-foreground uppercase tracking-widest font-light mb-2",
-                  isKorean && "font-[var(--font-noto-kr)] normal-case tracking-normal"
-                )}>
-                  {t('common.email')}
+              {/* 추천 히스토리 */}
+              <button
+                onClick={() => {
+                  if (isPremium) {
+                    router.push('/history');
+                  } else {
+                    router.push('/subscription');
+                  }
+                }}
+                className="p-4 bg-secondary border border-border rounded-lg hover:bg-gold/5 hover:border-gold/30 transition-all text-left group"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <p className={cn(
+                    "text-xs text-muted-foreground uppercase tracking-widest font-light",
+                    isKorean && "font-[var(--font-noto-kr)] normal-case tracking-normal"
+                  )}>
+                    {isKorean ? '추천 히스토리' : 'History'}
+                  </p>
+                  {!isPremium && (
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-gold/10 text-gold">
+                      PREMIUM
+                    </span>
+                  )}
+                </div>
+                <p className="text-foreground font-light group-hover:text-gold transition">
+                  {isKorean ? '내 추천 기록 보기' : 'View my recommendations'}
                 </p>
-                <p className="text-foreground font-light break-all">{email}</p>
-              </div>
+              </button>
 
-              {/* 이름 */}
-              <div className="p-4 bg-secondary border border-border rounded-lg">
-                <p className={cn(
-                  "text-xs text-muted-foreground uppercase tracking-widest font-light mb-2",
-                  isKorean && "font-[var(--font-noto-kr)] normal-case tracking-normal"
-                )}>
-                  {t('common.name')}
+              {/* 즐겨찾기 */}
+              <button
+                onClick={() => {
+                  if (isPremium) {
+                    router.push('/favorites');
+                  } else {
+                    router.push('/subscription');
+                  }
+                }}
+                className="p-4 bg-secondary border border-border rounded-lg hover:bg-gold/5 hover:border-gold/30 transition-all text-left group"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <p className={cn(
+                    "text-xs text-muted-foreground uppercase tracking-widest font-light",
+                    isKorean && "font-[var(--font-noto-kr)] normal-case tracking-normal"
+                  )}>
+                    {isKorean ? '즐겨찾기' : 'Favorites'}
+                  </p>
+                  {!isPremium && (
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-gold/10 text-gold">
+                      PREMIUM
+                    </span>
+                  )}
+                </div>
+                <p className="text-foreground font-light group-hover:text-gold transition">
+                  {isKorean ? '저장한 음료 보기' : 'View saved drinks'}
                 </p>
-                <p className="text-foreground font-light">{username}</p>
-              </div>
-
-              {/* ID */}
-              <div className="p-4 bg-secondary border border-border rounded-lg">
-                <p className={cn(
-                  "text-xs text-muted-foreground uppercase tracking-widest font-light mb-2",
-                  isKorean && "font-[var(--font-noto-kr)] normal-case tracking-normal"
-                )}>
-                  {t('userInfo.userId')}
-                </p>
-                <p className="text-foreground font-light text-sm">{id}</p>
-              </div>
-
-              {/* 권한 */}
-              <div className="p-4 bg-secondary border border-border rounded-lg">
-                <p className={cn(
-                  "text-xs text-muted-foreground uppercase tracking-widest font-light mb-2",
-                  isKorean && "font-[var(--font-noto-kr)] normal-case tracking-normal"
-                )}>
-                  {t('userInfo.role')}
-                </p>
-                <p className="text-foreground font-light">{Array.isArray(roles) ? roles.join(', ') : roles}</p>
-              </div>
+              </button>
             </div>
           </div>
         </motion.div>
@@ -203,43 +217,46 @@ export default function UserInfoPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-4"
+          className="space-y-4"
         >
-          {/* 추천 시작 */}
-          <Button
-            onClick={() => router.push('/')}
-            className={cn(
-              "bg-gold hover:bg-gold-light text-background font-semibold py-3 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-gold/20",
-              isKorean && "font-[var(--font-noto-kr)]"
-            )}
-          >
-            {t('userInfo.startRecommendation')}
-          </Button>
+          {/* 첫 번째 줄 */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* 추천 시작 */}
+            <Button
+              onClick={() => router.push('/')}
+              className={cn(
+                "bg-gold hover:bg-gold-light text-background font-semibold py-3 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-gold/20",
+                isKorean && "font-[var(--font-noto-kr)]"
+              )}
+            >
+              {t('userInfo.startRecommendation')}
+            </Button>
 
-          {/* 구독 관리 */}
-          <Button
-            onClick={() => {
-              if (isPremium) {
-                router.push('/subscription/status');
-              } else {
-                router.push('/subscription');
-              }
-            }}
-            variant="outline"
-            className={cn(
-              "border border-border text-gold hover:bg-gold/10 hover:border-gold/40 font-semibold py-3 rounded-lg transition-all duration-300",
-              isKorean && "font-[var(--font-noto-kr)]"
-            )}
-          >
-            {isPremium ? t('userInfo.manageSubscription') : t('userInfo.subscribe')}
-          </Button>
+            {/* 구독 관리 */}
+            <Button
+              onClick={() => {
+                if (isPremium) {
+                  router.push('/subscription/status');
+                } else {
+                  router.push('/subscription');
+                }
+              }}
+              variant="outline"
+              className={cn(
+                "border border-border text-gold hover:bg-gold/10 hover:border-gold/40 font-semibold py-3 rounded-lg transition-all duration-300",
+                isKorean && "font-[var(--font-noto-kr)]"
+              )}
+            >
+              {isPremium ? t('userInfo.manageSubscription') : t('userInfo.subscribe')}
+            </Button>
+          </div>
 
-          {/* 설정 */}
+          {/* 두 번째 줄 */}
           <Button
             onClick={() => router.push('/settings')}
             variant="outline"
             className={cn(
-              "border border-border text-gold hover:bg-gold/10 hover:border-gold/40 font-semibold py-3 rounded-lg transition-all duration-300",
+              "w-full border border-border text-gold hover:bg-gold/10 hover:border-gold/40 font-semibold py-3 rounded-lg transition-all duration-300",
               isKorean && "font-[var(--font-noto-kr)]"
             )}
           >
