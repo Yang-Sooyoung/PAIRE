@@ -8,11 +8,11 @@ export class VisionService {
 
   constructor() {
     // service-account-key.json 경로 설정
-    const keyPath = process.env.GOOGLE_APPLICATION_CREDENTIALS || 
-                    path.join(process.cwd(), 'service-account-key.json');
-    
+    const keyPath = process.env.GOOGLE_APPLICATION_CREDENTIALS ||
+      path.join(process.cwd(), 'service-account-key.json');
+
     console.log('Vision API key path:', keyPath);
-    
+
     this.client = new vision.ImageAnnotatorClient({
       keyFilename: keyPath,
     });
