@@ -9,7 +9,6 @@ import { ArrowLeft, Check } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import axios from 'axios';
 
 export default function SubscriptionStatusPage() {
   const router = useRouter();
@@ -29,19 +28,29 @@ export default function SubscriptionStatusPage() {
     // 구독 정보 조회
     (async () => {
       try {
-        const res = await axios.get('/api/subscription/status', {
-          headers: { Authorization: `Bearer ${token}` },
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+        
+        const response = await fetch(`${API_URL}/subscription/status`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
         });
-        setSubscriptionInfo(res.data);
-        setFetchError(false);
-      } catch (err: any) {
-        console.error('Failed to fetch subscription status:', err);
-        // 404 에러는 구독 정보가 없는 것으로 처리 (에러로 표시하지 않음)
-        if (err?.response?.status === 404) {
+
+        if (response.ok) {
+          const data = await response.json();
+          setSubscriptionInfo(data);
+          setFetchError(false);
+        } else if (response.status === 404) {
+          // 404는 구독 정보가 없는 정상 상황
           setFetchError(false);
         } else {
           setFetchError(true);
         }
+      } catch (err: any) {
+        console.error('Failed to fetch subscription status:', err);
+        setFetchError(true);
       }
     })();
   }, [user, token, router]);
@@ -51,16 +60,27 @@ export default function SubscriptionStatusPage() {
 
     try {
       setLoading(true);
-      await axios.post(
-        '/api/subscription/cancel',
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+      
+      const response = await fetch(`${API_URL}/subscription/cancel`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || (isKorean ? '구독 취소 실패' : 'Failed to cancel subscription'));
+      }
 
       alert(isKorean ? '구독이 취소되었습니다.' : 'Subscription cancelled.');
       router.push('/user-info');
     } catch (err: any) {
-      alert(err?.response?.data?.message || (isKorean ? '구독 취소 실패' : 'Failed to cancel subscription'));
+      console.error('Cancel subscription error:', err);
+      alert(err?.message || (isKorean ? '구독 취소 실패' : 'Failed to cancel subscription'));
     } finally {
       setLoading(false);
     }

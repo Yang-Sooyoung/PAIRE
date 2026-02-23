@@ -13,12 +13,12 @@ import { DrinkDetailScreen } from "@/components/paire/drink-detail-screen"
 import { MenuInputScreen } from "@/components/paire/menu-input-screen"
 import { Settings, LogOut } from "lucide-react"
 
-type Screen = 
-  | "home" 
-  | "capture" 
-  | "loading" 
-  | "preference" 
-  | "recommendation" 
+type Screen =
+  | "home"
+  | "capture"
+  | "loading"
+  | "preference"
+  | "recommendation"
   | "detail"
   | "menu-input"
 
@@ -70,11 +70,11 @@ export default function PairePage() {
     setPreferences(prefs)
     setScreen("loading") // 로딩 화면 표시
     setIsLoadingRecommendation(true)
-    
+
     try {
       // 이미지 URL 처리 (placeholder 이미지는 null로 전달)
-      const imageUrl = capturedImage && !capturedImage.includes('paire-fairy') 
-        ? capturedImage 
+      const imageUrl = capturedImage && !capturedImage.includes('paire-fairy')
+        ? capturedImage
         : undefined
 
       // 백엔드 API 호출
@@ -92,7 +92,7 @@ export default function PairePage() {
       setScreen("recommendation")
     } catch (error: any) {
       console.error('추천 생성 실패:', error)
-      
+
       // 사용자 친화적 에러 메시지
       let errorMessage = '추천을 생성하는데 실패했습니다.'
       if (error.message.includes('일일 추천 한도')) {
@@ -100,7 +100,7 @@ export default function PairePage() {
       } else if (error.message.includes('로그인')) {
         errorMessage = '로그인이 필요한 서비스입니다.'
       }
-      
+
       alert(errorMessage)
       setScreen("preference")
     } finally {
@@ -166,23 +166,23 @@ export default function PairePage() {
             <h1 className="text-xl font-light text-foreground">PAIRÉ</h1>
             <div className="flex items-center gap-3">
               <button
-                  onClick={() => router.push("/user-info")}
-                  className="text-gold hover:text-gold-light transition"
-                  title="내 정보"
+                onClick={() => router.push("/user-info")}
+                className="text-gold hover:text-gold-light transition"
+                title="내 정보"
               >
                 👤
               </button>
               <button
-                  onClick={() => router.push("/settings")}
-                  className="text-gold hover:text-gold-light transition"
-                  title="설정"
+                onClick={() => router.push("/settings")}
+                className="text-gold hover:text-gold-light transition"
+                title="설정"
               >
                 <Settings className="w-5 h-5" />
               </button>
               <button
-                  onClick={handleLogout}
-                  className="text-gold hover:text-gold-light transition"
-                  title="로그아웃"
+                onClick={handleLogout}
+                className="text-gold hover:text-gold-light transition"
+                title="로그아웃"
               >
                 <LogOut className="w-5 h-5" />
               </button>
@@ -192,39 +192,39 @@ export default function PairePage() {
       )}
 
       {screen === "home" && (
-        <HomeScreen 
-          onCaptureFood={handleCaptureFood} 
+        <HomeScreen
+          onCaptureFood={handleCaptureFood}
           onMenuInput={handleMenuInput}
           user={user}
           onLoginClick={() => router.push("/login")}
           onSignupClick={() => router.push("/signup")}
         />
       )}
-      
+
       {screen === "capture" && (
-        <CaptureScreen 
-          onCapture={handleCapture} 
+        <CaptureScreen
+          onCapture={handleCapture}
           onBack={goHome}
         />
       )}
-      
+
       {screen === "loading" && (
-        <LoadingScreen 
-          imageUrl={capturedImage} 
-          onComplete={() => {}} // API 호출 완료 시 자동으로 화면 전환
+        <LoadingScreen
+          imageUrl={capturedImage}
+          onComplete={() => { }} // API 호출 완료 시 자동으로 화면 전환
         />
       )}
-      
+
       {screen === "preference" && (
-        <PreferenceScreen 
-          onSubmit={handlePreferenceSubmit} 
+        <PreferenceScreen
+          onSubmit={handlePreferenceSubmit}
           onBack={() => menuText ? setScreen("menu-input") : setScreen("capture")}
           isLoading={isLoadingRecommendation}
         />
       )}
-      
+
       {screen === "recommendation" && (
-        <RecommendationScreen 
+        <RecommendationScreen
           imageUrl={capturedImage}
           preferences={preferences}
           drinks={recommendedDrinks}
@@ -234,9 +234,9 @@ export default function PairePage() {
           onRefresh={handleRefresh}
         />
       )}
-      
+
       {screen === "detail" && selectedDrink && (
-        <DrinkDetailScreen 
+        <DrinkDetailScreen
           drink={selectedDrink}
           onBack={() => setScreen("recommendation")}
           onAddToCart={handleAddToCart}
@@ -244,7 +244,7 @@ export default function PairePage() {
       )}
 
       {screen === "menu-input" && (
-        <MenuInputScreen 
+        <MenuInputScreen
           onSubmit={handleMenuSubmit}
           onBack={goHome}
         />
