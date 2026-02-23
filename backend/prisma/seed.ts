@@ -3,33 +3,33 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('?�� Seeding drinks data...');
+  console.log('🌱 Seeding drinks data...');
 
-  // 기존 ?�이????��
+  // 기존 데이터 삭제
   await prisma.drink.deleteMany();
 
-  // ?�료 ?�이??추�?
+  // 음료 데이터 추가
   const drinks = [
-    // ?�??- ?�파?�링
+    // 와인 - 스파클링
     {
       name: 'Champagne',
       type: 'sparkling',
-      description: '?�아??기포감과 ?�선??�?,
+      description: '우아한 기포감과 신선한 맛',
       tastingNotes: ['fruity', 'elegant', 'light'],
-      image: null,
-      price: '??0,000',
+      image: 'https://via.placeholder.com/300x400?text=Champagne',
+      price: '₩50,000',
       foodPairings: ['seafood', 'pasta', 'cheese', 'dessert'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'light'],
     },
-    // ?�??- ?�드
+    // 와인 - 레드
     {
       name: 'Pinot Noir',
       type: 'red wine',
-      description: '부?�러???�닌�??�아???��?',
+      description: '부드러운 탄닌과 우아한 산미',
       tastingNotes: ['fruity', 'elegant', 'medium'],
-      image: null,
-      price: '??5,000',
+      image: 'https://via.placeholder.com/300x400?text=Pinot+Noir',
+      price: '₩45,000',
       foodPairings: ['meat', 'fish', 'mushroom', 'cheese'],
       occasions: ['date', 'gathering', 'solo-drinking'],
       tastes: ['bitter', 'medium'],
@@ -37,10 +37,10 @@ async function main() {
     {
       name: 'Merlot',
       type: 'red wine',
-      description: '부?�럽�??��???�?,
+      description: '부드럽고 풍부한 맛',
       tastingNotes: ['fruity', 'smooth', 'medium'],
-      image: null,
-      price: '??0,000',
+      image: 'https://via.placeholder.com/300x400?text=Merlot',
+      price: '₩40,000',
       foodPairings: ['meat', 'pasta', 'cheese'],
       occasions: ['date', 'gathering', 'solo-drinking'],
       tastes: ['sweet', 'medium'],
@@ -48,22 +48,22 @@ async function main() {
     {
       name: 'Cabernet Sauvignon',
       type: 'red wine',
-      description: '진하�?복잡??�?,
+      description: '진하고 복잡한 맛',
       tastingNotes: ['bold', 'complex', 'heavy'],
-      image: null,
-      price: '??5,000',
+      image: 'https://via.placeholder.com/300x400?text=Cabernet+Sauvignon',
+      price: '₩55,000',
       foodPairings: ['meat', 'steak', 'cheese'],
       occasions: ['date', 'gathering', 'solo-drinking'],
       tastes: ['bitter', 'heavy'],
     },
-    // ?�??- ?�이??
+    // 와인 - 화이트
     {
       name: 'Sauvignon Blanc',
       type: 'white wine',
-      description: '?�큼???��??� ?�선???��?',
+      description: '상큼한 산미와 신선한 풍미',
       tastingNotes: ['crisp', 'light', 'fresh'],
-      image: null,
-      price: '??5,000',
+      image: 'https://via.placeholder.com/300x400?text=Sauvignon+Blanc',
+      price: '₩35,000',
       foodPairings: ['seafood', 'salad', 'vegetable', 'cheese'],
       occasions: ['date', 'gathering', 'camping'],
       tastes: ['sour', 'light'],
@@ -71,10 +71,10 @@ async function main() {
     {
       name: 'Riesling',
       type: 'white wine',
-      description: '?�콤??맛과 ?�선???��?',
+      description: '달콤한 맛과 신선한 산미',
       tastingNotes: ['sweet', 'fruity', 'light'],
-      image: null,
-      price: '??8,000',
+      image: 'https://via.placeholder.com/300x400?text=Riesling',
+      price: '₩38,000',
       foodPairings: ['seafood', 'spicy', 'dessert', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'light'],
@@ -82,22 +82,22 @@ async function main() {
     {
       name: 'Chardonnay',
       type: 'white wine',
-      description: '?��???맛과 부?�러???��?',
+      description: '풍부한 맛과 부드러운 산미',
       tastingNotes: ['rich', 'smooth', 'medium'],
-      image: null,
-      price: '??2,000',
+      image: 'https://via.placeholder.com/300x400?text=Chardonnay',
+      price: '₩42,000',
       foodPairings: ['seafood', 'pasta', 'cheese', 'chicken'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'medium'],
     },
-    // �?
+    // 차
     {
       name: 'Oolong Tea',
       type: 'tea',
-      description: '깊�? 맛과 ?�아????,
+      description: '깊은 맛과 우아한 향',
       tastingNotes: ['floral', 'smooth', 'elegant'],
-      image: null,
-      price: '??,000',
+      image: 'https://via.placeholder.com/300x400?text=Oolong+Tea',
+      price: '₩8,000',
       foodPairings: ['meat', 'fish', 'cheese', 'dessert'],
       occasions: ['date', 'gathering', 'solo-meal'],
       tastes: ['bitter', 'medium'],
@@ -105,10 +105,10 @@ async function main() {
     {
       name: 'Green Tea',
       type: 'tea',
-      description: '?�선???��??� 가벼운 �?,
+      description: '신선한 풍미와 가벼운 맛',
       tastingNotes: ['fresh', 'light', 'grassy'],
-      image: null,
-      price: '??,000',
+      image: 'https://via.placeholder.com/300x400?text=Green+Tea',
+      price: '₩6,000',
       foodPairings: ['seafood', 'vegetable', 'light dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['light', 'sour'],
@@ -116,22 +116,22 @@ async function main() {
     {
       name: 'Black Tea',
       type: 'tea',
-      description: '진하�??��???�?,
+      description: '진하고 풍부한 맛',
       tastingNotes: ['bold', 'rich', 'smooth'],
-      image: null,
-      price: '??,000',
+      image: 'https://via.placeholder.com/300x400?text=Black+Tea',
+      price: '₩7,000',
       foodPairings: ['meat', 'cheese', 'dessert'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['bitter', 'medium'],
     },
-    // 비알�?
+    // 비알콜
     {
       name: 'Sparkling Water',
       type: 'non-alcoholic',
-      description: '?�큼??기포감과 깔끔??�?,
+      description: '상큼한 기포감과 깔끔한 맛',
       tastingNotes: ['light', 'fresh', 'clean'],
-      image: null,
-      price: '??,000',
+      image: 'https://via.placeholder.com/300x400?text=Sparkling+Water',
+      price: '₩5,000',
       foodPairings: ['all'],
       occasions: ['all'],
       tastes: ['light'],
@@ -139,10 +139,10 @@ async function main() {
     {
       name: 'Ginger Ale',
       type: 'non-alcoholic',
-      description: '?�강???�과 ?�큼??�?,
+      description: '생강의 향과 상큼한 맛',
       tastingNotes: ['spicy', 'fresh', 'light'],
-      image: null,
-      price: '??,000',
+      image: 'https://via.placeholder.com/300x400?text=Ginger+Ale',
+      price: '₩6,000',
       foodPairings: ['spicy', 'meat', 'seafood'],
       occasions: ['gathering', 'solo-meal'],
       tastes: ['sour', 'light'],
@@ -150,10 +150,10 @@ async function main() {
     {
       name: 'Kombucha',
       type: 'non-alcoholic',
-      description: '발효??맛과 건강???��?지',
+      description: '발효된 맛과 건강한 이미지',
       tastingNotes: ['tangy', 'light', 'fresh'],
-      image: null,
-      price: '??,000',
+      image: 'https://via.placeholder.com/300x400?text=Kombucha',
+      price: '₩8,000',
       foodPairings: ['light dishes', 'vegetable', 'seafood'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sour', 'light'],
@@ -161,22 +161,22 @@ async function main() {
     {
       name: 'Fresh Juice',
       type: 'non-alcoholic',
-      description: '?�선??과일??�?,
+      description: '신선한 과일의 맛',
       tastingNotes: ['fruity', 'sweet', 'light'],
-      image: null,
-      price: '??,000',
+      image: 'https://via.placeholder.com/300x400?text=Fresh+Juice',
+      price: '₩9,000',
       foodPairings: ['dessert', 'light dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sweet', 'light'],
     },
-    // ?�스??
+    // 위스키
     {
       name: 'Single Malt Whisky',
       type: 'whisky',
-      description: '복잡?�고 ?�아??�?,
+      description: '복잡하고 우아한 맛',
       tastingNotes: ['complex', 'smooth', 'elegant'],
-      image: null,
-      price: '??0,000',
+      image: 'https://via.placeholder.com/300x400?text=Single+Malt+Whisky',
+      price: '₩60,000',
       foodPairings: ['meat', 'cheese', 'chocolate'],
       occasions: ['solo-drinking', 'gathering'],
       tastes: ['bitter', 'heavy'],
@@ -184,22 +184,22 @@ async function main() {
     {
       name: 'Bourbon',
       type: 'whisky',
-      description: '?�콤?�고 ?��???�?,
+      description: '달콤하고 풍부한 맛',
       tastingNotes: ['sweet', 'rich', 'smooth'],
-      image: null,
-      price: '??5,000',
+      image: 'https://via.placeholder.com/300x400?text=Bourbon',
+      price: '₩45,000',
       foodPairings: ['meat', 'cheese', 'dessert'],
       occasions: ['solo-drinking', 'gathering'],
       tastes: ['sweet', 'medium'],
     },
-    // 칵테??
+    // 칵테일
     {
       name: 'Mojito',
       type: 'cocktail',
-      description: '?�큼??민트?� ?�임??조화',
+      description: '상큼한 민트와 라임의 조화',
       tastingNotes: ['fresh', 'light', 'fruity'],
-      image: null,
-      price: '??5,000',
+      image: 'https://via.placeholder.com/300x400?text=Mojito',
+      price: '₩15,000',
       foodPairings: ['seafood', 'light dishes', 'spicy'],
       occasions: ['date', 'gathering', 'camping'],
       tastes: ['sweet', 'light'],
@@ -207,10 +207,10 @@ async function main() {
     {
       name: 'Margarita',
       type: 'cocktail',
-      description: '?�큼???�임�??�킬?�의 조화',
+      description: '상큼한 라임과 테킬라의 조화',
       tastingNotes: ['crisp', 'fruity', 'light'],
-      image: null,
-      price: '??4,000',
+      image: 'https://via.placeholder.com/300x400?text=Margarita',
+      price: '₩14,000',
       foodPairings: ['spicy', 'seafood', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['sour', 'light'],
@@ -218,10 +218,10 @@ async function main() {
     {
       name: 'Old Fashioned',
       type: 'cocktail',
-      description: '?�래?�하�??�아??�?,
+      description: '클래식하고 우아한 맛',
       tastingNotes: ['bold', 'smooth', 'elegant'],
-      image: null,
-      price: '??6,000',
+      image: 'https://via.placeholder.com/300x400?text=Old+Fashioned',
+      price: '₩16,000',
       foodPairings: ['meat', 'cheese', 'chocolate'],
       occasions: ['solo-drinking', 'gathering'],
       tastes: ['bitter', 'medium'],
@@ -234,127 +234,7 @@ async function main() {
     });
   }
 
-  console.log(`??Created ${drinks.length} drinks`);
-}
-
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
-
-
-// 추�? ?�료 ?�이???�성 (�?200�??�상)
-const additionalDrinks = [];
-
-// ?�드 ?�??추�? (50�?
-const redWineNames = ['Pinot Noir', 'Merlot', 'Cabernet Sauvignon', 'Syrah', 'Malbec'];
-for (let i = 0; i < 50; i++) {
-  additionalDrinks.push({
-    name: `${redWineNames[i % 5]} ${2015 + Math.floor(i / 10)}`,
-    type: 'red wine',
-    description: '?��????�닌�?복합?�인 �?,
-    tastingNotes: ['fruity', 'bold', i % 3 === 0 ? 'heavy' : 'medium'],
-    image: null,
-    price: `??{40000 + (i * 2000)}`,
-    foodPairings: ['meat', 'steak', 'cheese'],
-    occasions: ['date', 'gathering', 'solo-drinking'],
-    tastes: [i % 2 === 0 ? 'bitter' : 'sweet', i % 3 === 0 ? 'heavy' : 'medium'],
-  });
-}
-
-// ?�이???�??추�? (50�?
-const whiteWineNames = ['Sauvignon Blanc', 'Chardonnay', 'Riesling', 'Pinot Grigio', 'Moscato'];
-for (let i = 0; i < 50; i++) {
-  additionalDrinks.push({
-    name: `${whiteWineNames[i % 5]} ${2016 + Math.floor(i / 10)}`,
-    type: 'white wine',
-    description: '?�큼???��??� ?�선???��?',
-    tastingNotes: ['crisp', 'light', 'fresh'],
-    image: null,
-    price: `??{35000 + (i * 1500)}`,
-    foodPairings: ['seafood', 'salad', 'cheese', 'light dishes'],
-    occasions: ['date', 'gathering', 'camping'],
-    tastes: [i % 2 === 0 ? 'sweet' : 'sour', 'light'],
-  });
-}
-
-// ?�스??추�? (30�?
-const whiskeyNames = ['Single Malt', 'Bourbon', 'Rye', 'Irish Whiskey', 'Japanese Whisky'];
-for (let i = 0; i < 30; i++) {
-  additionalDrinks.push({
-    name: `${whiskeyNames[i % 5]} ${10 + i} Years`,
-    type: 'whisky',
-    description: '복잡?�고 ?�아??�?,
-    tastingNotes: ['complex', 'smooth', 'elegant'],
-    image: null,
-    price: `??{50000 + (i * 5000)}`,
-    foodPairings: ['meat', 'cheese', 'chocolate', 'dessert'],
-    occasions: ['solo-drinking', 'gathering'],
-    tastes: [i % 2 === 0 ? 'sweet' : 'bitter', i % 3 === 0 ? 'heavy' : 'medium'],
-  });
-}
-
-// 칵테??추�? (30�?
-const cocktailNames = ['Mojito', 'Margarita', 'Old Fashioned', 'Negroni', 'Manhattan', 'Martini', 'Daiquiri', 'Whiskey Sour', 'Cosmopolitan', 'Aperol Spritz'];
-for (let i = 0; i < 30; i++) {
-  additionalDrinks.push({
-    name: `${cocktailNames[i % 10]} ${i > 9 ? 'Premium' : 'Classic'}`,
-    type: 'cocktail',
-    description: '?�큼?�고 균형?�힌 �?,
-    tastingNotes: ['fresh', 'balanced', 'fruity'],
-    image: null,
-    price: `??{12000 + (i * 1000)}`,
-    foodPairings: i % 2 === 0 ? ['seafood', 'light dishes'] : ['spicy', 'meat'],
-    occasions: ['date', 'gathering', 'camping'],
-    tastes: [i % 2 === 0 ? 'sweet' : 'sour', 'light'],
-  });
-}
-
-// �?추�? (20�?
-const teaNames = ['Green Tea', 'Black Tea', 'Oolong Tea', 'White Tea', 'Pu-erh Tea'];
-for (let i = 0; i < 20; i++) {
-  additionalDrinks.push({
-    name: `${teaNames[i % 5]} Premium ${i + 1}`,
-    type: 'tea',
-    description: '깊�? 맛과 ?�아????,
-    tastingNotes: ['floral', 'smooth', 'elegant'],
-    image: null,
-    price: `??{6000 + (i * 500)}`,
-    foodPairings: ['light dishes', 'dessert', 'cheese'],
-    occasions: ['solo-meal', 'gathering'],
-    tastes: [i % 2 === 0 ? 'bitter' : 'sweet', i % 3 === 0 ? 'medium' : 'light'],
-  });
-}
-
-// 비알�??�료 추�? (20�?
-const nonAlcNames = ['Sparkling Water', 'Kombucha', 'Fresh Juice', 'Mocktail', 'Iced Tea'];
-for (let i = 0; i < 20; i++) {
-  additionalDrinks.push({
-    name: `${nonAlcNames[i % 5]} ${i + 1}`,
-    type: 'non-alcoholic',
-    description: '?�큼?�고 건강??�?,
-    tastingNotes: ['fresh', 'light', 'clean'],
-    image: null,
-    price: `??{5000 + (i * 500)}`,
-    foodPairings: ['all'],
-    occasions: ['all'],
-    tastes: ['light'],
-  });
-}
-
-// 모든 ?�료 ?�성
-for (const drink of [...drinks, ...additionalDrinks]) {
-  await prisma.drink.create({
-    data: drink,
-  });
-}
-
-const totalCount = drinks.length + additionalDrinks.length;
-console.log(`??Created ${totalCount} drinks`);
+  console.log(`✅ Created ${drinks.length} drinks`);
 }
 
 main()
