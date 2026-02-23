@@ -32,12 +32,14 @@ export default function SubscriptionPage() {
   };
 
   useEffect(() => {
+    let isCancelled = false;
+
     if (!user || !token) {
       setMethodRegistered(false);
       return;
     }
 
-    (async () => {
+    const fetchPaymentMethods = async () => {
       try {
         const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 
@@ -46,16 +48,22 @@ export default function SubscriptionPage() {
           headers: { Authorization: `Bearer ${currentToken}` },
         });
 
+        if (isCancelled) return;
+
         // 401 에러면 토큰 갱신 후 재시도
         if (response.status === 401) {
           console.log('Token expired, refreshing...');
           const newToken = await refreshTokenIfNeeded();
+
+          if (isCancelled) return;
 
           if (newToken) {
             currentToken = newToken;
             response = await axios.get(`${API_URL}/subscription/methods`, {
               headers: { Authorization: `Bearer ${currentToken}` },
             });
+
+            if (isCancelled) return;
           } else {
             console.log('Token refresh failed, redirecting to login');
             router.push('/login');
@@ -65,20 +73,26 @@ export default function SubscriptionPage() {
 
         console.log('Payment methods response:', response.data);
 
-        if (response.data?.success && response.data.methods?.length > 0) {
-          const m = response.data.methods[0];
-          console.log('Payment method found:', m);
-          setMethodRegistered(true);
-          setBillingKey(m.billingKey ?? '');
-        } else {
-          console.log('No payment methods found');
-          setMethodRegistered(false);
+        if (!isCancelled) {
+          if (response.data?.success && response.data.methods?.length > 0) {
+            const m = response.data.methods[0];
+            console.log('Payment method found:', m);
+            setMethodRegistered(true);
+            setBillingKey(m.billingKey ?? '');
+          } else {
+            console.log('No payment methods found');
+            setMethodRegistered(false);
+          }
         }
       } catch (err: any) {
+        if (isCancelled) return;
+
         // 401 에러 처리
         if (err?.response?.status === 401) {
           console.log('Token expired, refreshing...');
           const newToken = await refreshTokenIfNeeded();
+
+          if (isCancelled) return;
 
           if (newToken) {
             try {
@@ -87,20 +101,26 @@ export default function SubscriptionPage() {
                 headers: { Authorization: `Bearer ${newToken}` },
               });
 
+              if (isCancelled) return;
+
               console.log('Payment methods response (after refresh):', response.data);
 
-              if (response.data?.success && response.data.methods?.length > 0) {
-                const m = response.data.methods[0];
-                console.log('Payment method found (after refresh):', m);
-                setMethodRegistered(true);
-                setBillingKey(m.billingKey ?? '');
-              } else {
-                console.log('No payment methods found (after refresh)');
-                setMethodRegistered(false);
+              if (!isCancelled) {
+                if (response.data?.success && response.data.methods?.length > 0) {
+                  const m = response.data.methods[0];
+                  console.log('Payment method found (after refresh):', m);
+                  setMethodRegistered(true);
+                  setBillingKey(m.billingKey ?? '');
+                } else {
+                  console.log('No payment methods found (after refresh)');
+                  setMethodRegistered(false);
+                }
               }
             } catch (retryErr) {
-              console.error('Retry failed:', retryErr);
-              setMethodRegistered(false);
+              if (!isCancelled) {
+                console.error('Retry failed:', retryErr);
+                setMethodRegistered(false);
+              }
             }
           } else {
             console.log('Token refresh failed, redirecting to login');
@@ -111,7 +131,13 @@ export default function SubscriptionPage() {
           setMethodRegistered(false);
         }
       }
-    })();
+    };
+
+    fetchPaymentMethods();
+
+    return () => {
+      isCancelled = true;
+    };
   }, [user, token, refreshTokenIfNeeded, router]);
 
   const handleRegisterBilling = async () => {
