@@ -63,11 +63,15 @@ export default function SubscriptionPage() {
           }
         }
 
+        console.log('Payment methods response:', response.data);
+
         if (response.data?.success && response.data.methods?.length > 0) {
           const m = response.data.methods[0];
+          console.log('Payment method found:', m);
           setMethodRegistered(true);
           setBillingKey(m.billingKey ?? '');
         } else {
+          console.log('No payment methods found');
           setMethodRegistered(false);
         }
       } catch (err: any) {
@@ -83,11 +87,15 @@ export default function SubscriptionPage() {
                 headers: { Authorization: `Bearer ${newToken}` },
               });
 
+              console.log('Payment methods response (after refresh):', response.data);
+
               if (response.data?.success && response.data.methods?.length > 0) {
                 const m = response.data.methods[0];
+                console.log('Payment method found (after refresh):', m);
                 setMethodRegistered(true);
                 setBillingKey(m.billingKey ?? '');
               } else {
+                console.log('No payment methods found (after refresh)');
                 setMethodRegistered(false);
               }
             } catch (retryErr) {
