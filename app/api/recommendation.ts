@@ -78,6 +78,9 @@ export async function getRecommendationHistory(
   );
 
   if (!res.ok) {
+    if (res.status === 401) {
+      throw new Error('401: Unauthorized');
+    }
     throw new Error('히스토리 조회 실패');
   }
 

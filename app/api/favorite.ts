@@ -40,6 +40,9 @@ export async function getFavorites(token: string) {
   });
 
   if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error('401: Unauthorized');
+    }
     const error = await response.json();
     throw new Error(error.message || '즐겨찾기 목록을 불러오는데 실패했습니다.');
   }
