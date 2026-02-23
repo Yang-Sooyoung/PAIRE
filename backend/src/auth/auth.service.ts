@@ -54,7 +54,7 @@ export class AuthService {
     }
 
     // Check password
-    const isPasswordValid = await bcrypt.compare(dto.password, user.password);
+    const isPasswordValid = await bcrypt.compare(dto.password, user.password || '');
 
     if (!isPasswordValid) {
       throw new UnauthorizedException('이메일 또는 비밀번호가 잘못되었습니다.');
@@ -104,6 +104,71 @@ export class AuthService {
     }
 
     return this.formatUser(user);
+  }
+
+  /**
+   * OAuth 사용자 검증 및 생성/업데이트
+   */
+  async validateOAuthUser(profile: {
+    provider: string;
+    providerId: string;
+    email: string;
+    username: string;
+    profileImage?: string;
+  }) {
+    // provider + providerId로 사용자 찾기
+    let user = await this.prisma.user.findUnique({
+      where: {
+        provider_providerId: {
+          provider: profile.provider,
+          providerId: profile.providerId,
+        },
+      },
+    });
+
+    if (!user) {
+      // 이메일로 기존 사용자 찾기 (이메일 연동)
+      const existingUser = await this.prisma.user.findUnique({
+        where: { email: profile.email },
+      });
+
+      if (existingUser && !existingUser.provider) {
+        // 기존 로컬 계정에 OAuth 연동
+        user = await this.prisma.user.update({
+          where: { id: existingUser.id },
+          data: {
+            provider: profile.provider,
+            providerId: profile.providerId,
+          },
+        });
+      } else {
+        // 새 OAuth 사용자 생성
+        user = await this.prisma.user.create({
+          data: {
+            email: profile.email,
+            username: profile.username,
+            nickname: profile.username,
+            provider: profile.provider,
+            providerId: profile.providerId,
+            password: null, // OAuth 사용자는 비밀번호 없음
+          },
+        });
+      }
+    }
+
+    return user;
+  }
+
+  /**
+   * OAuth 로그인 후 토큰 생성
+   */
+  async oauthLogin(user: any) {
+    const tokens = this.generateTokens(user.id);
+
+    return {
+      user: this.formatUser(user),
+      ...tokens,
+    };
   }
 
   private generateTokens(userId: string) {

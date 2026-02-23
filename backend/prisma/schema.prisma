@@ -14,11 +14,15 @@ datasource db {
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
-  password  String
+  password  String?  // OAuth 사용자는 null 가능
   username  String
   nickname  String?
   membership Membership @default(FREE)
   roles     String[] @default(["USER"])
+  
+  // OAuth 정보
+  provider  String?  // google, kakao, local
+  providerId String? // OAuth provider의 user ID
   
   // Relations
   subscriptions Subscription[]
@@ -30,6 +34,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
+  @@unique([provider, providerId])
   @@map("users")
 }
 

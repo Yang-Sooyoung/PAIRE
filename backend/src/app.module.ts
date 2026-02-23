@@ -12,6 +12,7 @@ import { SupportModule } from './support/support.module';
 import { FavoriteModule } from './favorite/favorite.module';
 import { StorageModule } from './storage/storage.module';
 import { SchedulerModule } from './scheduler/scheduler.module';
+import { StickerModule } from './sticker/sticker.module';
 import { AppController } from './app.controller';
 
 @Module({
@@ -31,6 +32,7 @@ import { AppController } from './app.controller';
     FavoriteModule,
     StorageModule,
     SchedulerModule,
+    StickerModule,
   ],
   controllers: [AppController],
 })
