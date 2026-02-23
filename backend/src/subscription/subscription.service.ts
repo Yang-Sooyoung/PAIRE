@@ -112,11 +112,27 @@ export class SubscriptionService {
   }
 
   async getStatus(userId: string) {
+    // ACTIVE 또는 CANCELLED 구독 조회 (만료 전까지)
     const subscription = await this.prisma.subscription.findFirst({
-      where: { userId, status: 'ACTIVE' },
+      where: { 
+        userId, 
+        status: { in: ['ACTIVE', 'CANCELLED'] },
+      },
+      orderBy: { createdAt: 'desc' },
     });
 
     if (!subscription) {
+      return { subscription: null };
+    }
+
+    // CANCELLED 구독이 만료되었는지 확인
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const nextBillingDate = new Date(subscription.nextBillingDate);
+    nextBillingDate.setHours(0, 0, 0, 0);
+
+    if (subscription.status === 'CANCELLED' && nextBillingDate <= today) {
+      // 만료된 CANCELLED 구독
       return { subscription: null };
     }
 
@@ -129,6 +145,7 @@ export class SubscriptionService {
         nextBillingDate: subscription.nextBillingDate,
         status: subscription.status,
         paymentMethod: '카드 ****',
+        willExpire: subscription.status === 'CANCELLED', // 취소 예정 플래그
       },
     };
   }
@@ -142,13 +159,20 @@ export class SubscriptionService {
       throw new NotFoundException('활성 구독을 찾을 수 없습니다.');
     }
 
-    // 구독 상태 변경
+    // 구독 상태만 CANCELLED로 변경 (멤버십은 유지)
     await this.prisma.subscription.update({
       where: { id: subscription.id },
       data: { status: 'CANCELLED' },
     });
 
-    return { success: true, message: '구독이 취소되었습니다. 다음 갱신일부터 FREE로 변경됩니다.' };
+    // 사용자 멤버십은 nextBillingDate까지 유지
+    // 스케줄러가 nextBillingDate에 FREE로 변경
+
+    return { 
+      success: true, 
+      message: '구독이 취소되었습니다. 다음 갱신일까지 PREMIUM 혜택을 이용할 수 있습니다.',
+      nextBillingDate: subscription.nextBillingDate,
+    };
   }
 
   async removePaymentMethod(userId: string) {
@@ -157,18 +181,14 @@ export class SubscriptionService {
       where: { userId, status: 'ACTIVE' },
     });
 
-    // 활성 구독이 있으면 먼저 취소
+    // 활성 구독이 있으면 먼저 취소 (멤버십은 유지)
     if (activeSubscription) {
       await this.prisma.subscription.update({
         where: { id: activeSubscription.id },
         data: { status: 'CANCELLED' },
       });
-
-      // 사용자 멤버십을 FREE로 변경
-      await this.prisma.user.update({
-        where: { id: userId },
-        data: { membership: 'FREE' },
-      });
+      
+      // 멤버십은 nextBillingDate까지 유지
     }
 
     // 결제 수단 제거
@@ -185,8 +205,9 @@ export class SubscriptionService {
     return { 
       success: true, 
       message: activeSubscription 
-        ? '구독이 취소되고 결제 수단이 제거되었습니다.' 
-        : '결제 수단이 제거되었습니다.' 
+        ? `구독이 취소되고 결제 수단이 제거되었습니다. ${activeSubscription.nextBillingDate.toLocaleDateString()}까지 PREMIUM 혜택을 이용할 수 있습니다.`
+        : '결제 수단이 제거되었습니다.',
+      nextBillingDate: activeSubscription?.nextBillingDate,
     };
   }
 
@@ -197,7 +218,29 @@ export class SubscriptionService {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // 갱신 예정인 구독 조회
+    // 1. CANCELLED 구독 중 만료된 것 처리
+    const expiredCancelledSubscriptions = await this.prisma.subscription.findMany({
+      where: {
+        status: 'CANCELLED',
+        nextBillingDate: { lte: today },
+      },
+    });
+
+    for (const subscription of expiredCancelledSubscriptions) {
+      try {
+        // 사용자 멤버십을 FREE로 변경
+        await this.prisma.user.update({
+          where: { id: subscription.userId },
+          data: { membership: 'FREE' },
+        });
+
+        console.log(`구독 만료 처리 완료: userId=${subscription.userId}`);
+      } catch (error) {
+        console.error(`구독 만료 처리 실패 (${subscription.id}):`, error);
+      }
+    }
+
+    // 2. ACTIVE 구독 중 갱신 예정인 것 처리
     const subscriptions = await this.prisma.subscription.findMany({
       where: {
         status: 'ACTIVE',
@@ -227,6 +270,8 @@ export class SubscriptionService {
             where: { id: subscription.id },
             data: { nextBillingDate },
           });
+
+          console.log(`구독 갱신 성공: userId=${subscription.userId}`);
         } else {
           // 결제 실패 - 상태 변경
           await this.prisma.subscription.update({
@@ -239,10 +284,11 @@ export class SubscriptionService {
             where: { id: subscription.userId },
             data: { membership: 'FREE' },
           });
+
+          console.log(`구독 갱신 실패: userId=${subscription.userId}`);
         }
       } catch (error) {
         console.error(`구독 갱신 실패 (${subscription.id}):`, error);
-        // 실패 로그 기록
       }
     }
   }
