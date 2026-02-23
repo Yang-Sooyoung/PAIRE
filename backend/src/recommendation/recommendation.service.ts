@@ -2,10 +2,10 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { VisionService } from '@/vision/vision.service';
 import { StorageService } from '@/storage/storage.service';
-import { 
-  normalizeMenuItems, 
-  findPairingRules, 
-  generatePairingReason 
+import {
+  normalizeMenuItems,
+  findPairingRules,
+  generatePairingReason
 } from './menu-normalizer';
 import {
   calculateDrinkScore,
@@ -64,14 +64,14 @@ export class RecommendationService {
         try {
           detectedFoods = await this.visionService.detectFoodLabels(imageUrl);
           console.log('Detected foods:', detectedFoods);
-          
+
           // 메뉴 정규화 및 페어링 룰 적용
           const normalizedMenus = normalizeMenuItems(detectedFoods);
           console.log('Normalized menus:', normalizedMenus);
-          
+
           const pairingRules = findPairingRules(normalizedMenus);
           console.log('Pairing rules:', pairingRules);
-          
+
           pairingReason = generatePairingReason(normalizedMenus, pairingRules);
         } catch (error) {
           console.error('Vision API 오류:', error);
@@ -191,7 +191,7 @@ export class RecommendationService {
     // 메뉴 정규화 및 페어링 룰 적용
     const normalizedMenus = normalizeMenuItems(foods);
     const pairingRules = findPairingRules(normalizedMenus);
-    
+
     console.log('=== Recommendation Engine ===');
     console.log('Foods:', foods);
     console.log('Normalized menus:', normalizedMenus);
@@ -225,7 +225,7 @@ export class RecommendationService {
         if (occasion === 'all') return true;
         return occasions.includes(occasion) || occasions.includes('all');
       });
-      
+
       // 그래도 없으면 전체 음료 사용
       if (candidates.length === 0) {
         console.log('Still no candidates, using all drinks...');
@@ -267,7 +267,7 @@ export class RecommendationService {
     return topScores.map(topScore => {
       const drinkData = scores.find(s => s.score.drinkId === topScore.drinkId);
       if (!drinkData) return null;
-      
+
       const { drink } = drinkData;
       return {
         id: drink.id,

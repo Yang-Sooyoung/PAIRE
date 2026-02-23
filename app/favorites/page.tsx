@@ -7,6 +7,7 @@ import { getFavorites, removeFavorite } from '@/app/api/favorite';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Heart, Trash2, Loader2, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { CustomDialog } from '@/components/ui/custom-dialog';
 import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils';
 
@@ -27,6 +28,17 @@ export default function FavoritesPage() {
   const [favorites, setFavorites] = useState<Favorite[]>([]);
   const [loading, setLoading] = useState(true);
   const [removingId, setRemovingId] = useState<string | null>(null);
+  const [showDialog, setShowDialog] = useState(false);
+  const [dialogConfig, setDialogConfig] = useState<{
+    type: 'confirm'
+    title: string
+    description: string
+    onConfirm?: () => void
+  }>({
+    type: 'confirm',
+    title: '',
+    description: '',
+  });
 
   useEffect(() => {
     if (!user || !token) {
@@ -78,21 +90,29 @@ export default function FavoritesPage() {
   const handleRemove = async (drinkId: string) => {
     if (!token) return;
 
-    const confirmRemove = confirm(
-      isKorean ? '즐겨찾기에서 제거하시겠어요?' : 'Remove from favorites?'
-    );
-
-    if (!confirmRemove) return;
-
-    setRemovingId(drinkId);
-    try {
-      await removeFavorite(drinkId, token);
-      setFavorites((prev) => prev.filter((fav) => fav.drinkId !== drinkId));
-    } catch (error: any) {
-      alert(error.message || (isKorean ? '제거에 실패했습니다.' : 'Failed to remove.'));
-    } finally {
-      setRemovingId(null);
-    }
+    setDialogConfig({
+      type: 'confirm',
+      title: isKorean ? '즐겨찾기 제거' : 'Remove Favorite',
+      description: isKorean ? '즐겨찾기에서 제거하시겠어요?' : 'Remove from favorites?',
+      onConfirm: async () => {
+        setShowDialog(false);
+        setRemovingId(drinkId);
+        try {
+          await removeFavorite(drinkId, token);
+          setFavorites((prev) => prev.filter((fav) => fav.drinkId !== drinkId));
+        } catch (error: any) {
+          setDialogConfig({
+            type: 'confirm',
+            title: isKorean ? '오류' : 'Error',
+            description: error.message || (isKorean ? '제거에 실패했습니다.' : 'Failed to remove.'),
+          });
+          setShowDialog(true);
+        } finally {
+          setRemovingId(null);
+        }
+      }
+    });
+    setShowDialog(true);
   };
 
   // FREE 사용자 화면
@@ -256,6 +276,18 @@ export default function FavoritesPage() {
           </div>
         )}
       </div>
+
+      {/* Custom Dialog */}
+      <CustomDialog
+        isOpen={showDialog}
+        onClose={() => setShowDialog(false)}
+        type={dialogConfig.type}
+        title={dialogConfig.title}
+        description={dialogConfig.description}
+        confirmText={isKorean ? '확인' : 'Confirm'}
+        cancelText={isKorean ? '취소' : 'Cancel'}
+        onConfirm={dialogConfig.onConfirm}
+      />
     </div>
   );
 }

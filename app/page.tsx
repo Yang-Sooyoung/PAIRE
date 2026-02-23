@@ -11,6 +11,7 @@ import { PreferenceScreen } from "@/components/paire/preference-screen"
 import { RecommendationScreen } from "@/components/paire/recommendation-screen"
 import { DrinkDetailScreen } from "@/components/paire/drink-detail-screen"
 import { MenuInputScreen } from "@/components/paire/menu-input-screen"
+import { CustomDialog } from "@/components/ui/custom-dialog"
 import { Settings, LogOut, User } from "lucide-react"
 
 type Screen =
@@ -47,6 +48,19 @@ export default function PairePage() {
   const [menuText, setMenuText] = useState<string>("")
   const [isReady, setIsReady] = useState(false)
   const [isLoadingRecommendation, setIsLoadingRecommendation] = useState(false)
+  
+  // Dialog 상태
+  const [showDialog, setShowDialog] = useState(false)
+  const [dialogConfig, setDialogConfig] = useState<{
+    type: 'info' | 'success' | 'warning' | 'error' | 'confirm'
+    title: string
+    description: string
+    onConfirm?: () => void
+  }>({
+    type: 'info',
+    title: '',
+    description: '',
+  })
 
   // 초기화 완료 후 준비
   useEffect(() => {
@@ -75,13 +89,16 @@ export default function PairePage() {
       
       if (guestUsageCount >= 1) {
         // 비로그인 사용자는 1회만 가능
-        const confirmSignup = confirm(
-          '비회원은 1회만 무료로 이용 가능합니다.\n회원가입하시면 매일 1회 무료로 이용할 수 있어요!\n\n회원가입 하시겠어요?'
-        )
-        
-        if (confirmSignup) {
-          router.push('/signup')
-        }
+        setDialogConfig({
+          type: 'confirm',
+          title: '회원가입 필요',
+          description: '비회원은 1회만 무료로 이용 가능합니다.\n회원가입하시면 매일 1회 무료로 이용할 수 있어요!',
+          onConfirm: () => {
+            setShowDialog(false)
+            router.push('/signup')
+          }
+        })
+        setShowDialog(true)
         return
       }
     }
@@ -133,14 +150,23 @@ export default function PairePage() {
       }
 
       if (showUpgradeOption) {
-        const confirmUpgrade = confirm(errorMessage + '\n\n업그레이드 페이지로 이동하시겠어요?')
-        if (confirmUpgrade) {
-          router.push('/subscription')
-        }
+        setDialogConfig({
+          type: 'confirm',
+          title: 'PREMIUM 업그레이드',
+          description: errorMessage,
+          onConfirm: () => {
+            setShowDialog(false)
+            router.push('/subscription')
+          }
+        })
       } else {
-        alert(errorMessage)
+        setDialogConfig({
+          type: 'error',
+          title: '추천 실패',
+          description: errorMessage,
+        })
       }
-      
+      setShowDialog(true)
       setScreen("preference")
     } finally {
       setIsLoadingRecommendation(false)
@@ -283,6 +309,18 @@ export default function PairePage() {
           onBack={goHome}
         />
       )}
+
+      {/* Custom Dialog */}
+      <CustomDialog
+        isOpen={showDialog}
+        onClose={() => setShowDialog(false)}
+        type={dialogConfig.type}
+        title={dialogConfig.title}
+        description={dialogConfig.description}
+        confirmText={dialogConfig.type === 'confirm' ? '확인' : undefined}
+        cancelText={dialogConfig.type === 'confirm' ? '취소' : undefined}
+        onConfirm={dialogConfig.onConfirm}
+      />
     </main>
   )
 }

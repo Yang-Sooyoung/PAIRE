@@ -194,10 +194,6 @@ export default function HistoryPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                onClick={() => {
-                  // 상세 보기는 웹 버전에서만 지원
-                  alert(isKorean ? '상세 보기는 곧 추가됩니다!' : 'Detail view coming soon!');
-                }}
                 className="bg-card border border-border rounded-xl p-4 hover:border-gold/30 transition cursor-pointer"
               >
                 <div className="flex gap-4">
