@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUserStore } from '@/app/store/userStore';
 import { Button } from '@/components/ui/button';
+import { CustomDialog } from '@/components/ui/custom-dialog';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Coffee, Heart, MessageSquare, Briefcase, Send, Sparkles } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/context';
@@ -17,10 +18,21 @@ export default function SupportPage() {
   const [message, setMessage] = useState('');
   const [email, setEmail] = useState('');
   const [sending, setSending] = useState(false);
+  const [showDialog, setShowDialog] = useState(false);
+  const [dialogConfig, setDialogConfig] = useState<{ type: 'info' | 'success' | 'warning' | 'error', title: string, description: string }>({
+    type: 'info',
+    title: '',
+    description: ''
+  });
 
   const handleSendMessage = async () => {
     if (!message.trim()) {
-      alert(isKorean ? '메시지를 입력해주세요!' : 'Please enter a message!');
+      setDialogConfig({
+        type: 'warning',
+        title: isKorean ? '입력 필요' : 'Input Required',
+        description: isKorean ? '메시지를 입력해주세요!' : 'Please enter a message!'
+      });
+      setShowDialog(true);
       return;
     }
 
@@ -56,11 +68,14 @@ export default function SupportPage() {
   };
 
   const handleSupport = (amount: number) => {
-    // TODO: 토스페이먼츠 연동
-    alert(isKorean 
-      ? `${amount.toLocaleString()}원 후원 기능은 곧 오픈됩니다! 💛` 
-      : `${amount.toLocaleString()}₩ support coming soon! 💛`
-    );
+    setDialogConfig({
+      type: 'info',
+      title: isKorean ? '준비 중입니다' : 'Coming Soon',
+      description: isKorean 
+        ? `${amount.toLocaleString()}원 후원 기능은 곧 오픈됩니다! 💛` 
+        : `${amount.toLocaleString()}₩ support feature coming soon! 💛`
+    });
+    setShowDialog(true);
   };
 
   return (
@@ -343,6 +358,16 @@ export default function SupportPage() {
           </p>
         </motion.div>
       </div>
+
+      {/* Custom Dialog */}
+      <CustomDialog
+        isOpen={showDialog}
+        onClose={() => setShowDialog(false)}
+        type={dialogConfig.type}
+        title={dialogConfig.title}
+        description={dialogConfig.description}
+        confirmText="확인"
+      />
     </div>
   );
 }
