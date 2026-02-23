@@ -14,7 +14,7 @@
 ## 🎨 브랜드 정체성
 
 ### 캐릭터: 페어레 (PAIRÉ Fairy)
-- **역할**: 취향을 읽어주는 요정 (전문가 아님)
+- **역할**: 취향을 읽어주는 요정 
 - **성격**: 우아함, 다정함, 절제된 자신감
 - **말투**: 부드럽고 여백 있는 문장, 단정하지만 따뜻함
 
@@ -234,10 +234,6 @@ NEXT_PUBLIC_API_URL=http://localhost:3000/api
 - [Google Cloud Vision API](https://cloud.google.com/vision/docs)
 - [Next.js 공식 문서](https://nextjs.org/docs)
 - [Shadcn/ui 컴포넌트](https://ui.shadcn.com)
-
-## 📄 라이선스
-
-MIT License
 
 ---
 
