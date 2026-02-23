@@ -63,15 +63,12 @@ export default function PairePage() {
 
   const handleCapture = (imageUrl: string) => {
     setCapturedImage(imageUrl)
-    setScreen("loading")
-  }
-
-  const handleLoadingComplete = () => {
-    setScreen("preference")
+    setScreen("preference") // 바로 취향 선택으로
   }
 
   const handlePreferenceSubmit = async (prefs: { occasion: string; tastes: string[] }) => {
     setPreferences(prefs)
+    setScreen("loading") // 로딩 화면 표시
     setIsLoadingRecommendation(true)
     
     try {
@@ -214,7 +211,7 @@ export default function PairePage() {
       {screen === "loading" && (
         <LoadingScreen 
           imageUrl={capturedImage} 
-          onComplete={handleLoadingComplete}
+          onComplete={() => {}} // API 호출 완료 시 자동으로 화면 전환
         />
       )}
       
