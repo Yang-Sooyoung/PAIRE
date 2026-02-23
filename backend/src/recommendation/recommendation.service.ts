@@ -216,6 +216,25 @@ export class RecommendationService {
 
     console.log('Candidates after filtering:', candidates.length);
 
+    // 후보가 없으면 필터링 완화
+    if (candidates.length === 0) {
+      console.log('No candidates found, relaxing filters...');
+      // 상황 필터만 적용
+      candidates = allDrinks.filter((drink) => {
+        const occasions = drink.occasions as string[];
+        if (occasion === 'all') return true;
+        return occasions.includes(occasion) || occasions.includes('all');
+      });
+      
+      // 그래도 없으면 전체 음료 사용
+      if (candidates.length === 0) {
+        console.log('Still no candidates, using all drinks...');
+        candidates = allDrinks;
+      }
+    }
+
+    console.log('Final candidates:', candidates.length);
+
     // 3. 점수 계산
     const scores = candidates.map((drink) => {
       const score = calculateDrinkScore(
