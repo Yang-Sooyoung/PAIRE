@@ -31,6 +31,13 @@ export class SubscriptionController {
     return this.subscriptionService.cancelSubscription(req.user.sub);
   }
 
+  @Post('remove-method')
+  @UseGuards(JwtAuthGuard)
+  async removePaymentMethod(@Request() req: any) {
+    // 결제 수단 제거 = 구독 취소
+    return this.subscriptionService.cancelSubscription(req.user.sub);
+  }
+
   @Get('billing-callback')
   async billingCallback(
     @Query('customerKey') customerKey: string,

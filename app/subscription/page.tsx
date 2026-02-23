@@ -1,7 +1,7 @@
 // app/subscription/page.tsx
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useUserStore } from '@/app/store/userStore';
 import { PLANS, type Plan } from './constants/subscriptionPlans';
@@ -9,6 +9,7 @@ import { loadTossPayments } from '@tosspayments/sdk';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { Check } from 'lucide-react';
+import { PaymentMethodCard } from '@/components/subscription/PaymentMethodCard';
 
 export default function SubscriptionPage() {
   const { user, token, setUser } = useUserStore();
@@ -163,12 +164,17 @@ export default function SubscriptionPage() {
           </div>
 
           {/* 결제 수단 */}
-          <div className="mb-8 pb-8 border-b border-slate-700">
+          <div className="mb-8">
             <h3 className="text-sm font-semibold text-slate-300 mb-3">결제 수단</h3>
             {methodRegistered ? (
-              <div className="text-slate-400 text-sm">
-                ✓ 등록된 결제수단: **** **** **** {billingKey.slice(-4)}
-              </div>
+              <PaymentMethodCard
+                billingKey={billingKey}
+                token={token!}
+                onRemoved={() => {
+                  setMethodRegistered(false);
+                  setBillingKey('');
+                }}
+              />
             ) : (
               <Button
                 onClick={handleRegisterBilling}
