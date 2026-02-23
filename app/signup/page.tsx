@@ -8,10 +8,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { motion } from 'framer-motion';
 import { ChevronLeft } from 'lucide-react';
+import { useI18n } from '@/lib/i18n/context';
+import { cn } from '@/lib/utils';
 
 export default function SignUpPage() {
   const router = useRouter();
   const { setUser, setToken, setRefreshToken } = useUserStore();
+  const { language, t } = useI18n();
+  const isKorean = language === 'ko';
 
   const [step, setStep] = useState(1); // 1: 기본정보, 2: 추가정보
   const [email, setEmail] = useState('');
@@ -40,7 +44,7 @@ export default function SignUpPage() {
 
     try {
       await signup({ email, password, username, nickname });
-      setSuccess('회원가입이 완료되었습니다. 로그인 중...');
+      setSuccess(t('auth.signupSuccess'));
 
       setTimeout(async () => {
         try {
@@ -55,23 +59,23 @@ export default function SignUpPage() {
 
           router.push('/user-info');
         } catch (loginErr: any) {
-          setError(loginErr.message || '자동 로그인 실패. 로그인 페이지로 이동합니다.');
+          setError(loginErr.message || t('auth.loginError'));
           setTimeout(() => router.push('/login'), 2000);
         }
       }, 1000);
     } catch (e: any) {
-      setError(e.message || '회원가입 실패. 다시 시도해주세요.');
+      setError(e.message || t('auth.signupError'));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex flex-col items-center justify-center px-4 relative overflow-hidden">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4 relative overflow-hidden">
       {/* 배경 효과 */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-amber-600/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-amber-500/3 rounded-full blur-3xl" />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gold/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-gold/3 rounded-full blur-3xl" />
       </div>
 
       <motion.div
@@ -85,12 +89,12 @@ export default function SignUpPage() {
           <motion.button
             onClick={() => router.push('/')}
             className="inline-block hover:opacity-80 transition mb-6"
-            title="홈으로 이동"
+            title={isKorean ? '홈으로 이동' : 'Go to Home'}
             whileHover={{ scale: 1.05 }}
           >
-            <h1 className="text-4xl font-light text-white tracking-widest">PAIRÉ</h1>
+            <h1 className="text-4xl font-light text-foreground tracking-widest">PAIRÉ</h1>
           </motion.button>
-          <p className="text-amber-200/60 text-sm tracking-wide font-light">Your Table's Fairy Sommelier</p>
+          <p className="text-gold-dim text-sm tracking-wide font-light">Your Table's Fairy Sommelier</p>
         </div>
 
         {/* 요정 이미지 */}
@@ -113,20 +117,23 @@ export default function SignUpPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="bg-slate-900/50 backdrop-blur-sm border border-amber-600/20 rounded-xl p-8 space-y-6"
+          className="bg-card backdrop-blur-sm border border-border rounded-xl p-8 space-y-6"
         >
           <div className="flex items-center justify-between mb-8">
             {step === 2 && (
               <button
                 type="button"
                 onClick={() => setStep(1)}
-                className="text-amber-400 hover:text-amber-300 transition"
+                className="text-gold hover:text-gold-light transition"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
             )}
-            <h2 className="text-2xl font-light text-white flex-1 text-center">
-              {step === 1 ? '계정 만들기' : '프로필 설정'}
+            <h2 className={cn(
+              "text-2xl font-light text-foreground flex-1 text-center",
+              isKorean && "font-[var(--font-noto-kr)]"
+            )}>
+              {step === 1 ? t('auth.signupTitle') : t('auth.profileSetup')}
             </h2>
             {step === 2 && <div className="w-5" />}
           </div>
@@ -140,25 +147,35 @@ export default function SignUpPage() {
               className="space-y-6"
             >
               <div className="space-y-2">
-                <label className="block text-xs text-amber-200/70 uppercase tracking-widest font-light">이메일</label>
+                <label className={cn(
+                  "block text-xs text-gold-dim uppercase tracking-widest font-light",
+                  isKorean && "font-[var(--font-noto-kr)] normal-case tracking-normal"
+                )}>
+                  {t('common.email')}
+                </label>
                 <Input
                   type="email"
-                  placeholder="your@email.com"
+                  placeholder={t('auth.emailPlaceholder')}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="bg-slate-800/50 border border-amber-600/20 text-white placeholder-slate-500 rounded-lg focus:border-amber-500/50 focus:bg-slate-800/70 transition"
+                  className="bg-secondary border border-border text-foreground placeholder-muted-foreground rounded-lg focus:border-gold/50 focus:bg-secondary/70 transition"
                   required
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="block text-xs text-amber-200/70 uppercase tracking-widest font-light">비밀번호</label>
+                <label className={cn(
+                  "block text-xs text-gold-dim uppercase tracking-widest font-light",
+                  isKorean && "font-[var(--font-noto-kr)] normal-case tracking-normal"
+                )}>
+                  {t('common.password')}
+                </label>
                 <Input
                   type="password"
-                  placeholder="••••••••"
+                  placeholder={t('auth.passwordPlaceholder')}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="bg-slate-800/50 border border-amber-600/20 text-white placeholder-slate-500 rounded-lg focus:border-amber-500/50 focus:bg-slate-800/70 transition"
+                  className="bg-secondary border border-border text-foreground placeholder-muted-foreground rounded-lg focus:border-gold/50 focus:bg-secondary/70 transition"
                   required
                 />
               </div>
@@ -167,7 +184,7 @@ export default function SignUpPage() {
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-red-900/20 border border-red-600/30 text-red-300 text-sm p-3 rounded-lg"
+                  className="bg-destructive/20 border border-destructive/30 text-destructive text-sm p-3 rounded-lg"
                 >
                   {error}
                 </motion.div>
@@ -175,9 +192,12 @@ export default function SignUpPage() {
 
               <Button
                 type="submit"
-                className="w-full bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-slate-950 font-semibold py-3 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/20"
+                className={cn(
+                  "w-full bg-gold hover:bg-gold-light text-background font-semibold py-3 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-gold/20",
+                  isKorean && "font-[var(--font-noto-kr)]"
+                )}
               >
-                다음
+                {t('auth.next')}
               </Button>
             </motion.div>
           )}
@@ -191,25 +211,35 @@ export default function SignUpPage() {
               className="space-y-6"
             >
               <div className="space-y-2">
-                <label className="block text-xs text-amber-200/70 uppercase tracking-widest font-light">이름</label>
+                <label className={cn(
+                  "block text-xs text-gold-dim uppercase tracking-widest font-light",
+                  isKorean && "font-[var(--font-noto-kr)] normal-case tracking-normal"
+                )}>
+                  {t('common.name')}
+                </label>
                 <Input
                   type="text"
-                  placeholder="홍길동"
+                  placeholder={t('auth.namePlaceholder')}
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="bg-slate-800/50 border border-amber-600/20 text-white placeholder-slate-500 rounded-lg focus:border-amber-500/50 focus:bg-slate-800/70 transition"
+                  className="bg-secondary border border-border text-foreground placeholder-muted-foreground rounded-lg focus:border-gold/50 focus:bg-secondary/70 transition"
                   required
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="block text-xs text-amber-200/70 uppercase tracking-widest font-light">닉네임 (선택)</label>
+                <label className={cn(
+                  "block text-xs text-gold-dim uppercase tracking-widest font-light",
+                  isKorean && "font-[var(--font-noto-kr)] normal-case tracking-normal"
+                )}>
+                  {t('auth.nicknameOptional')}
+                </label>
                 <Input
                   type="text"
-                  placeholder="페어레의 친구"
+                  placeholder={t('auth.nicknamePlaceholder')}
                   value={nickname}
                   onChange={(e) => setNickname(e.target.value)}
-                  className="bg-slate-800/50 border border-amber-600/20 text-white placeholder-slate-500 rounded-lg focus:border-amber-500/50 focus:bg-slate-800/70 transition"
+                  className="bg-secondary border border-border text-foreground placeholder-muted-foreground rounded-lg focus:border-gold/50 focus:bg-secondary/70 transition"
                 />
               </div>
 
@@ -217,7 +247,7 @@ export default function SignUpPage() {
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-red-900/20 border border-red-600/30 text-red-300 text-sm p-3 rounded-lg"
+                  className="bg-destructive/20 border border-destructive/30 text-destructive text-sm p-3 rounded-lg"
                 >
                   {error}
                 </motion.div>
@@ -236,22 +266,28 @@ export default function SignUpPage() {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-slate-950 font-semibold py-3 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/20 disabled:opacity-50"
+                className={cn(
+                  "w-full bg-gold hover:bg-gold-light text-background font-semibold py-3 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-gold/20 disabled:opacity-50",
+                  isKorean && "font-[var(--font-noto-kr)]"
+                )}
               >
-                {loading ? '처리 중...' : '회원가입 완료'}
+                {loading ? t('auth.signingUp') : t('auth.complete')}
               </Button>
             </motion.div>
           )}
         </motion.form>
 
         {/* 하단 텍스트 */}
-        <p className="text-center text-amber-200/50 text-xs mt-8 tracking-wide">
-          이미 계정이 있으신가요?{' '}
+        <p className={cn(
+          "text-center text-muted-foreground text-xs mt-8 tracking-wide",
+          isKorean && "font-[var(--font-noto-kr)] tracking-normal"
+        )}>
+          {t('auth.hasAccount')}{' '}
           <button
             onClick={() => router.push('/login')}
-            className="text-amber-400 hover:text-amber-300 transition font-medium"
+            className="text-gold hover:text-gold-light transition font-medium"
           >
-            로그인
+            {t('auth.login')}
           </button>
         </p>
       </motion.div>
