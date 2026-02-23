@@ -172,3 +172,63 @@ model SupportMessage {
   @@map("support_messages")
 }
 
+// ============ Standard Menu (정규화 테이블) ============
+model StandardMenu {
+  id        String   @id @default(cuid())
+  
+  // 표시 이름
+  displayName String
+  displayNameEn String?
+  
+  // 카테고리
+  category  String   // meat, seafood, pasta, dessert, etc.
+  subcategory String? // beef, pork, cream, tomato, etc.
+  cuisine   String?  // korean, italian, japanese, etc.
+  
+  // 특성
+  fatLevel  String?  // low, medium, high
+  sweetness String?  // low, medium, high
+  spiciness String?  // low, medium, high
+  
+  // 매칭 키워드 (OCR 결과 매핑용)
+  keywords  String[] // ["스테이크", "steak", "ribeye", "등심"]
+  
+  // 추천 가중치
+  weight    Float @default(1.0)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("standard_menus")
+}
+
+// ============ Pairing Rules (추천 룰) ============
+model PairingRule {
+  id        String   @id @default(cuid())
+  
+  // 음식 조건
+  menuCategory String
+  menuSubcategory String?
+  
+  // 상황 조건 (optional)
+  occasion  String?
+  
+  // 추천 음료
+  drinkTypes String[] // ["wine-red", "whiskey"]
+  drinkTastes String[] // ["bold", "rich"]
+  
+  // 점수 가중치
+  score     Float @default(1.0)
+  
+  // 추천 이유
+  reason    String
+  reasonEn  String?
+  
+  // 활성화 여부
+  isActive  Boolean @default(true)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("pairing_rules")
+}

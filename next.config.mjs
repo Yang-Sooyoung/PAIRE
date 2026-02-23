@@ -1,14 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export', // 정적 빌드 (Capacitor용)
+  // output: 'export', // 개발/프로덕션에서는 제거 (Capacitor 빌드 시에만 사용)
   typescript: {
     ignoreBuildErrors: true,
   },
   images: {
     unoptimized: true,
   },
-  // Capacitor를 위한 trailing slash
-  trailingSlash: true,
 }
 
 export default nextConfig;

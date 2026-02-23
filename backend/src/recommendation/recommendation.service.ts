@@ -7,6 +7,11 @@ import {
   findPairingRules, 
   generatePairingReason 
 } from './menu-normalizer';
+import {
+  calculateDrinkScore,
+  selectTopDrinks,
+  DEFAULT_WEIGHTS,
+} from './recommendation-engine';
 
 @Injectable()
 export class RecommendationService {
@@ -183,24 +188,25 @@ export class RecommendationService {
     // 데이터베이스에서 모든 음료 조회
     const allDrinks = await this.prisma.drink.findMany();
 
-    let candidates = [...allDrinks];
-
     // 메뉴 정규화 및 페어링 룰 적용
     const normalizedMenus = normalizeMenuItems(foods);
     const pairingRules = findPairingRules(normalizedMenus);
     
-    console.log('Recommendation engine - Normalized menus:', normalizedMenus);
-    console.log('Recommendation engine - Pairing rules:', pairingRules);
+    console.log('=== Recommendation Engine ===');
+    console.log('Foods:', foods);
+    console.log('Normalized menus:', normalizedMenus);
+    console.log('Pairing rules:', pairingRules.length);
+    console.log('Occasion:', occasion);
+    console.log('Tastes:', tastes);
 
-    // 1. 상황에 맞는 음료 필터링
-    if (occasion !== 'all') {
-      candidates = candidates.filter((drink) => {
-        const occasions = drink.occasions as string[];
-        return occasions.includes(occasion) || occasions.includes('all');
-      });
-    }
+    // 1. 기본 필터링 (상황에 맞지 않는 음료 제외)
+    let candidates = allDrinks.filter((drink) => {
+      const occasions = drink.occasions as string[];
+      if (occasion === 'all') return true;
+      return occasions.includes(occasion) || occasions.includes('all');
+    });
 
-    // 2. 취향에 맞는 음료 필터링
+    // 2. 취향 필터링 (취향이 있으면 매칭되는 것만)
     if (tastes && tastes.length > 0) {
       candidates = candidates.filter((drink) => {
         const drinkTastes = drink.tastes as string[];
@@ -208,65 +214,52 @@ export class RecommendationService {
       });
     }
 
-    // 3. 음식 페어링 점수 계산
-    const scored = candidates.map((drink) => {
-      let score = 0;
+    console.log('Candidates after filtering:', candidates.length);
 
-      // 페어링 룰 기반 점수 (가장 높은 가중치)
-      if (pairingRules.length > 0) {
-        for (const rule of pairingRules) {
-          // 음료 타입 매칭
-          if (rule.drinkTypes.includes(drink.type)) {
-            score += 20;
-          }
-          
-          // 음료 맛 매칭
-          const drinkTastes = drink.tastes as string[];
-          const matchingTastes = drinkTastes.filter(taste => 
-            rule.drinkTastes.includes(taste)
-          );
-          score += matchingTastes.length * 10;
-        }
-      }
-
-      // 음식 페어링 점수 (기존 로직)
-      const foodPairings = drink.foodPairings as string[];
-      if (foodPairings.includes('all')) {
-        score += 5;
-      } else {
-        foods.forEach((food) => {
-          if (foodPairings.some((pairing) => food.toLowerCase().includes(pairing))) {
-            score += 8;
-          }
-        });
-      }
-
-      // 취향 점수
-      if (tastes && tastes.length > 0) {
-        const drinkTastes = drink.tastes as string[];
-        const matchingTastes = drinkTastes.filter((taste) => tastes.includes(taste));
-        score += matchingTastes.length * 5;
-      }
-
-      return { ...drink, score };
+    // 3. 점수 계산
+    const scores = candidates.map((drink) => {
+      const score = calculateDrinkScore(
+        drink,
+        pairingRules,
+        occasion,
+        tastes,
+        DEFAULT_WEIGHTS
+      );
+      return { drink, score };
     });
 
-    // 4. 상위 3개 반환
-    const topDrinks = scored
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 3);
-      
-    console.log('Top drinks with scores:', topDrinks.map(d => ({ name: d.name, score: d.score })));
+    // 4. 상위 3개 선택
+    const topScores = selectTopDrinks(
+      scores.map(s => s.score),
+      3
+    );
 
-    return topDrinks.map(({ score, ...drink }) => ({
-      id: drink.id,
-      name: drink.name,
-      type: drink.type,
-      description: drink.description,
-      tastingNotes: drink.tastingNotes,
-      image: drink.image,
-      price: drink.price,
-    }));
+    console.log('Top scores:', topScores.map(s => ({
+      drinkId: s.drinkId,
+      total: s.totalScore.toFixed(2),
+      breakdown: {
+        menu: s.breakdown.menuMatch.toFixed(1),
+        situation: s.breakdown.situationMatch.toFixed(1),
+        taste: s.breakdown.tasteMatch.toFixed(1),
+      }
+    })));
+
+    // 5. 음료 정보 반환
+    return topScores.map(topScore => {
+      const drinkData = scores.find(s => s.score.drinkId === topScore.drinkId);
+      if (!drinkData) return null;
+      
+      const { drink } = drinkData;
+      return {
+        id: drink.id,
+        name: drink.name,
+        type: drink.type,
+        description: drink.description,
+        tastingNotes: drink.tastingNotes,
+        image: drink.image,
+        price: drink.price,
+      };
+    }).filter(Boolean);
   }
 
   async getHistory(userId: string, limit: number = 10, offset: number = 0) {
