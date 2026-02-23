@@ -1,0 +1,124 @@
+## CodeRabbit Configuration
+
+# Language and framework settings
+language: typescript
+
+# Review settings
+reviews:
+  # Enable automatic reviews
+  auto_review: true
+  
+  # Review on pull requests
+  review_on_pr: true
+  
+  # Review on push
+  review_on_push: false
+  
+  # Maximum files to review per PR
+  max_files: 50
+  
+  # Fail on review issues
+  fail_on_issues: false
+
+# Code quality checks
+code_quality:
+  # Enable code quality checks
+  enabled: true
+  
+  # Check for security issues
+  security: true
+  
+  # Check for performance issues
+  performance: true
+  
+  # Check for best practices
+  best_practices: true
+
+# Specific rules for different file types
+rules:
+  # TypeScript/JavaScript files
+  - path: "**/*.ts"
+    rules:
+      - no-console
+      - no-debugger
+      - no-unused-vars
+  
+  - path: "**/*.tsx"
+    rules:
+      - no-console
+      - no-debugger
+      - react-hooks/rules-of-hooks
+  
+  # Backend files
+  - path: "backend/src/**/*.ts"
+    rules:
+      - no-console
+      - no-debugger
+      - no-unused-vars
+  
+  # Frontend files
+  - path: "app/**/*.tsx"
+    rules:
+      - no-console
+      - react-hooks/rules-of-hooks
+
+# Exclude patterns
+exclude:
+  - "node_modules/**"
+  - "dist/**"
+  - ".next/**"
+  - "coverage/**"
+  - "*.test.ts"
+  - "*.spec.ts"
+
+# Comment settings
+comments:
+  # Enable inline comments
+  inline_comments: true
+  
+  # Enable summary comment
+  summary_comment: true
+  
+  # Comment on every file
+  comment_on_every_file: false
+
+# Severity levels
+severity:
+  # Critical issues
+  critical:
+    - security
+    - performance
+  
+  # Major issues
+  major:
+    - best_practices
+    - code_quality
+  
+  # Minor issues
+  minor:
+    - style
+    - documentation
+
+# Ignore patterns
+ignore:
+  - "**/*.md"
+  - "**/*.json"
+  - ".gitignore"
+  - ".env*"
+
+# Custom instructions
+instructions: |
+  Please review this code for:
+  1. Security vulnerabilities
+  2. Performance issues
+  3. Code quality and best practices
+  4. TypeScript type safety
+  5. React best practices (if applicable)
+  6. NestJS best practices (if applicable)
+  
+  Focus on:
+  - Proper error handling
+  - Type safety
+  - Code readability
+  - Performance optimization
+  - Security best practices
