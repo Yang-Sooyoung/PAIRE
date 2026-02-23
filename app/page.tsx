@@ -148,10 +148,10 @@ export default function PairePage() {
 
   if (!isReady) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
+      <div className="flex items-center justify-center min-h-screen bg-background">
         <div className="text-center">
-          <div className="text-white text-2xl font-light mb-4">PAIRÉ</div>
-          <div className="text-slate-400">Loading...</div>
+          <div className="text-foreground text-2xl font-light mb-4">PAIRÉ</div>
+          <div className="text-muted-foreground">Loading...</div>
         </div>
       </div>
     )
@@ -161,27 +161,27 @@ export default function PairePage() {
     <main className="min-h-screen bg-background">
       {/* 헤더 (로그인 상태일 때만) */}
       {user && screen === "home" && (
-        <div className="bg-slate-800 border-b border-slate-700 sticky top-0 z-10">
+        <div className="bg-card/50 backdrop-blur-sm border-b border-border sticky top-0 z-10">
           <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
-            <h1 className="text-xl font-light text-white">PAIRÉ</h1>
+            <h1 className="text-xl font-light text-foreground">PAIRÉ</h1>
             <div className="flex items-center gap-3">
               <button
                   onClick={() => router.push("/user-info")}
-                  className="text-slate-400 hover:text-white transition"
+                  className="text-gold hover:text-gold-light transition"
                   title="내 정보"
               >
                 👤
               </button>
               <button
                   onClick={() => router.push("/settings")}
-                  className="text-slate-400 hover:text-white transition"
+                  className="text-gold hover:text-gold-light transition"
                   title="설정"
               >
                 <Settings className="w-5 h-5" />
               </button>
               <button
                   onClick={handleLogout}
-                  className="text-slate-400 hover:text-white transition"
+                  className="text-gold hover:text-gold-light transition"
                   title="로그아웃"
               >
                 <LogOut className="w-5 h-5" />
