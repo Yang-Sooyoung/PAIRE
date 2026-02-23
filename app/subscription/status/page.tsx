@@ -56,23 +56,86 @@ export default function SubscriptionStatusPage() {
   }, [user, token, router]);
 
   const handleCancel = async () => {
-    if (!token) return;
+    if (!token) {
+      console.error('No token available');
+      alert(isKorean ? '로그인이 필요합니다.' : 'Login required.');
+      router.push('/login');
+      return;
+    }
 
     try {
       setLoading(true);
       
       const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
       
+      // 먼저 현재 토큰으로 시도
+      let currentToken = token;
+      
       const response = await fetch(`${API_URL}/subscription/cancel`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${currentToken}`,
         },
       });
 
+      // 401 에러인 경우 토큰 갱신 후 재시도
+      if (response.status === 401) {
+        console.log('Token expired, attempting to refresh...');
+        
+        const storedRefreshToken = localStorage.getItem('refreshToken');
+        if (!storedRefreshToken) {
+          alert(isKorean ? '세션이 만료되었습니다. 다시 로그인해주세요.' : 'Session expired. Please login again.');
+          router.push('/login');
+          return;
+        }
+
+        try {
+          // 토큰 갱신
+          const refreshResponse = await fetch(`${API_URL}/auth/refresh`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ refreshToken: storedRefreshToken }),
+          });
+
+          if (!refreshResponse.ok) {
+            throw new Error('Token refresh failed');
+          }
+
+          const refreshData = await refreshResponse.json();
+          currentToken = refreshData.accessToken;
+          
+          // 새 토큰 저장
+          localStorage.setItem('accessToken', refreshData.accessToken);
+          localStorage.setItem('refreshToken', refreshData.refreshToken);
+          
+          // 새 토큰으로 재시도
+          const retryResponse = await fetch(`${API_URL}/subscription/cancel`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${currentToken}`,
+            },
+          });
+
+          if (!retryResponse.ok) {
+            const error = await retryResponse.json().catch(() => ({ message: 'Unknown error' }));
+            throw new Error(error.message || (isKorean ? '구독 취소 실패' : 'Failed to cancel subscription'));
+          }
+
+          alert(isKorean ? '구독이 취소되었습니다.' : 'Subscription cancelled.');
+          router.push('/user-info');
+          return;
+        } catch (refreshError) {
+          console.error('Token refresh failed:', refreshError);
+          alert(isKorean ? '세션이 만료되었습니다. 다시 로그인해주세요.' : 'Session expired. Please login again.');
+          router.push('/login');
+          return;
+        }
+      }
+
       if (!response.ok) {
-        const error = await response.json();
+        const error = await response.json().catch(() => ({ message: 'Unknown error' }));
         throw new Error(error.message || (isKorean ? '구독 취소 실패' : 'Failed to cancel subscription'));
       }
 
