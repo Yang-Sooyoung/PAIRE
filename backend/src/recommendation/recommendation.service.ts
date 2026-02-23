@@ -7,7 +7,7 @@ export class RecommendationService {
   constructor(
     private prisma: PrismaService,
     private visionService: VisionService,
-  ) {}
+  ) { }
 
   async createRecommendation(userId: string | null, dto: any) {
     // 권한 체크 (비로그인, FREE, PREMIUM)

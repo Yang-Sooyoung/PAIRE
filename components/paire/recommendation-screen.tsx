@@ -137,7 +137,7 @@ export function RecommendationScreen({
             "text-foreground text-sm leading-relaxed",
             isKorean && "font-[var(--font-noto-kr)] text-xs leading-relaxed"
           )}>
-            {t(currentDrink.descriptionKey)}
+            {fairyMessage || currentDrink.description || t("recommendation.defaultMessage")}
           </p>
         </div>
       </motion.div>
@@ -171,7 +171,7 @@ export function RecommendationScreen({
                 "text-gold-dim text-sm font-medium tracking-wide mb-1",
                 isKorean && "font-[var(--font-noto-kr)] text-xs tracking-normal"
               )}>
-                {t(currentDrink.typeKey)}
+                {currentDrink.type}
               </p>
               <h2 className="text-foreground text-2xl font-semibold mb-3">
                 {currentDrink.name}
