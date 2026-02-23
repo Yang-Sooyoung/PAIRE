@@ -130,7 +130,8 @@ function RegisterDoneContent() {
           if (!isCancelled) {
             setStatus('success');
             setTimeout(() => {
-              router.push('/subscription');
+              // 페이지 새로고침으로 결제수단 상태 업데이트
+              window.location.href = '/subscription';
             }, 2000);
           }
         } else {
