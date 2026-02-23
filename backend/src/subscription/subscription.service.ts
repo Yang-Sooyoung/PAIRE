@@ -7,11 +7,11 @@ export class SubscriptionService {
   constructor(
     private prisma: PrismaService,
     private tossService: TossService,
-  ) {}
+  ) { }
 
   async getMethods(userId: string) {
     console.log('getMethods called for userId:', userId);
-    
+
     // 사용자의 결제 수단 조회 (PaymentMethod 테이블에서)
     const paymentMethod = await this.prisma.paymentMethod.findFirst({
       where: { userId },
@@ -42,7 +42,7 @@ export class SubscriptionService {
 
   async registerPaymentMethod(userId: string, billingAuthKey: string) {
     console.log('registerPaymentMethod called:', { userId, billingAuthKey });
-    
+
     // 기존 결제 수단 확인
     const existingMethod = await this.prisma.paymentMethod.findFirst({
       where: { userId },

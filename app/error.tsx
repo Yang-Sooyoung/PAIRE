@@ -2,7 +2,10 @@
 
 import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Home, RotateCcw } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { useI18n } from '@/lib/i18n/context';
+import { cn } from '@/lib/utils';
 
 export default function Error({
   error,
@@ -11,49 +14,113 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const { language } = useI18n();
+  const isKorean = language === 'ko';
+
   useEffect(() => {
     console.error(error);
   }, [error]);
 
   return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-slate-900 to-slate-800 px-4">
-        <div className="text-center max-w-md">
-          <div className="mb-6 flex justify-center">
-            <div className="bg-red-500/20 border border-red-500 rounded-full p-4">
-              <AlertCircle className="w-12 h-12 text-red-500" />
-            </div>
-          </div>
+    <div className="min-h-screen bg-background relative overflow-hidden flex items-center justify-center px-4">
+      {/* 배경 효과 */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gold/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-gold/3 rounded-full blur-3xl" />
+      </div>
 
-          <h1 className="text-3xl font-light text-white mb-2">문제가 발생했어요</h1>
-          <p className="text-slate-400 mb-8">
-            예상치 못한 오류가 발생했습니다.
-            <br />
-            다시 시도해주세요.
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="text-center max-w-md relative z-10"
+      >
+        {/* 로고 */}
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+          className="mb-8"
+        >
+          <h1 className="text-4xl font-light text-foreground tracking-widest mb-2">PAIRÉ</h1>
+          <div className="h-px w-24 bg-gold/30 mx-auto" />
+        </motion.div>
+
+        {/* 에러 아이콘 */}
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 0.4, type: "spring" }}
+          className="mb-6 flex justify-center"
+        >
+          <div className="bg-destructive/20 border border-destructive/50 rounded-full p-4">
+            <AlertCircle className="w-12 h-12 text-destructive" />
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+        >
+          <h2 className={cn(
+            "text-2xl font-light text-foreground mb-3",
+            isKorean && "font-[var(--font-noto-kr)]"
+          )}>
+            {isKorean ? '문제가 발생했어요' : 'Something went wrong'}
+          </h2>
+          <p className={cn(
+            "text-muted-foreground mb-8",
+            isKorean && "font-[var(--font-noto-kr)]"
+          )}>
+            {isKorean ? (
+              <>
+                예상치 못한 오류가 발생했습니다.
+                <br />
+                다시 시도해주세요.
+              </>
+            ) : (
+              <>
+                An unexpected error occurred.
+                <br />
+                Please try again.
+              </>
+            )}
           </p>
 
           {process.env.NODE_ENV === 'development' && (
-              <div className="bg-red-900/20 border border-red-700 rounded p-4 mb-6 text-left">
-                <p className="text-red-300 text-sm font-mono break-words">
-                  {error.message}
-                </p>
-              </div>
+            <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4 mb-6 text-left">
+              <p className="text-destructive text-sm font-mono break-words">
+                {error.message}
+              </p>
+            </div>
           )}
 
           <div className="space-y-3">
             <Button
-                onClick={reset}
-                className="w-full bg-amber-600 hover:bg-amber-700 text-white py-3"
+              onClick={reset}
+              className={cn(
+                "w-full bg-gold hover:bg-gold-light text-background py-3",
+                isKorean && "font-[var(--font-noto-kr)]"
+              )}
             >
-              다시 시도
+              <RotateCcw className="w-4 h-4 mr-2" />
+              {isKorean ? '다시 시도' : 'Try Again'}
             </Button>
             <Button
-                onClick={() => window.location.href = '/'}
-                className="w-full bg-slate-700 hover:bg-slate-600 text-white py-3"
+              onClick={() => window.location.href = '/'}
+              variant="outline"
+              className={cn(
+                "w-full border-border text-foreground hover:bg-secondary py-3",
+                isKorean && "font-[var(--font-noto-kr)]"
+              )}
             >
-              홈으로 이동
+              <Home className="w-4 h-4 mr-2" />
+              {isKorean ? '홈으로 이동' : 'Go Home'}
             </Button>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
+    </div>
   );
 }
