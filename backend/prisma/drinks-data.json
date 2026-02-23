@@ -1,0 +1,35 @@
+[
+  {
+    "name": "Champagne Brut",
+    "type": "sparkling",
+    "description": "우아한 기포감과 신선한 맛",
+    "tastingNotes": ["fruity", "elegant", "light"],
+    "image": null,
+    "price": "₩50,000",
+    "foodPairings": ["seafood", "pasta", "cheese", "dessert"],
+    "occasions": ["date", "gathering"],
+    "tastes": ["sweet", "light"]
+  },
+  {
+    "name": "Prosecco",
+    "type": "sparkling",
+    "description": "가벼운 기포와 과일향",
+    "tastingNotes": ["fruity", "fresh", "light"],
+    "image": null,
+    "price": "₩35,000",
+    "foodPairings": ["seafood", "light dishes", "dessert"],
+    "occasions": ["date", "gathering", "camping"],
+    "tastes": ["sweet", "light"]
+  },
+  {
+    "name": "Cava",
+    "type": "sparkling",
+    "description": "스페인의 스파클링 와인",
+    "tastingNotes": ["crisp", "elegant", "light"],
+    "image": null,
+    "price": "₩40,000",
+    "foodPairings": ["seafood", "tapas", "cheese"],
+    "occasions": ["date", "gathering"],
+    "tastes": ["dry", "light"]
+  }
+]

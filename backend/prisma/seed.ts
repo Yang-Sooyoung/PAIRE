@@ -245,3 +245,123 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+
+
+  // 추가 음료 데이터 생성 (총 200개 이상)
+  const additionalDrinks = [];
+
+  // 레드 와인 추가 (50개)
+  const redWineNames = ['Pinot Noir', 'Merlot', 'Cabernet Sauvignon', 'Syrah', 'Malbec'];
+  for (let i = 0; i < 50; i++) {
+    additionalDrinks.push({
+      name: `${redWineNames[i % 5]} ${2015 + Math.floor(i / 10)}`,
+      type: 'red wine',
+      description: '풍부한 탄닌과 복합적인 맛',
+      tastingNotes: ['fruity', 'bold', i % 3 === 0 ? 'heavy' : 'medium'],
+      image: null,
+      price: `₩${40000 + (i * 2000)}`,
+      foodPairings: ['meat', 'steak', 'cheese'],
+      occasions: ['date', 'gathering', 'solo-drinking'],
+      tastes: [i % 2 === 0 ? 'bitter' : 'sweet', i % 3 === 0 ? 'heavy' : 'medium'],
+    });
+  }
+
+  // 화이트 와인 추가 (50개)
+  const whiteWineNames = ['Sauvignon Blanc', 'Chardonnay', 'Riesling', 'Pinot Grigio', 'Moscato'];
+  for (let i = 0; i < 50; i++) {
+    additionalDrinks.push({
+      name: `${whiteWineNames[i % 5]} ${2016 + Math.floor(i / 10)}`,
+      type: 'white wine',
+      description: '상큼한 산미와 신선한 풍미',
+      tastingNotes: ['crisp', 'light', 'fresh'],
+      image: null,
+      price: `₩${35000 + (i * 1500)}`,
+      foodPairings: ['seafood', 'salad', 'cheese', 'light dishes'],
+      occasions: ['date', 'gathering', 'camping'],
+      tastes: [i % 2 === 0 ? 'sweet' : 'sour', 'light'],
+    });
+  }
+
+  // 위스키 추가 (30개)
+  const whiskeyNames = ['Single Malt', 'Bourbon', 'Rye', 'Irish Whiskey', 'Japanese Whisky'];
+  for (let i = 0; i < 30; i++) {
+    additionalDrinks.push({
+      name: `${whiskeyNames[i % 5]} ${10 + i} Years`,
+      type: 'whisky',
+      description: '복잡하고 우아한 맛',
+      tastingNotes: ['complex', 'smooth', 'elegant'],
+      image: null,
+      price: `₩${50000 + (i * 5000)}`,
+      foodPairings: ['meat', 'cheese', 'chocolate', 'dessert'],
+      occasions: ['solo-drinking', 'gathering'],
+      tastes: [i % 2 === 0 ? 'sweet' : 'bitter', i % 3 === 0 ? 'heavy' : 'medium'],
+    });
+  }
+
+  // 칵테일 추가 (30개)
+  const cocktailNames = ['Mojito', 'Margarita', 'Old Fashioned', 'Negroni', 'Manhattan', 'Martini', 'Daiquiri', 'Whiskey Sour', 'Cosmopolitan', 'Aperol Spritz'];
+  for (let i = 0; i < 30; i++) {
+    additionalDrinks.push({
+      name: `${cocktailNames[i % 10]} ${i > 9 ? 'Premium' : 'Classic'}`,
+      type: 'cocktail',
+      description: '상큼하고 균형잡힌 맛',
+      tastingNotes: ['fresh', 'balanced', 'fruity'],
+      image: null,
+      price: `₩${12000 + (i * 1000)}`,
+      foodPairings: i % 2 === 0 ? ['seafood', 'light dishes'] : ['spicy', 'meat'],
+      occasions: ['date', 'gathering', 'camping'],
+      tastes: [i % 2 === 0 ? 'sweet' : 'sour', 'light'],
+    });
+  }
+
+  // 차 추가 (20개)
+  const teaNames = ['Green Tea', 'Black Tea', 'Oolong Tea', 'White Tea', 'Pu-erh Tea'];
+  for (let i = 0; i < 20; i++) {
+    additionalDrinks.push({
+      name: `${teaNames[i % 5]} Premium ${i + 1}`,
+      type: 'tea',
+      description: '깊은 맛과 우아한 향',
+      tastingNotes: ['floral', 'smooth', 'elegant'],
+      image: null,
+      price: `₩${6000 + (i * 500)}`,
+      foodPairings: ['light dishes', 'dessert', 'cheese'],
+      occasions: ['solo-meal', 'gathering'],
+      tastes: [i % 2 === 0 ? 'bitter' : 'sweet', i % 3 === 0 ? 'medium' : 'light'],
+    });
+  }
+
+  // 비알콜 음료 추가 (20개)
+  const nonAlcNames = ['Sparkling Water', 'Kombucha', 'Fresh Juice', 'Mocktail', 'Iced Tea'];
+  for (let i = 0; i < 20; i++) {
+    additionalDrinks.push({
+      name: `${nonAlcNames[i % 5]} ${i + 1}`,
+      type: 'non-alcoholic',
+      description: '상큼하고 건강한 맛',
+      tastingNotes: ['fresh', 'light', 'clean'],
+      image: null,
+      price: `₩${5000 + (i * 500)}`,
+      foodPairings: ['all'],
+      occasions: ['all'],
+      tastes: ['light'],
+    });
+  }
+
+  // 모든 음료 생성
+  for (const drink of [...drinks, ...additionalDrinks]) {
+    await prisma.drink.create({
+      data: drink,
+    });
+  }
+
+  const totalCount = drinks.length + additionalDrinks.length;
+  console.log(`✅ Created ${totalCount} drinks`);
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
