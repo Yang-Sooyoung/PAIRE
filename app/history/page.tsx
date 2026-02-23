@@ -22,14 +22,14 @@ interface HistoryItem {
 
 export default function HistoryPage() {
   const router = useRouter();
-  const { user, token, refreshTokenIfNeeded } = useUserStore();
+  const { user, refreshTokenIfNeeded } = useUserStore();
   const { language, t } = useI18n();
   const isKorean = language === 'ko';
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user || !token) {
+    if (!user) {
       router.push('/login');
       return;
     }
@@ -41,7 +41,13 @@ export default function HistoryPage() {
 
     const fetchHistory = async () => {
       try {
-        let currentToken = token;
+        // 최신 토큰 가져오기
+        let currentToken = useUserStore.getState().token;
+        if (!currentToken) {
+          router.push('/login');
+          return;
+        }
+
         let response;
 
         try {
@@ -73,7 +79,7 @@ export default function HistoryPage() {
     };
 
     fetchHistory();
-  }, [user, token, refreshTokenIfNeeded, router]);
+  }, [user, refreshTokenIfNeeded, router]);
 
   // FREE 사용자 화면
   if (user && user.membership === 'FREE') {

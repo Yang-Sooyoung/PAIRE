@@ -35,7 +35,7 @@ interface Drink {
 
 export default function PairePage() {
   const router = useRouter()
-  const { user, token } = useUserStore()
+  const { user } = useUserStore()
   const [screen, setScreen] = useState<Screen>("home")
   const [capturedImage, setCapturedImage] = useState<string>("")
   const [preferences, setPreferences] = useState<{ occasion: string; tastes: string[] }>({
@@ -48,7 +48,7 @@ export default function PairePage() {
   const [menuText, setMenuText] = useState<string>("")
   const [isReady, setIsReady] = useState(false)
   const [isLoadingRecommendation, setIsLoadingRecommendation] = useState(false)
-  
+
   // Dialog 상태
   const [showDialog, setShowDialog] = useState(false)
   const [dialogConfig, setDialogConfig] = useState<{
@@ -82,11 +82,11 @@ export default function PairePage() {
 
   const handlePreferenceSubmit = async (prefs: { occasion: string; tastes: string[] }) => {
     setPreferences(prefs)
-    
+
     // 비로그인 사용자 체크 - localStorage에서 사용 횟수 확인
     if (!user) {
       const guestUsageCount = parseInt(localStorage.getItem('guestRecommendationCount') || '0')
-      
+
       if (guestUsageCount >= 1) {
         // 비로그인 사용자는 1회만 가능
         setDialogConfig({
@@ -102,7 +102,7 @@ export default function PairePage() {
         return
       }
     }
-    
+
     setScreen("loading") // 로딩 화면 표시
     setIsLoadingRecommendation(true)
 
@@ -112,6 +112,9 @@ export default function PairePage() {
         ? capturedImage
         : undefined
 
+      // 최신 토큰 가져오기
+      const currentToken = useUserStore.getState().token
+
       // 백엔드 API 호출
       const response = await createRecommendation(
         {
@@ -119,13 +122,13 @@ export default function PairePage() {
           occasion: prefs.occasion,
           tastes: prefs.tastes,
         },
-        token || undefined
+        currentToken || undefined
       )
 
       setRecommendedDrinks(response.recommendation.drinks)
       setFairyMessage(response.recommendation.fairyMessage)
       setScreen("recommendation")
-      
+
       // 비로그인 사용자의 경우 사용 횟수 증가
       if (!user) {
         const currentCount = parseInt(localStorage.getItem('guestRecommendationCount') || '0')
@@ -137,7 +140,7 @@ export default function PairePage() {
       // 사용자 친화적 에러 메시지
       let errorMessage = '추천을 생성하는데 실패했습니다.'
       let showUpgradeOption = false
-      
+
       if (error.message.includes('일일 추천 한도') || error.message.includes('limit')) {
         if (user && user.membership === 'FREE') {
           errorMessage = '오늘의 무료 추천을 모두 사용했습니다.\nPREMIUM으로 업그레이드하시면 무제한으로 이용할 수 있어요!'

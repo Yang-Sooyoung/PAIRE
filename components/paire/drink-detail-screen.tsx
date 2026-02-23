@@ -30,22 +30,40 @@ interface DrinkDetailScreenProps {
 export function DrinkDetailScreen({ drink, onBack }: DrinkDetailScreenProps) {
   const { language, t } = useI18n()
   const isKorean = language === "ko"
-  const { user, token } = useUserStore()
+  const { user } = useUserStore()
   const [isWishlisted, setIsWishlisted] = useState(false)
   const [isLoadingFavorite, setIsLoadingFavorite] = useState(false)
 
   // 즐겨찾기 상태 확인
   useEffect(() => {
-    if (user && token && user.membership === 'PREMIUM') {
-      checkFavorite(drink.id, token)
-        .then((res) => setIsWishlisted(res.isFavorite))
-        .catch((err) => console.error('즐겨찾기 확인 실패:', err))
+    const checkFavoriteStatus = async () => {
+      if (user && user.membership === 'PREMIUM') {
+        // 최신 토큰 가져오기
+        const currentToken = useUserStore.getState().token
+        if (!currentToken) return
+        
+        try {
+          const res = await checkFavorite(drink.id, currentToken)
+          setIsWishlisted(res.isFavorite)
+        } catch (err) {
+          console.error('즐겨찾기 확인 실패:', err)
+        }
+      }
     }
-  }, [drink.id, user, token])
+    
+    checkFavoriteStatus()
+  }, [drink.id, user])
 
   // 즐겨찾기 토글
   const handleToggleFavorite = async () => {
-    if (!user || !token) {
+    if (!user) {
+      alert(isKorean ? '로그인이 필요합니다.' : 'Please login first.')
+      return
+    }
+
+    // 최신 토큰 가져오기
+    const currentToken = useUserStore.getState().token
+    if (!currentToken) {
       alert(isKorean ? '로그인이 필요합니다.' : 'Please login first.')
       return
     }
@@ -65,10 +83,10 @@ export function DrinkDetailScreen({ drink, onBack }: DrinkDetailScreenProps) {
     setIsLoadingFavorite(true)
     try {
       if (isWishlisted) {
-        await removeFavorite(drink.id, token)
+        await removeFavorite(drink.id, currentToken)
         setIsWishlisted(false)
       } else {
-        await addFavorite(drink.id, token)
+        await addFavorite(drink.id, currentToken)
         setIsWishlisted(true)
       }
     } catch (error: any) {

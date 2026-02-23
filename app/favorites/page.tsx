@@ -22,7 +22,7 @@ interface Favorite {
 
 export default function FavoritesPage() {
   const router = useRouter();
-  const { user, token, refreshTokenIfNeeded } = useUserStore();
+  const { user, refreshTokenIfNeeded } = useUserStore();
   const { language, t } = useI18n();
   const isKorean = language === 'ko';
   const [favorites, setFavorites] = useState<Favorite[]>([]);
@@ -41,7 +41,7 @@ export default function FavoritesPage() {
   });
 
   useEffect(() => {
-    if (!user || !token) {
+    if (!user) {
       router.push('/login');
       return;
     }
@@ -53,7 +53,13 @@ export default function FavoritesPage() {
 
     const fetchFavorites = async () => {
       try {
-        let currentToken = token;
+        // 최신 토큰 가져오기
+        let currentToken = useUserStore.getState().token;
+        if (!currentToken) {
+          router.push('/login');
+          return;
+        }
+
         let response;
 
         try {
@@ -85,10 +91,12 @@ export default function FavoritesPage() {
     };
 
     fetchFavorites();
-  }, [user, token, refreshTokenIfNeeded, router]);
+  }, [user, refreshTokenIfNeeded, router]);
 
   const handleRemove = async (drinkId: string) => {
-    if (!token) return;
+    // 최신 토큰 가져오기
+    const currentToken = useUserStore.getState().token;
+    if (!currentToken) return;
 
     setDialogConfig({
       type: 'confirm',
@@ -98,7 +106,7 @@ export default function FavoritesPage() {
         setShowDialog(false);
         setRemovingId(drinkId);
         try {
-          await removeFavorite(drinkId, token);
+          await removeFavorite(drinkId, currentToken);
           setFavorites((prev) => prev.filter((fav) => fav.drinkId !== drinkId));
         } catch (error: any) {
           setDialogConfig({
