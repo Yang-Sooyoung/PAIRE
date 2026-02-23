@@ -19,14 +19,18 @@ function RegisterDoneContent() {
   const customerKey = searchParams.get("customerKey");
 
   useEffect(() => {
+    let isCancelled = false;
+    
     console.log('Register done - authKey:', authKey, 'customerKey:', customerKey);
     
     if (!authKey || !customerKey) {
       console.error('Missing authKey or customerKey');
-      setStatus('error');
-      setTimeout(() => {
-        router.push('/subscription');
-      }, 3000);
+      if (!isCancelled) {
+        setStatus('error');
+        setTimeout(() => {
+          router.push('/subscription');
+        }, 3000);
+      }
       return;
     }
 
@@ -36,10 +40,12 @@ function RegisterDoneContent() {
       
       if (!token) {
         console.error('No access token found');
-        setStatus('error');
-        setTimeout(() => {
-          router.push('/login');
-        }, 2000);
+        if (!isCancelled) {
+          setStatus('error');
+          setTimeout(() => {
+            router.push('/login');
+          }, 2000);
+        }
         return;
       }
       
@@ -55,6 +61,8 @@ function RegisterDoneContent() {
           body: JSON.stringify({ billingAuthKey: authKey, customerKey }),
         });
 
+        if (isCancelled) return;
+
         console.log('Register response status:', response.status);
         
         // 401 에러면 토큰 갱신 후 재시도
@@ -64,10 +72,12 @@ function RegisterDoneContent() {
           const refreshToken = localStorage.getItem('refreshToken');
           if (!refreshToken) {
             console.error('No refresh token found');
-            setStatus('error');
-            setTimeout(() => {
-              router.push('/login');
-            }, 2000);
+            if (!isCancelled) {
+              setStatus('error');
+              setTimeout(() => {
+                router.push('/login');
+              }, 2000);
+            }
             return;
           }
 
@@ -78,12 +88,16 @@ function RegisterDoneContent() {
             body: JSON.stringify({ refreshToken }),
           });
 
+          if (isCancelled) return;
+
           if (!refreshResponse.ok) {
             console.error('Token refresh failed');
-            setStatus('error');
-            setTimeout(() => {
-              router.push('/login');
-            }, 2000);
+            if (!isCancelled) {
+              setStatus('error');
+              setTimeout(() => {
+                router.push('/login');
+              }, 2000);
+            }
             return;
           }
 
@@ -105,34 +119,46 @@ function RegisterDoneContent() {
             body: JSON.stringify({ billingAuthKey: authKey, customerKey }),
           });
 
+          if (isCancelled) return;
+
           console.log('Retry response status:', response.status);
         }
         
         if (response.ok) {
           const data = await response.json();
           console.log('Register success:', data);
-          setStatus('success');
-          setTimeout(() => {
-            router.push('/subscription');
-          }, 2000);
+          if (!isCancelled) {
+            setStatus('success');
+            setTimeout(() => {
+              router.push('/subscription');
+            }, 2000);
+          }
         } else {
           const error = await response.json().catch(() => ({}));
           console.error('Register failed:', error);
+          if (!isCancelled) {
+            setStatus('error');
+            setTimeout(() => {
+              router.push('/subscription');
+            }, 3000);
+          }
+        }
+      } catch (err) {
+        console.error('Register error:', err);
+        if (!isCancelled) {
           setStatus('error');
           setTimeout(() => {
             router.push('/subscription');
           }, 3000);
         }
-      } catch (err) {
-        console.error('Register error:', err);
-        setStatus('error');
-        setTimeout(() => {
-          router.push('/subscription');
-        }, 3000);
       }
     };
 
     registerPaymentMethod();
+
+    return () => {
+      isCancelled = true;
+    };
   }, [authKey, customerKey, router, isKorean]);
 
   return (
