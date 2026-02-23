@@ -228,6 +228,44 @@ export default function SettingsPage() {
           </button>
         </motion.section>
 
+        {/* 개발자 지원 */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.25 }}
+          className="bg-gradient-to-r from-gold/10 to-gold/5 backdrop-blur-sm border border-gold/20 rounded-xl overflow-hidden"
+        >
+          <h2 className={cn(
+            "text-xs text-gold uppercase tracking-widest font-light px-6 pt-6 pb-4",
+            isKorean && "font-[var(--font-noto-kr)] normal-case tracking-normal"
+          )}>
+            {isKorean ? '개발자 지원 💛' : 'Support Developer 💛'}
+          </h2>
+          <button
+            onClick={() => router.push('/support')}
+            className="w-full px-6 py-4 flex items-center justify-between hover:bg-gold/10 transition text-left group"
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">☕</span>
+              <div>
+                <div className={cn(
+                  "text-foreground/90 group-hover:text-foreground transition",
+                  isKorean && "font-[var(--font-noto-kr)]"
+                )}>
+                  {isKorean ? '개발자에게 한 잔 사주기' : 'Buy me a drink'}
+                </div>
+                <div className={cn(
+                  "text-xs text-muted-foreground",
+                  isKorean && "font-[var(--font-noto-kr)]"
+                )}>
+                  {isKorean ? '응원 메시지, 협업 문의' : 'Messages, collaborations'}
+                </div>
+              </div>
+            </div>
+            <ChevronRight className="w-5 h-5 text-gold/60 group-hover:text-gold transition" />
+          </button>
+        </motion.section>
+
         {/* 위험 영역 */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}

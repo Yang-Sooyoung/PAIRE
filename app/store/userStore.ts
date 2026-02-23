@@ -42,7 +42,7 @@ export const useUserStore = create<UserState>((set, get) => ({
 
   refreshTokenIfNeeded: async () => {
     const state = get();
-    
+
     // 이미 갱신 중이면 대기
     if (state.refreshing) {
       console.log('Token refresh already in progress, waiting...');
@@ -60,7 +60,7 @@ export const useUserStore = create<UserState>((set, get) => ({
       console.log('Refreshing token...');
 
       const response = await refreshTokenAPI(storedRefreshToken);
-      
+
       localStorage.setItem('accessToken', response.accessToken);
       localStorage.setItem('refreshToken', response.refreshToken);
 
@@ -75,12 +75,12 @@ export const useUserStore = create<UserState>((set, get) => ({
     } catch (error) {
       console.error('Token refresh failed:', error);
       set({ refreshing: false });
-      
+
       // 갱신 실패 시 로그아웃
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
       set({ user: null, token: null, refreshToken: null });
-      
+
       return null;
     }
   },
