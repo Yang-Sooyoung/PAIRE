@@ -1,9 +1,9 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 
-export default function RegisterDonePage() {
+function RegisterDoneContent() {
   const searchParams = useSearchParams();
   const billingAuthKey = searchParams.get("billingAuthKey");
   const customerKey = searchParams.get("customerKey");
@@ -26,4 +26,12 @@ export default function RegisterDonePage() {
   }, [billingAuthKey, customerKey]);
 
   return <p>결제수단 등록 중입니다...</p>;
+}
+
+export default function RegisterDonePage() {
+  return (
+    <Suspense fallback={<p>로딩 중...</p>}>
+      <RegisterDoneContent />
+    </Suspense>
+  );
 }
