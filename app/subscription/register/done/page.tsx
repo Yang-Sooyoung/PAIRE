@@ -14,40 +14,69 @@ function RegisterDoneContent() {
   const isKorean = language === 'ko';
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   
-  const billingAuthKey = searchParams.get("billingAuthKey");
+  // Toss Payments는 authKey와 customerKey를 보내줌
+  const authKey = searchParams.get("authKey");
   const customerKey = searchParams.get("customerKey");
 
   useEffect(() => {
-    if (billingAuthKey && customerKey) {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+    console.log('Register done - authKey:', authKey, 'customerKey:', customerKey);
+    
+    if (!authKey || !customerKey) {
+      console.error('Missing authKey or customerKey');
+      setStatus('error');
+      setTimeout(() => {
+        router.push('/subscription');
+      }, 3000);
+      return;
+    }
+
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+    const token = localStorage.getItem('accessToken');
+    
+    if (!token) {
+      console.error('No access token found');
+      setStatus('error');
+      setTimeout(() => {
+        router.push('/login');
+      }, 2000);
+      return;
+    }
+    
+    console.log('Sending register-method request...');
+    
+    fetch(`${API_URL}/subscription/register-method`, {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+      body: JSON.stringify({ billingAuthKey: authKey, customerKey }),
+    }).then(async (res) => {
+      console.log('Register response status:', res.status);
       
-      fetch(`${API_URL}/subscription/register-method`, {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem('accessToken')}`,
-        },
-        body: JSON.stringify({ billingAuthKey, customerKey }),
-      }).then(async (res) => {
-        if (res.ok) {
-          setStatus('success');
-          setTimeout(() => {
-            router.push('/subscription');
-          }, 2000);
-        } else {
-          setStatus('error');
-          setTimeout(() => {
-            router.push('/subscription');
-          }, 3000);
-        }
-      }).catch(() => {
+      if (res.ok) {
+        const data = await res.json();
+        console.log('Register success:', data);
+        setStatus('success');
+        setTimeout(() => {
+          router.push('/subscription');
+        }, 2000);
+      } else {
+        const error = await res.json().catch(() => ({}));
+        console.error('Register failed:', error);
         setStatus('error');
         setTimeout(() => {
           router.push('/subscription');
         }, 3000);
-      });
-    }
-  }, [billingAuthKey, customerKey, router]);
+      }
+    }).catch((err) => {
+      console.error('Register error:', err);
+      setStatus('error');
+      setTimeout(() => {
+        router.push('/subscription');
+      }, 3000);
+    });
+  }, [authKey, customerKey, router, isKorean]);
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden flex items-center justify-center px-4">

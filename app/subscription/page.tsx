@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
 export default function SubscriptionPage() {
-  const { user, token, setUser } = useUserStore();
+  const { user, token, setUser, refreshTokenIfNeeded } = useUserStore();
   const { language, t } = useI18n();
   const isKorean = language === 'ko';
   const [methodRegistered, setMethodRegistered] = useState(false);
@@ -41,23 +41,70 @@ export default function SubscriptionPage() {
       try {
         const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
         
-        const r = await axios.get(`${API_URL}/subscription/methods`, {
-          headers: { Authorization: `Bearer ${token}` },
+        let currentToken = token;
+        let response = await axios.get(`${API_URL}/subscription/methods`, {
+          headers: { Authorization: `Bearer ${currentToken}` },
         });
 
-        if (r.data?.success && r.data.methods?.length > 0) {
-          const m = r.data.methods[0];
+        // 401 에러면 토큰 갱신 후 재시도
+        if (response.status === 401) {
+          console.log('Token expired, refreshing...');
+          const newToken = await refreshTokenIfNeeded();
+          
+          if (newToken) {
+            currentToken = newToken;
+            response = await axios.get(`${API_URL}/subscription/methods`, {
+              headers: { Authorization: `Bearer ${currentToken}` },
+            });
+          } else {
+            console.log('Token refresh failed, redirecting to login');
+            router.push('/login');
+            return;
+          }
+        }
+
+        if (response.data?.success && response.data.methods?.length > 0) {
+          const m = response.data.methods[0];
           setMethodRegistered(true);
           setBillingKey(m.billingKey ?? '');
         } else {
           setMethodRegistered(false);
         }
       } catch (err: any) {
-        console.error('fetch payment methods error', err?.response?.data ?? err?.message);
-        setMethodRegistered(false);
+        // 401 에러 처리
+        if (err?.response?.status === 401) {
+          console.log('Token expired, refreshing...');
+          const newToken = await refreshTokenIfNeeded();
+          
+          if (newToken) {
+            try {
+              const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+              const response = await axios.get(`${API_URL}/subscription/methods`, {
+                headers: { Authorization: `Bearer ${newToken}` },
+              });
+
+              if (response.data?.success && response.data.methods?.length > 0) {
+                const m = response.data.methods[0];
+                setMethodRegistered(true);
+                setBillingKey(m.billingKey ?? '');
+              } else {
+                setMethodRegistered(false);
+              }
+            } catch (retryErr) {
+              console.error('Retry failed:', retryErr);
+              setMethodRegistered(false);
+            }
+          } else {
+            console.log('Token refresh failed, redirecting to login');
+            router.push('/login');
+          }
+        } else {
+          console.error('fetch payment methods error', err?.response?.data ?? err?.message);
+          setMethodRegistered(false);
+        }
       }
     })();
-  }, [user, token]);
+  }, [user, token, refreshTokenIfNeeded, router]);
 
   const handleRegisterBilling = async () => {
     if (!user) return router.push('/login');
