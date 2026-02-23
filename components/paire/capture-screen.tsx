@@ -1,13 +1,13 @@
 "use client"
 
 import React from "react"
-
 import { useRef, useState, useCallback } from "react"
 import { motion } from "framer-motion"
 import { Camera, X, ImagePlus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useI18n } from "@/lib/i18n/context"
 import { cn } from "@/lib/utils"
+import imageCompression from 'browser-image-compression'
 
 interface CaptureScreenProps {
   onCapture: (imageUrl: string) => void
@@ -19,14 +19,42 @@ export function CaptureScreen({ onCapture, onBack }: CaptureScreenProps) {
   const isKorean = language === "ko"
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [preview, setPreview] = useState<string | null>(null)
+  const [isCompressing, setIsCompressing] = useState(false)
 
-  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (file) {
+    if (!file) return
+
+    try {
+      setIsCompressing(true)
+
+      // 이미지 압축 옵션
+      const options = {
+        maxSizeMB: 1, // 최대 1MB
+        maxWidthOrHeight: 1920, // 최대 1920px
+        useWebWorker: true,
+        fileType: 'image/jpeg' as const,
+      }
+
+      // 이미지 압축
+      const compressedFile = await imageCompression(file, options)
+      
+      // base64로 변환
       const reader = new FileReader()
       reader.onload = (event) => {
         const result = event.target?.result as string
         setPreview(result)
+        setIsCompressing(false)
+      }
+      reader.readAsDataURL(compressedFile)
+    } catch (error) {
+      console.error('이미지 압축 실패:', error)
+      // 압축 실패 시 원본 사용
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        const result = event.target?.result as string
+        setPreview(result)
+        setIsCompressing(false)
       }
       reader.readAsDataURL(file)
     }
@@ -123,6 +151,7 @@ export function CaptureScreen({ onCapture, onBack }: CaptureScreenProps) {
             <Button
               variant="outline"
               onClick={() => setPreview(null)}
+              disabled={isCompressing}
               className={cn(
                 "flex-1 h-14 border-gold/40 text-gold hover:bg-gold/10",
                 isKorean && "font-[var(--font-noto-kr)]"
@@ -132,6 +161,7 @@ export function CaptureScreen({ onCapture, onBack }: CaptureScreenProps) {
             </Button>
             <Button
               onClick={handleConfirm}
+              disabled={isCompressing}
               className={cn(
                 "flex-1 h-14 bg-gold hover:bg-gold-light text-background font-semibold",
                 isKorean && "font-[var(--font-noto-kr)]"
@@ -144,13 +174,14 @@ export function CaptureScreen({ onCapture, onBack }: CaptureScreenProps) {
           <div className="flex flex-col gap-3">
             <Button
               onClick={() => fileInputRef.current?.click()}
+              disabled={isCompressing}
               className={cn(
                 "w-full h-14 bg-gold hover:bg-gold-light text-background font-semibold text-lg",
                 isKorean && "font-[var(--font-noto-kr)] text-base"
               )}
             >
               <ImagePlus className="w-5 h-5 mr-3" />
-              {t("capture.selectPhoto")}
+              {isCompressing ? '압축 중...' : t("capture.selectPhoto")}
             </Button>
           </div>
         )}
