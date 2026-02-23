@@ -122,7 +122,7 @@ export function RecommendationScreen({
     }
   };
 
-  // 랜덤 fairy 이미지 선택 (컴포넌트 마운트 시 한 번만)
+  // 랜덤 fairy 이미지 선택 (새로고침할 때마다 변경)
   const fairyImage = useMemo(() => {
     const fairyImages = [
       "/images/fairy_0_0.png",
@@ -133,7 +133,22 @@ export function RecommendationScreen({
       "/images/fairy_1_2.png",
     ]
     return fairyImages[Math.floor(Math.random() * fairyImages.length)]
-  }, [])
+  }, [fairyMessage]) // fairyMessage가 바뀔 때마다 새 이미지
+
+  // 랜덤 페어리 메시지 (새로고침할 때마다 변경)
+  const randomFairyMessage = useMemo(() => {
+    const messages = [
+      isKorean ? "이 음식과 완벽하게 어울리는 음료를 찾았어요! ✨" : "I found the perfect drink to pair with your dish! ✨",
+      isKorean ? "오늘의 분위기에 딱 맞는 추천이에요 💫" : "This is the perfect recommendation for today's mood 💫",
+      isKorean ? "당신의 취향을 고려해서 골랐어요 🌟" : "I chose this considering your preferences 🌟",
+      isKorean ? "특별한 순간을 더 특별하게 만들어줄 거예요 ✨" : "This will make your special moment even more special ✨",
+      isKorean ? "이 조합은 정말 환상적이에요! 🎉" : "This combination is absolutely fantastic! 🎉",
+      isKorean ? "최고의 페어링을 찾았어요 🥂" : "I found the best pairing 🥂",
+      isKorean ? "이 한 잔이 당신의 식사를 완성해줄 거예요 🍷" : "This drink will complete your meal 🍷",
+      isKorean ? "요정의 직감으로 선택했어요! 💝" : "I chose this with my fairy intuition! 💝",
+    ]
+    return messages[Math.floor(Math.random() * messages.length)]
+  }, [fairyMessage, isKorean]) // fairyMessage나 언어가 바뀔 때마다 새 메시지
 
   // 실제 데이터가 없으면 빈 배열 사용
   const displayDrinks = drinks && drinks.length > 0 ? drinks : []
@@ -336,13 +351,13 @@ export function RecommendationScreen({
         </div>
       </div>
 
-      {/* Food Image */}
+      {/* Food Image - 크기 2~3배 증가 */}
       <div className="px-6 mb-4">
-        <div className="relative h-48 rounded-xl overflow-hidden">
+        <div className="relative h-96 rounded-xl overflow-hidden">
           <img
             src={imageUrl || "/placeholder.svg"}
             alt="Your dish"
-            className="w-full h-full object-contain bg-secondary"
+            className="w-full h-full object-cover bg-secondary"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
         </div>
@@ -364,7 +379,7 @@ export function RecommendationScreen({
             "text-foreground text-sm leading-relaxed",
             isKorean && "font-[var(--font-noto-kr)] text-xs leading-relaxed"
           )}>
-            {translateFairyMessage(fairyMessage || currentDrink.description || t("recommendation.defaultMessage"))}
+            {fairyMessage || randomFairyMessage}
           </p>
         </div>
       </motion.div>
