@@ -40,7 +40,7 @@ export default function SubscriptionPage() {
     (async () => {
       try {
         const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
-        
+
         let currentToken = token;
         let response = await axios.get(`${API_URL}/subscription/methods`, {
           headers: { Authorization: `Bearer ${currentToken}` },
@@ -50,7 +50,7 @@ export default function SubscriptionPage() {
         if (response.status === 401) {
           console.log('Token expired, refreshing...');
           const newToken = await refreshTokenIfNeeded();
-          
+
           if (newToken) {
             currentToken = newToken;
             response = await axios.get(`${API_URL}/subscription/methods`, {
@@ -75,7 +75,7 @@ export default function SubscriptionPage() {
         if (err?.response?.status === 401) {
           console.log('Token expired, refreshing...');
           const newToken = await refreshTokenIfNeeded();
-          
+
           if (newToken) {
             try {
               const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
