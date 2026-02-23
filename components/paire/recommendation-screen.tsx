@@ -211,7 +211,7 @@ export function RecommendationScreen({
 
       {/* Pagination Dots */}
       <div className="flex justify-center gap-2 py-4">
-        {sampleDrinks.map((_, i) => (
+        {displayDrinks.map((_, i) => (
           <button
             key={i}
             onClick={() => {
