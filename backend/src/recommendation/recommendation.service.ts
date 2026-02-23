@@ -22,10 +22,19 @@ export class RecommendationService {
   ) { }
 
   async createRecommendation(userId: string | null, dto: any) {
-    // 권한 체크 (비로그인, FREE, PREMIUM)
+    // 권한 체크 (비로그인, FREE, CREDIT, PREMIUM)
     if (userId) {
       const user = await this.prisma.user.findUnique({ where: { id: userId } });
-      if (user?.membership === 'FREE') {
+      
+      if (user?.membership === 'PREMIUM') {
+        // PREMIUM: 무제한
+      } else if (user && user.credits > 0) {
+        // 크레딧 보유: 크레딧 차감
+        await this.prisma.user.update({
+          where: { id: userId },
+          data: { credits: { decrement: 1 } },
+        });
+      } else if (user?.membership === 'FREE') {
         // FREE 사용자 일일 한도 체크
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -36,7 +45,9 @@ export class RecommendationService {
           },
         });
         if (count >= 1) {
-          throw new BadRequestException('일일 추천 한도(1회)를 초과했습니다. PREMIUM으로 업그레이드하세요.');
+          throw new BadRequestException(
+            '일일 추천 한도(1회)를 초과했습니다. 크레딧을 구매하거나 PREMIUM으로 업그레이드하세요.'
+          );
         }
       }
     }

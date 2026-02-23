@@ -20,6 +20,9 @@ model User {
   membership Membership @default(FREE)
   roles     String[] @default(["USER"])
   
+  // 크레딧 시스템
+  credits   Int      @default(0)  // 보유 크레딧
+  
   // OAuth 정보
   provider  String?  // google, kakao, local
   providerId String? // OAuth provider의 user ID
@@ -30,6 +33,7 @@ model User {
   paymentMethods PaymentMethod[]
   favorites Favorite[]
   stickers UserSticker[]
+  creditPurchases CreditPurchase[]
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -176,6 +180,25 @@ model SupportMessage {
   createdAt DateTime @default(now())
   
   @@map("support_messages")
+}
+
+// ============ Credit Purchases (크레딧 구매 내역) ============
+model CreditPurchase {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  packageType String  // CREDIT_5, CREDIT_10, CREDIT_30
+  credits   Int      // 구매한 크레딧 수
+  price     Int      // 결제 금액
+  
+  paymentKey String? // Toss 결제 키
+  orderId   String   @unique
+  status    PaymentStatus @default(PENDING)
+  
+  createdAt DateTime @default(now())
+  
+  @@map("credit_purchases")
 }
 
 // ============ Stickers (수집형 배지) ============

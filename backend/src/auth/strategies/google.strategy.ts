@@ -6,12 +6,21 @@ import { AuthService } from '../auth.service';
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   constructor(private authService: AuthService) {
+    const clientID = process.env.GOOGLE_CLIENT_ID;
+    const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+
+    // 환경 변수가 없으면 더미 값 사용 (전략 비활성화)
     super({
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      clientID: clientID || 'dummy-client-id',
+      clientSecret: clientSecret || 'dummy-client-secret',
       callbackURL: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:3001/api/auth/google/callback',
       scope: ['email', 'profile'],
     });
+
+    // 환경 변수가 없으면 경고 로그
+    if (!clientID || !clientSecret) {
+      console.warn('⚠️  Google OAuth is disabled: GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET not set');
+    }
   }
 
   async validate(
