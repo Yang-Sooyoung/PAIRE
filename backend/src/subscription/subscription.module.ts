@@ -8,5 +8,6 @@ import { TossModule } from '@/toss/toss.module';
   imports: [PrismaModule, TossModule],
   controllers: [SubscriptionController],
   providers: [SubscriptionService],
+  exports: [SubscriptionService], // Scheduler에서 사용하기 위해 export
 })
 export class SubscriptionModule {}

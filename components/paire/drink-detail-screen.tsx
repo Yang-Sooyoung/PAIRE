@@ -3,9 +3,11 @@
 import { motion } from "framer-motion"
 import { ArrowLeft, Wine, Droplet, Sparkles, ShoppingCart, Heart } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useI18n } from "@/lib/i18n/context"
 import { cn } from "@/lib/utils"
+import { useUserStore } from "@/app/store/userStore"
+import { addFavorite, removeFavorite, checkFavorite } from "@/app/api/favorite"
 
 interface DrinkDetailScreenProps {
   drink: {
@@ -28,7 +30,53 @@ interface DrinkDetailScreenProps {
 export function DrinkDetailScreen({ drink, onBack }: DrinkDetailScreenProps) {
   const { language, t } = useI18n()
   const isKorean = language === "ko"
+  const { user, token } = useUserStore()
   const [isWishlisted, setIsWishlisted] = useState(false)
+  const [isLoadingFavorite, setIsLoadingFavorite] = useState(false)
+
+  // 즐겨찾기 상태 확인
+  useEffect(() => {
+    if (user && token && user.membership === 'PREMIUM') {
+      checkFavorite(drink.id, token)
+        .then((res) => setIsWishlisted(res.isFavorite))
+        .catch((err) => console.error('즐겨찾기 확인 실패:', err))
+    }
+  }, [drink.id, user, token])
+
+  // 즐겨찾기 토글
+  const handleToggleFavorite = async () => {
+    if (!user || !token) {
+      alert(isKorean ? '로그인이 필요합니다.' : 'Please login first.')
+      return
+    }
+
+    if (user.membership !== 'PREMIUM') {
+      const confirmUpgrade = confirm(
+        isKorean
+          ? '즐겨찾기는 PREMIUM 멤버만 이용할 수 있습니다.\n업그레이드 하시겠어요?'
+          : 'Favorites are available for PREMIUM members only.\nWould you like to upgrade?'
+      )
+      if (confirmUpgrade) {
+        window.location.href = '/subscription'
+      }
+      return
+    }
+
+    setIsLoadingFavorite(true)
+    try {
+      if (isWishlisted) {
+        await removeFavorite(drink.id, token)
+        setIsWishlisted(false)
+      } else {
+        await addFavorite(drink.id, token)
+        setIsWishlisted(true)
+      }
+    } catch (error: any) {
+      alert(error.message || (isKorean ? '오류가 발생했습니다.' : 'An error occurred.'))
+    } finally {
+      setIsLoadingFavorite(false)
+    }
+  }
 
   // 음료 타입별 Flavor Profile 계산
   const calculateFlavorProfile = () => {
@@ -189,7 +237,8 @@ export function DrinkDetailScreen({ drink, onBack }: DrinkDetailScreenProps) {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setIsWishlisted(!isWishlisted)}
+            onClick={handleToggleFavorite}
+            disabled={isLoadingFavorite}
             className="bg-background/30 backdrop-blur-sm text-foreground hover:bg-background/50"
           >
             <Heart className={`w-5 h-5 ${isWishlisted ? "fill-gold text-gold" : ""}`} />
@@ -341,7 +390,8 @@ export function DrinkDetailScreen({ drink, onBack }: DrinkDetailScreenProps) {
           <Button
             variant="outline"
             size="icon"
-            onClick={() => setIsWishlisted(!isWishlisted)}
+            onClick={handleToggleFavorite}
+            disabled={isLoadingFavorite}
             className="h-14 w-14 border-gold/40 text-gold hover:bg-gold/10 shrink-0"
           >
             <Heart className={`w-5 h-5 ${isWishlisted ? "fill-gold" : ""}`} />

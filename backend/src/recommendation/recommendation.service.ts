@@ -1,12 +1,19 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { VisionService } from '@/vision/vision.service';
+import { StorageService } from '@/storage/storage.service';
+import { 
+  normalizeMenuItems, 
+  findPairingRules, 
+  generatePairingReason 
+} from './menu-normalizer';
 
 @Injectable()
 export class RecommendationService {
   constructor(
     private prisma: PrismaService,
     private visionService: VisionService,
+    private storageService: StorageService,
   ) { }
 
   async createRecommendation(userId: string | null, dto: any) {
@@ -29,20 +36,44 @@ export class RecommendationService {
       }
     }
 
-    // Vision API로 음식 인식
+    // 이미지 처리
+    let imageUrl = dto.imageUrl;
     let detectedFoods: string[] = [];
-    if (dto.imageUrl) {
-      // base64 이미지는 Vision API에서 처리 불가 - 일단 스킵
-      if (dto.imageUrl.startsWith('data:image')) {
-        console.log('Base64 image detected - skipping Vision API');
-        detectedFoods = ['음식'];
-      } else {
+    let pairingReason = '';
+
+    if (imageUrl) {
+      // base64 이미지면 Supabase에 업로드
+      if (imageUrl.startsWith('data:image')) {
+        console.log('Uploading base64 image to Supabase...');
+        const uploadedUrl = await this.storageService.uploadBase64Image(imageUrl, userId);
+        if (uploadedUrl) {
+          imageUrl = uploadedUrl;
+          console.log('Image uploaded:', uploadedUrl);
+        } else {
+          console.log('Image upload failed, using base64');
+        }
+      }
+
+      // Vision API로 음식 인식 (base64는 스킵)
+      if (!imageUrl.startsWith('data:image')) {
         try {
-          detectedFoods = await this.visionService.detectFoodLabels(dto.imageUrl);
+          detectedFoods = await this.visionService.detectFoodLabels(imageUrl);
+          console.log('Detected foods:', detectedFoods);
+          
+          // 메뉴 정규화 및 페어링 룰 적용
+          const normalizedMenus = normalizeMenuItems(detectedFoods);
+          console.log('Normalized menus:', normalizedMenus);
+          
+          const pairingRules = findPairingRules(normalizedMenus);
+          console.log('Pairing rules:', pairingRules);
+          
+          pairingReason = generatePairingReason(normalizedMenus, pairingRules);
         } catch (error) {
           console.error('Vision API 오류:', error);
           detectedFoods = ['음식'];
         }
+      } else {
+        detectedFoods = ['음식'];
       }
     } else {
       detectedFoods = ['음식'];
@@ -55,19 +86,19 @@ export class RecommendationService {
       dto.tastes,
     );
 
-    const fairyMessages = [
-      '이 순간에는 이 한 잔이 어울릴 것 같아요...',
-      '당신의 취향을 읽었어요. 이 음료를 추천합니다.',
-      '음식의 향과 맛을 생각하면, 이것이 최고의 페어링이에요.',
-      '요정의 직감이 말해줘요. 이 한 잔이 정답입니다.',
-      '당신의 순간을 더 특별하게 만들어줄 음료예요.',
-    ];
+    // 페어리 메시지 생성 (상황별 맞춤)
+    const fairyMessage = this.generateFairyMessage(
+      dto.occasion,
+      dto.tastes,
+      detectedFoods,
+      pairingReason
+    );
 
     const recommendation = {
       id: `rec_${Date.now()}`,
       drinks: recommendedDrinks,
       detectedFoods,
-      fairyMessage: fairyMessages[Math.floor(Math.random() * fairyMessages.length)],
+      fairyMessage,
       createdAt: new Date(),
     };
 
@@ -76,15 +107,73 @@ export class RecommendationService {
       await this.prisma.recommendation.create({
         data: {
           userId,
+          imageUrl, // 업로드된 URL 또는 원본 URL
           occasion: dto.occasion,
           tastes: dto.tastes,
           drinks: recommendedDrinks,
-          fairyMessage: recommendation.fairyMessage,
+          fairyMessage,
         },
       });
     }
 
     return { recommendation };
+  }
+
+  /**
+   * 상황별 페어리 메시지 생성
+   */
+  private generateFairyMessage(
+    occasion: string,
+    tastes: string[],
+    foods: string[],
+    pairingReason: string
+  ): string {
+    const messages = {
+      date: [
+        '특별한 순간을 더욱 빛나게 해줄 한 잔이에요 ✨',
+        '로맨틱한 분위기에 완벽한 페어링입니다 💕',
+        '이 음료와 함께라면 더 특별한 시간이 될 거예요',
+      ],
+      solo: [
+        '나만의 시간을 위한 완벽한 선택이에요 🌙',
+        '혼자만의 여유를 즐기기에 딱 좋은 한 잔입니다',
+        '오늘 하루의 피로를 풀어줄 음료예요',
+      ],
+      friends: [
+        '친구들과 함께 즐기기 좋은 선택이에요 🎉',
+        '즐거운 시간을 더욱 풍성하게 만들어줄 거예요',
+        '함께 나누면 더 맛있는 한 잔입니다',
+      ],
+      family: [
+        '가족과 함께하는 식사에 어울리는 음료예요 🏠',
+        '따뜻한 시간을 더욱 특별하게 만들어줄 거예요',
+        '모두가 즐길 수 있는 완벽한 선택입니다',
+      ],
+      business: [
+        '비즈니스 미팅에 적합한 세련된 선택이에요 💼',
+        '프로페셔널한 분위기를 완성해줄 음료입니다',
+        '좋은 인상을 남길 수 있는 페어링이에요',
+      ],
+      celebration: [
+        '축하의 순간을 더욱 화려하게 만들어줄 거예요 🎊',
+        '특별한 날을 기념하기에 완벽한 선택입니다',
+        '행복한 순간과 함께할 최고의 한 잔이에요',
+      ],
+      all: [
+        '어떤 상황에서도 즐길 수 있는 만능 페어링이에요',
+        '언제 어디서나 좋은 선택입니다',
+      ],
+    };
+
+    const occasionMessages = messages[occasion] || messages.all;
+    const randomMessage = occasionMessages[Math.floor(Math.random() * occasionMessages.length)];
+
+    // 페어링 이유가 있으면 추가
+    if (pairingReason) {
+      return `${randomMessage}\n\n${pairingReason}`;
+    }
+
+    return randomMessage;
   }
 
   /**
@@ -95,6 +184,13 @@ export class RecommendationService {
     const allDrinks = await this.prisma.drink.findMany();
 
     let candidates = [...allDrinks];
+
+    // 메뉴 정규화 및 페어링 룰 적용
+    const normalizedMenus = normalizeMenuItems(foods);
+    const pairingRules = findPairingRules(normalizedMenus);
+    
+    console.log('Recommendation engine - Normalized menus:', normalizedMenus);
+    console.log('Recommendation engine - Pairing rules:', pairingRules);
 
     // 1. 상황에 맞는 음료 필터링
     if (occasion !== 'all') {
@@ -116,14 +212,31 @@ export class RecommendationService {
     const scored = candidates.map((drink) => {
       let score = 0;
 
-      // 음식 페어링 점수
+      // 페어링 룰 기반 점수 (가장 높은 가중치)
+      if (pairingRules.length > 0) {
+        for (const rule of pairingRules) {
+          // 음료 타입 매칭
+          if (rule.drinkTypes.includes(drink.type)) {
+            score += 20;
+          }
+          
+          // 음료 맛 매칭
+          const drinkTastes = drink.tastes as string[];
+          const matchingTastes = drinkTastes.filter(taste => 
+            rule.drinkTastes.includes(taste)
+          );
+          score += matchingTastes.length * 10;
+        }
+      }
+
+      // 음식 페어링 점수 (기존 로직)
       const foodPairings = drink.foodPairings as string[];
       if (foodPairings.includes('all')) {
-        score += 10;
+        score += 5;
       } else {
         foods.forEach((food) => {
           if (foodPairings.some((pairing) => food.toLowerCase().includes(pairing))) {
-            score += 5;
+            score += 8;
           }
         });
       }
@@ -132,25 +245,28 @@ export class RecommendationService {
       if (tastes && tastes.length > 0) {
         const drinkTastes = drink.tastes as string[];
         const matchingTastes = drinkTastes.filter((taste) => tastes.includes(taste));
-        score += matchingTastes.length * 3;
+        score += matchingTastes.length * 5;
       }
 
       return { ...drink, score };
     });
 
     // 4. 상위 3개 반환
-    return scored
+    const topDrinks = scored
       .sort((a, b) => b.score - a.score)
-      .slice(0, 3)
-      .map(({ score, ...drink }) => ({
-        id: drink.id,
-        name: drink.name,
-        type: drink.type,
-        description: drink.description,
-        tastingNotes: drink.tastingNotes,
-        image: drink.image,
-        price: drink.price,
-      }));
+      .slice(0, 3);
+      
+    console.log('Top drinks with scores:', topDrinks.map(d => ({ name: d.name, score: d.score })));
+
+    return topDrinks.map(({ score, ...drink }) => ({
+      id: drink.id,
+      name: drink.name,
+      type: drink.type,
+      description: drink.description,
+      tastingNotes: drink.tastingNotes,
+      image: drink.image,
+      price: drink.price,
+    }));
   }
 
   async getHistory(userId: string, limit: number = 10, offset: number = 0) {

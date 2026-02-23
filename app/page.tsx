@@ -11,7 +11,7 @@ import { PreferenceScreen } from "@/components/paire/preference-screen"
 import { RecommendationScreen } from "@/components/paire/recommendation-screen"
 import { DrinkDetailScreen } from "@/components/paire/drink-detail-screen"
 import { MenuInputScreen } from "@/components/paire/menu-input-screen"
-import { Settings, LogOut } from "lucide-react"
+import { Settings, LogOut, User } from "lucide-react"
 
 type Screen =
   | "home"
@@ -205,7 +205,7 @@ export default function PairePage() {
                 className="text-gold hover:text-gold-light transition"
                 title="내 정보"
               >
-                👤
+                <User className="w-5 h-5" />
               </button>
               <button
                 onClick={() => router.push("/settings")}

@@ -2,10 +2,11 @@
 
 import { useState, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { ArrowLeft, ChevronLeft, ChevronRight, ShoppingBag, RefreshCw } from "lucide-react"
+import { ArrowLeft, ChevronLeft, ChevronRight, ShoppingBag, RefreshCw, Share2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useI18n } from "@/lib/i18n/context"
 import { cn } from "@/lib/utils"
+import { shareViaWebAPI, copyToClipboard, generateShareText } from "@/lib/share"
 
 interface RecommendationScreenProps {
   imageUrl: string
@@ -95,6 +96,31 @@ export function RecommendationScreen({
   const isKorean = language === "ko"
   const [currentIndex, setCurrentIndex] = useState(0)
   const [direction, setDirection] = useState(0)
+  const [showShareToast, setShowShareToast] = useState(false)
+
+  // 공유 기능
+  const handleShare = async () => {
+    if (!drinks || drinks.length === 0) return;
+
+    const shareText = generateShareText(drinks, isKorean);
+    const shareData = {
+      title: 'PAIRÉ',
+      text: shareText,
+      url: window.location.origin,
+    };
+
+    // 웹 공유 API 시도
+    const shared = await shareViaWebAPI(shareData);
+    
+    if (!shared) {
+      // 웹 공유 API가 없으면 클립보드에 복사
+      const copied = await copyToClipboard(`${shareText}\n\n${window.location.origin}`);
+      if (copied) {
+        setShowShareToast(true);
+        setTimeout(() => setShowShareToast(false), 2000);
+      }
+    }
+  };
 
   // 랜덤 fairy 이미지 선택 (컴포넌트 마운트 시 한 번만)
   const fairyImage = useMemo(() => {
@@ -288,14 +314,26 @@ export function RecommendationScreen({
         )}>
           {t("recommendation.title")}
         </h1>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onRefresh}
-          className="text-gold hover:bg-gold/10"
-        >
-          <RefreshCw className="w-5 h-5" />
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleShare}
+            className="text-gold hover:bg-gold/10"
+            title={isKorean ? '공유하기' : 'Share'}
+          >
+            <Share2 className="w-5 h-5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onRefresh}
+            className="text-gold hover:bg-gold/10"
+            title={isKorean ? '새로고침' : 'Refresh'}
+          >
+            <RefreshCw className="w-5 h-5" />
+          </Button>
+        </div>
       </div>
 
       {/* Food Image */}
@@ -441,6 +479,23 @@ export function RecommendationScreen({
           {t("recommendation.selectThis")}
         </Button>
       </div>
+
+      {/* 공유 토스트 */}
+      {showShareToast && (
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 50 }}
+          className="fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-gold text-background px-6 py-3 rounded-full shadow-lg z-50"
+        >
+          <p className={cn(
+            "font-medium",
+            isKorean && "font-[var(--font-noto-kr)] text-sm"
+          )}>
+            {isKorean ? '클립보드에 복사되었습니다!' : 'Copied to clipboard!'}
+          </p>
+        </motion.div>
+      )}
     </div>
   )
 }

@@ -55,11 +55,11 @@ const handlePreferenceSubmit = async (prefs) => {
 
 ### 4. 추천 히스토리
 **백엔드:** ✅ 구현됨 (`GET /api/recommendation/history`)
-**프론트엔드:** ❌ UI 없음
+**프론트엔드:** ✅ 구현됨 (`/history` 페이지)
 
 ### 5. 결제 수단 제거
-**백엔드:** ❌ 엔드포인트 없음
-**프론트엔드:** ❌ UI 없음
+**백엔드:** ⚠️ 엔드포인트 필요
+**프론트엔드:** ⚠️ UI 필요
 
 ### 6. 구독 취소 플로우
 **백엔드:** ✅ 구현됨 (`POST /api/subscription/cancel`)
@@ -80,8 +80,11 @@ const handlePreferenceSubmit = async (prefs) => {
 **필요:** 추천 결과 공유 (카카오톡, 링크 복사)
 
 ### 9. 즐겨찾기
-**상태:** 미구현
-**필요:** 좋아하는 음료 저장
+**상태:** ✅ 구현 완료
+**기능:** 
+- 음료 즐겨찾기 추가/제거
+- 즐겨찾기 목록 페이지 (`/favorites`)
+- PREMIUM 전용 기능
 
 ### 10. TTS (음성 안내)
 **상태:** 미구현

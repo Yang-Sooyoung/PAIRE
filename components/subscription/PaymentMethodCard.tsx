@@ -27,7 +27,7 @@ export function PaymentMethodCard({ billingKey, token }: PaymentMethodCardProps)
     const handleRemove = async () => {
         try {
             setLoading(true);
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 
             let currentToken = token;
 

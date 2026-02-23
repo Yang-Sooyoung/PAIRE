@@ -9,6 +9,9 @@ import { PaymentModule } from './payment/payment.module';
 import { VisionModule } from './vision/vision.module';
 import { TossModule } from './toss/toss.module';
 import { SupportModule } from './support/support.module';
+import { FavoriteModule } from './favorite/favorite.module';
+import { StorageModule } from './storage/storage.module';
+import { SchedulerModule } from './scheduler/scheduler.module';
 import { AppController } from './app.controller';
 
 @Module({
@@ -25,6 +28,9 @@ import { AppController } from './app.controller';
     VisionModule,
     TossModule,
     SupportModule,
+    FavoriteModule,
+    StorageModule,
+    SchedulerModule,
   ],
   controllers: [AppController],
 })

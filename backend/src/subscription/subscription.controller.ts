@@ -34,8 +34,8 @@ export class SubscriptionController {
   @Post('remove-method')
   @UseGuards(JwtAuthGuard)
   async removePaymentMethod(@Request() req: any) {
-    // 결제 수단 제거 = 구독 취소
-    return this.subscriptionService.cancelSubscription(req.user.sub);
+    // 결제 수단 제거 (활성 구독이 있으면 자동으로 취소)
+    return this.subscriptionService.removePaymentMethod(req.user.sub);
   }
 
   @Post('register-method')

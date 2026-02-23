@@ -4,20 +4,35 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUserStore } from '@/app/store/userStore';
 import { Button } from '@/components/ui/button';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { ArrowLeft, Check } from 'lucide-react';
+import { CustomDialog } from '@/components/ui/custom-dialog';
+import { motion } from 'framer-motion';
+import { ArrowLeft, Crown, Calendar, CreditCard, AlertCircle, Loader2 } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
+import axios from 'axios';
+
+interface Subscription {
+  id: string;
+  membership: string;
+  interval: string;
+  price: number;
+  nextBillingDate: string;
+  status: string;
+  paymentMethod: string;
+}
 
 export default function SubscriptionStatusPage() {
   const router = useRouter();
-  const { user, token, refreshTokenIfNeeded } = useUserStore();
+  const { user, token, setUser, refreshTokenIfNeeded } = useUserStore();
   const { language, t } = useI18n();
   const isKorean = language === 'ko';
-  const [loading, setLoading] = useState(false);
-  const [subscriptionInfo, setSubscriptionInfo] = useState<any>(null);
-  const [fetchError, setFetchError] = useState(false);
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [cancelling, setCancelling] = useState(false);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [showErrorDialog, setShowErrorDialog] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     if (!user || !token) {
@@ -25,145 +40,147 @@ export default function SubscriptionStatusPage() {
       return;
     }
 
-    // 구독 정보 조회
-    (async () => {
-      try {
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
-
-        let currentToken = token;
-        let response = await fetch(`${API_URL}/subscription/status`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${currentToken}`,
-          },
-        });
-
-        // 401 에러인 경우 토큰 갱신 후 재시도
-        if (response.status === 401) {
-          console.log('Token expired, attempting to refresh for status check...');
-          
-          const newToken = await refreshTokenIfNeeded();
-          if (newToken) {
-            currentToken = newToken;
-            
-            // 새 토큰으로 재시도
-            response = await fetch(`${API_URL}/subscription/status`, {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${currentToken}`,
-              },
-            });
-          } else {
-            console.log('Token refresh failed, redirecting to login');
-            router.push('/login');
-            return;
-          }
-        }
-
-        if (response.ok) {
-          const data = await response.json();
-          setSubscriptionInfo(data);
-          setFetchError(false);
-        } else if (response.status === 404) {
-          // 404는 구독 정보가 없는 정상 상황
-          setFetchError(false);
-        } else {
-          setFetchError(true);
-        }
-      } catch (err: any) {
-        console.error('Failed to fetch subscription status:', err);
-        setFetchError(true);
-      }
-    })();
-  }, [user, token, router, refreshTokenIfNeeded]);
-
-  const handleCancel = async () => {
-    if (!token) {
-      console.error('No token available');
-      alert(isKorean ? '로그인이 필요합니다.' : 'Login required.');
-      router.push('/login');
+    if (user.membership !== 'PREMIUM') {
+      router.push('/subscription');
       return;
     }
 
+    fetchSubscriptionStatus();
+  }, [user, token, router]);
+
+  const fetchSubscriptionStatus = async () => {
     try {
-      setLoading(true);
-
       const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
-
       let currentToken = token;
 
-      const response = await fetch(`${API_URL}/subscription/cancel`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${currentToken}`,
-        },
-      });
-
-      // 401 에러인 경우 토큰 갱신 후 재시도
-      if (response.status === 401) {
-        console.log('Token expired, attempting to refresh...');
-
-        const newToken = await refreshTokenIfNeeded();
-        if (!newToken) {
-          alert(isKorean ? '세션이 만료되었습니다. 다시 로그인해주세요.' : 'Session expired. Please login again.');
-          router.push('/login');
-          return;
-        }
-
-        currentToken = newToken;
-
-        // 새 토큰으로 재시도
-        const retryResponse = await fetch(`${API_URL}/subscription/cancel`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${currentToken}`,
-          },
+      try {
+        const response = await axios.get(`${API_URL}/subscription/status`, {
+          headers: { Authorization: `Bearer ${currentToken}` },
         });
 
-        if (!retryResponse.ok) {
-          const error = await retryResponse.json().catch(() => ({ message: 'Unknown error' }));
-          throw new Error(error.message || (isKorean ? '구독 취소 실패' : 'Failed to cancel subscription'));
+        if (response.data?.subscription) {
+          setSubscription(response.data.subscription);
         }
-
-        alert(isKorean ? '구독이 취소되었습니다.' : 'Subscription cancelled.');
-        router.push('/user-info');
-        return;
+      } catch (error: any) {
+        if (error?.response?.status === 401) {
+          const newToken = await refreshTokenIfNeeded();
+          if (newToken) {
+            const response = await axios.get(`${API_URL}/subscription/status`, {
+              headers: { Authorization: `Bearer ${newToken}` },
+            });
+            if (response.data?.subscription) {
+              setSubscription(response.data.subscription);
+            }
+          } else {
+            router.push('/login');
+          }
+        } else {
+          throw error;
+        }
       }
-
-      if (!response.ok) {
-        const error = await response.json().catch(() => ({ message: 'Unknown error' }));
-        throw new Error(error.message || (isKorean ? '구독 취소 실패' : 'Failed to cancel subscription'));
-      }
-
-      alert(isKorean ? '구독이 취소되었습니다.' : 'Subscription cancelled.');
-      router.push('/user-info');
-    } catch (err: any) {
-      console.error('Cancel subscription error:', err);
-      alert(err?.message || (isKorean ? '구독 취소 실패' : 'Failed to cancel subscription'));
+    } catch (error) {
+      console.error('Failed to fetch subscription:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  if (!user) {
+  const handleCancelSubscription = async () => {
+    if (!token) return;
+
+    setCancelling(true);
+    try {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+      let currentToken = token;
+
+      try {
+        await axios.post(
+          `${API_URL}/subscription/cancel`,
+          {},
+          { headers: { Authorization: `Bearer ${currentToken}` } }
+        );
+      } catch (error: any) {
+        if (error?.response?.status === 401) {
+          const newToken = await refreshTokenIfNeeded();
+          if (newToken) {
+            await axios.post(
+              `${API_URL}/subscription/cancel`,
+              {},
+              { headers: { Authorization: `Bearer ${newToken}` } }
+            );
+          } else {
+            router.push('/login');
+            return;
+          }
+        } else {
+          throw error;
+        }
+      }
+
+      setShowCancelDialog(false);
+      setShowSuccessDialog(true);
+
+      // 사용자 정보 업데이트
+      if (user) {
+        setUser({ ...user, membership: 'FREE' });
+      }
+
+      // 2초 후 홈으로 이동
+      setTimeout(() => {
+        router.push('/');
+      }, 2000);
+    } catch (error: any) {
+      console.error('Failed to cancel subscription:', error);
+      setErrorMessage(error.response?.data?.message || '구독 취소에 실패했습니다.');
+      setShowErrorDialog(true);
+    } finally {
+      setCancelling(false);
+    }
+  };
+
+  if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-foreground text-2xl font-light mb-4">PAIRÉ</div>
-          <div className={cn(
-            "text-muted-foreground text-sm",
-            isKorean && "font-[var(--font-noto-kr)]"
-          )}>
-            {t('common.loading')}
-          </div>
-        </div>
+        <Loader2 className="w-12 h-12 text-gold animate-spin" />
       </div>
     );
   }
+
+  if (!subscription) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center"
+        >
+          <AlertCircle className="w-16 h-16 text-gold/30 mx-auto mb-4" />
+          <h2 className={cn(
+            "text-2xl font-light text-foreground mb-6",
+            isKorean && "font-[var(--font-noto-kr)]"
+          )}>
+            {isKorean ? '활성 구독을 찾을 수 없습니다' : 'No active subscription found'}
+          </h2>
+          <Button
+            onClick={() => router.push('/subscription')}
+            className={cn(
+              "bg-gold hover:bg-gold-light text-background",
+              isKorean && "font-[var(--font-noto-kr)]"
+            )}
+          >
+            {isKorean ? '구독하기' : 'Subscribe'}
+          </Button>
+        </motion.div>
+      </div>
+    );
+  }
+
+  const nextBillingDate = new Date(subscription.nextBillingDate);
+  const formattedDate = nextBillingDate.toLocaleDateString(isKorean ? 'ko-KR' : 'en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
@@ -179,7 +196,6 @@ export default function SubscriptionStatusPage() {
           <button
             onClick={() => router.back()}
             className="text-gold hover:text-gold-light transition"
-            title={t('common.back')}
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
@@ -193,178 +209,179 @@ export default function SubscriptionStatusPage() {
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-12 relative z-10">
+        {/* 구독 상태 카드 */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
+          className="bg-gradient-to-br from-gold/10 to-gold/5 border border-gold/20 rounded-xl p-8 mb-8"
         >
-          <p className={cn(
-            "text-muted-foreground",
-            isKorean && "font-[var(--font-noto-kr)]"
-          )}>
-            {isKorean ? '현재 PREMIUM 멤버십 중입니다' : 'You are currently a PREMIUM member'}
-          </p>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="bg-card border border-border rounded-xl p-8 mb-8"
-        >
-          <div className="space-y-6">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-16 h-16 bg-gold/20 rounded-full flex items-center justify-center">
+              <Crown className="w-8 h-8 text-gold" />
+            </div>
             <div>
               <h2 className={cn(
-                "text-sm font-semibold text-muted-foreground mb-2",
+                "text-2xl font-light text-foreground mb-1",
                 isKorean && "font-[var(--font-noto-kr)]"
               )}>
-                {isKorean ? '현재 플랜' : 'Current Plan'}
+                PREMIUM
               </h2>
-              <p className="text-2xl font-light text-foreground">PREMIUM</p>
+              <p className={cn(
+                "text-gold text-sm",
+                isKorean && "font-[var(--font-noto-kr)]"
+              )}>
+                {subscription.interval === 'MONTHLY' 
+                  ? (isKorean ? '월간 구독' : 'Monthly Subscription')
+                  : (isKorean ? '연간 구독' : 'Annual Subscription')}
+              </p>
             </div>
+          </div>
 
-            {subscriptionInfo && subscriptionInfo.nextBillingDate && (
-              <div>
-                <h2 className={cn(
-                  "text-sm font-semibold text-muted-foreground mb-2",
+          <div className="space-y-4">
+            {/* 다음 결제일 */}
+            <div className="flex items-center justify-between p-4 bg-background/50 rounded-lg">
+              <div className="flex items-center gap-3">
+                <Calendar className="w-5 h-5 text-gold" />
+                <span className={cn(
+                  "text-muted-foreground",
                   isKorean && "font-[var(--font-noto-kr)]"
                 )}>
-                  {isKorean ? '갱신 날짜' : 'Renewal Date'}
-                </h2>
-                <p className="text-foreground">
-                  {new Date(subscriptionInfo.nextBillingDate).toLocaleDateString(isKorean ? 'ko-KR' : 'en-US')}
-                </p>
+                  {isKorean ? '다음 결제일' : 'Next Billing Date'}
+                </span>
               </div>
-            )}
+              <span className={cn(
+                "text-foreground font-medium",
+                isKorean && "font-[var(--font-noto-kr)]"
+              )}>
+                {formattedDate}
+              </span>
+            </div>
 
-            {subscriptionInfo && subscriptionInfo.paymentMethod && (
-              <div>
-                <h2 className={cn(
-                  "text-sm font-semibold text-muted-foreground mb-2",
+            {/* 결제 금액 */}
+            <div className="flex items-center justify-between p-4 bg-background/50 rounded-lg">
+              <div className="flex items-center gap-3">
+                <CreditCard className="w-5 h-5 text-gold" />
+                <span className={cn(
+                  "text-muted-foreground",
+                  isKorean && "font-[var(--font-noto-kr)]"
+                )}>
+                  {isKorean ? '결제 금액' : 'Amount'}
+                </span>
+              </div>
+              <span className="text-foreground font-medium">
+                ₩{subscription.price.toLocaleString()}
+              </span>
+            </div>
+
+            {/* 결제 수단 */}
+            <div className="flex items-center justify-between p-4 bg-background/50 rounded-lg">
+              <div className="flex items-center gap-3">
+                <CreditCard className="w-5 h-5 text-gold" />
+                <span className={cn(
+                  "text-muted-foreground",
                   isKorean && "font-[var(--font-noto-kr)]"
                 )}>
                   {isKorean ? '결제 수단' : 'Payment Method'}
-                </h2>
-                <p className="text-foreground">
-                  {subscriptionInfo.paymentMethod}
-                </p>
+                </span>
               </div>
-            )}
-
-            <div className="pt-6 border-t border-border">
-              <h2 className={cn(
-                "text-sm font-semibold text-muted-foreground mb-4",
-                isKorean && "font-[var(--font-noto-kr)]"
-              )}>
-                {isKorean ? 'PREMIUM 혜택' : 'PREMIUM Benefits'}
-              </h2>
-              <ul className={cn(
-                "space-y-2 text-foreground",
-                isKorean && "font-[var(--font-noto-kr)]"
-              )}>
-                <li className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-gold" />
-                  {isKorean ? '무제한 음료 추천' : 'Unlimited drink recommendations'}
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-gold" />
-                  {isKorean ? '상황별 맞춤 추천' : 'Personalized recommendations'}
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-gold" />
-                  {isKorean ? '추천 히스토리 저장' : 'Recommendation history'}
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-gold" />
-                  {isKorean ? '즐겨찾기 기능' : 'Favorites feature'}
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-gold" />
-                  {isKorean ? '공유 기능' : 'Sharing feature'}
-                </li>
-              </ul>
+              <span className="text-foreground font-medium">
+                {subscription.paymentMethod}
+              </span>
             </div>
           </div>
         </motion.div>
 
+        {/* 프리미엄 혜택 */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="flex gap-3"
+          transition={{ delay: 0.1 }}
+          className="bg-card border border-border rounded-xl p-6 mb-8"
         >
-          <Button
-            onClick={() => router.push('/')}
-            className={cn(
-              "flex-1 bg-gold hover:bg-gold-light text-background py-3",
-              isKorean && "font-[var(--font-noto-kr)]"
-            )}
-          >
-            {isKorean ? '추천 계속하기' : 'Continue Recommendations'}
-          </Button>
-
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button
-                className={cn(
-                  "flex-1 bg-destructive/30 hover:bg-destructive/50 text-destructive border border-destructive py-3",
-                  isKorean && "font-[var(--font-noto-kr)]"
-                )}
-              >
-                {isKorean ? '구독 취소' : 'Cancel Subscription'}
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent className="bg-card border border-border">
-              <AlertDialogHeader>
-                <AlertDialogTitle className={cn(
-                  "text-foreground",
-                  isKorean && "font-[var(--font-noto-kr)]"
-                )}>
-                  {isKorean ? '구독을 취소하시겠어요?' : 'Cancel subscription?'}
-                </AlertDialogTitle>
-                <AlertDialogDescription className={cn(
+          <h3 className={cn(
+            "text-lg font-medium text-foreground mb-4",
+            isKorean && "font-[var(--font-noto-kr)]"
+          )}>
+            {isKorean ? '프리미엄 혜택' : 'Premium Benefits'}
+          </h3>
+          <ul className="space-y-3">
+            {[
+              isKorean ? '무제한 음료 추천' : 'Unlimited recommendations',
+              isKorean ? '추천 히스토리 저장' : 'Save recommendation history',
+              isKorean ? '즐겨찾기 기능' : 'Favorites feature',
+              isKorean ? '우선 고객 지원' : 'Priority support',
+            ].map((benefit, index) => (
+              <li key={index} className="flex items-center gap-3">
+                <div className="w-2 h-2 rounded-full bg-gold" />
+                <span className={cn(
                   "text-muted-foreground",
                   isKorean && "font-[var(--font-noto-kr)]"
                 )}>
-                  {isKorean
-                    ? '구독을 취소하면 다음 갱신일부터 FREE 플랜으로 변경됩니다. 현재 남은 기간은 계속 사용할 수 있습니다.'
-                    : 'If you cancel your subscription, it will change to the FREE plan from the next renewal date. You can continue using it for the remaining period.'}
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <div className="flex gap-3">
-                <AlertDialogCancel className={cn(
-                  "bg-secondary hover:bg-secondary/80 text-foreground border-border",
-                  isKorean && "font-[var(--font-noto-kr)]"
-                )}>
-                  {isKorean ? '계속 구독' : 'Keep Subscription'}
-                </AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={handleCancel}
-                  disabled={loading}
-                  className={cn(
-                    "bg-destructive hover:bg-destructive/90 text-destructive-foreground",
-                    isKorean && "font-[var(--font-noto-kr)]"
-                  )}
-                >
-                  {loading ? (isKorean ? '처리 중...' : 'Processing...') : (isKorean ? '구독 취소' : 'Cancel')}
-                </AlertDialogAction>
-              </div>
-            </AlertDialogContent>
-          </AlertDialog>
+                  {benefit}
+                </span>
+              </li>
+            ))}
+          </ul>
         </motion.div>
 
-        <div className="text-center mt-6">
-          <button
-            onClick={() => router.push('/user-info')}
+        {/* 구독 취소 버튼 */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <Button
+            onClick={() => setShowCancelDialog(true)}
+            variant="outline"
             className={cn(
-              "text-muted-foreground hover:text-foreground transition",
+              "w-full border-destructive/30 text-destructive hover:bg-destructive/10",
               isKorean && "font-[var(--font-noto-kr)]"
             )}
           >
-            {isKorean ? '돌아가기' : 'Go Back'}
-          </button>
-        </div>
+            {isKorean ? '구독 취소' : 'Cancel Subscription'}
+          </Button>
+        </motion.div>
       </div>
+
+      {/* 취소 확인 다이얼로그 */}
+      <CustomDialog
+        isOpen={showCancelDialog}
+        onClose={() => setShowCancelDialog(false)}
+        onConfirm={handleCancelSubscription}
+        type="confirm"
+        title={isKorean ? '구독을 취소하시겠어요?' : 'Cancel Subscription?'}
+        description={
+          isKorean
+            ? `다음 결제일(${formattedDate})부터 FREE 플랜으로 전환됩니다. 그 전까지는 PREMIUM 혜택을 계속 이용할 수 있습니다.`
+            : `Your subscription will be downgraded to FREE plan from ${formattedDate}. You can continue using PREMIUM benefits until then.`
+        }
+        confirmText={cancelling ? (isKorean ? '취소 중...' : 'Cancelling...') : (isKorean ? '구독 취소' : 'Cancel')}
+        cancelText={isKorean ? '돌아가기' : 'Go Back'}
+      />
+
+      {/* 성공 다이얼로그 */}
+      <CustomDialog
+        isOpen={showSuccessDialog}
+        onClose={() => setShowSuccessDialog(false)}
+        type="success"
+        title={isKorean ? '구독이 취소되었습니다' : 'Subscription Cancelled'}
+        description={
+          isKorean
+            ? `${formattedDate}까지 PREMIUM 혜택을 이용할 수 있습니다.`
+            : `You can use PREMIUM benefits until ${formattedDate}.`
+        }
+        confirmText={isKorean ? '확인' : 'OK'}
+      />
+
+      {/* 에러 다이얼로그 */}
+      <CustomDialog
+        isOpen={showErrorDialog}
+        onClose={() => setShowErrorDialog(false)}
+        type="error"
+        title={isKorean ? '오류 발생' : 'Error'}
+        description={errorMessage}
+        confirmText={isKorean ? '확인' : 'OK'}
+      />
     </div>
   );
 }

@@ -1,9 +1,9 @@
 "use client"
 
 import React from "react"
-import { useRef, useState, useCallback } from "react"
+import { useRef, useState, useCallback, useEffect } from "react"
 import { motion } from "framer-motion"
-import { Camera, X, ImagePlus } from "lucide-react"
+import { Camera, X, ImagePlus, SwitchCamera } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useI18n } from "@/lib/i18n/context"
 import { cn } from "@/lib/utils"
@@ -18,8 +18,117 @@ export function CaptureScreen({ onCapture, onBack }: CaptureScreenProps) {
   const { language, t } = useI18n()
   const isKorean = language === "ko"
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
   const [preview, setPreview] = useState<string | null>(null)
   const [isCompressing, setIsCompressing] = useState(false)
+  const [isCameraActive, setIsCameraActive] = useState(false)
+  const [stream, setStream] = useState<MediaStream | null>(null)
+  const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment')
+
+  // 카메라 시작
+  const startCamera = useCallback(async () => {
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: facingMode,
+          width: { ideal: 1920 },
+          height: { ideal: 1080 }
+        }
+      })
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = mediaStream
+        setStream(mediaStream)
+        setIsCameraActive(true)
+      }
+    } catch (error) {
+      console.error('카메라 접근 실패:', error)
+      alert(isKorean ? '카메라 접근 권한이 필요합니다.' : 'Camera access is required.')
+    }
+  }, [facingMode, isKorean])
+
+  // 카메라 중지
+  const stopCamera = useCallback(() => {
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop())
+      setStream(null)
+      setIsCameraActive(false)
+    }
+  }, [stream])
+
+  // 카메라 전환
+  const switchCamera = useCallback(() => {
+    stopCamera()
+    setFacingMode(prev => prev === 'user' ? 'environment' : 'user')
+  }, [stopCamera])
+
+  // 사진 촬영
+  const capturePhoto = useCallback(async () => {
+    if (!videoRef.current || !canvasRef.current) return
+
+    const video = videoRef.current
+    const canvas = canvasRef.current
+
+    canvas.width = video.videoWidth
+    canvas.height = video.videoHeight
+
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    ctx.drawImage(video, 0, 0)
+
+    canvas.toBlob(async (blob) => {
+      if (!blob) return
+
+      try {
+        setIsCompressing(true)
+
+        // 이미지 압축
+        const options = {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 1920,
+          useWebWorker: true,
+          fileType: 'image/jpeg' as const,
+        }
+
+        const compressedFile = await imageCompression(blob as File, options)
+
+        const reader = new FileReader()
+        reader.onload = (event) => {
+          const result = event.target?.result as string
+          setPreview(result)
+          setIsCompressing(false)
+          stopCamera()
+        }
+        reader.readAsDataURL(compressedFile)
+      } catch (error) {
+        console.error('이미지 압축 실패:', error)
+        const reader = new FileReader()
+        reader.onload = (event) => {
+          const result = event.target?.result as string
+          setPreview(result)
+          setIsCompressing(false)
+          stopCamera()
+        }
+        reader.readAsDataURL(blob)
+      }
+    }, 'image/jpeg', 0.95)
+  }, [stopCamera])
+
+  // facingMode 변경 시 카메라 재시작
+  useEffect(() => {
+    if (isCameraActive) {
+      startCamera()
+    }
+  }, [facingMode])
+
+  // 컴포넌트 언마운트 시 카메라 정리
+  useEffect(() => {
+    return () => {
+      stopCamera()
+    }
+  }, [stopCamera])
 
   const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -28,18 +137,15 @@ export function CaptureScreen({ onCapture, onBack }: CaptureScreenProps) {
     try {
       setIsCompressing(true)
 
-      // 이미지 압축 옵션
       const options = {
-        maxSizeMB: 1, // 최대 1MB
-        maxWidthOrHeight: 1920, // 최대 1920px
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1920,
         useWebWorker: true,
         fileType: 'image/jpeg' as const,
       }
 
-      // 이미지 압축
       const compressedFile = await imageCompression(file, options)
-      
-      // base64로 변환
+
       const reader = new FileReader()
       reader.onload = (event) => {
         const result = event.target?.result as string
@@ -49,7 +155,6 @@ export function CaptureScreen({ onCapture, onBack }: CaptureScreenProps) {
       reader.readAsDataURL(compressedFile)
     } catch (error) {
       console.error('이미지 압축 실패:', error)
-      // 압축 실패 시 원본 사용
       const reader = new FileReader()
       reader.onload = (event) => {
         const result = event.target?.result as string
@@ -73,7 +178,10 @@ export function CaptureScreen({ onCapture, onBack }: CaptureScreenProps) {
         <Button
           variant="ghost"
           size="icon"
-          onClick={onBack}
+          onClick={() => {
+            stopCamera()
+            onBack()
+          }}
           className="text-gold hover:bg-gold/10"
         >
           <X className="w-6 h-6" />
@@ -84,7 +192,17 @@ export function CaptureScreen({ onCapture, onBack }: CaptureScreenProps) {
         )}>
           {t("capture.title")}
         </h1>
-        <div className="w-10" />
+        {isCameraActive && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={switchCamera}
+            className="text-gold hover:bg-gold/10"
+          >
+            <SwitchCamera className="w-6 h-6" />
+          </Button>
+        )}
+        {!isCameraActive && <div className="w-10" />}
       </div>
 
       {/* Camera/Preview Area */}
@@ -94,13 +212,28 @@ export function CaptureScreen({ onCapture, onBack }: CaptureScreenProps) {
           animate={{ opacity: 1, scale: 1 }}
           className="relative w-full max-w-sm aspect-square rounded-2xl overflow-hidden border-2 border-dashed border-gold/30 bg-secondary/50"
         >
-          {preview ? (
+          {/* 실시간 카메라 */}
+          {isCameraActive && !preview && (
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              muted
+              className="w-full h-full object-cover"
+            />
+          )}
+
+          {/* 촬영된 사진 미리보기 */}
+          {preview && (
             <img
-              src={preview || "/placeholder.svg"}
+              src={preview}
               alt="Food preview"
               className="w-full h-full object-cover"
             />
-          ) : (
+          )}
+
+          {/* 초기 상태 */}
+          {!isCameraActive && !preview && (
             <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
               <div className="w-20 h-20 rounded-full bg-gold/10 flex items-center justify-center mb-4">
                 <Camera className="w-10 h-10 text-gold" />
@@ -135,6 +268,9 @@ export function CaptureScreen({ onCapture, onBack }: CaptureScreenProps) {
         </p>
       </div>
 
+      {/* Hidden canvas for photo capture */}
+      <canvas ref={canvasRef} className="hidden" />
+
       {/* Bottom Actions */}
       <div className="p-6 pb-10">
         <input
@@ -145,7 +281,7 @@ export function CaptureScreen({ onCapture, onBack }: CaptureScreenProps) {
           onChange={handleFileSelect}
           className="hidden"
         />
-        
+
         {preview ? (
           <div className="flex gap-4">
             <Button
@@ -170,18 +306,54 @@ export function CaptureScreen({ onCapture, onBack }: CaptureScreenProps) {
               {t("capture.usePhoto")}
             </Button>
           </div>
-        ) : (
+        ) : isCameraActive ? (
           <div className="flex flex-col gap-3">
             <Button
-              onClick={() => fileInputRef.current?.click()}
+              onClick={capturePhoto}
               disabled={isCompressing}
               className={cn(
                 "w-full h-14 bg-gold hover:bg-gold-light text-background font-semibold text-lg",
                 isKorean && "font-[var(--font-noto-kr)] text-base"
               )}
             >
-              <ImagePlus className="w-5 h-5 mr-3" />
-              {isCompressing ? '압축 중...' : t("capture.selectPhoto")}
+              <Camera className="w-5 h-5 mr-3" />
+              {isCompressing ? (isKorean ? '처리 중...' : 'Processing...') : (isKorean ? '사진 촬영' : 'Take Photo')}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={stopCamera}
+              className={cn(
+                "w-full h-12 border-gold/40 text-gold hover:bg-gold/10",
+                isKorean && "font-[var(--font-noto-kr)]"
+              )}
+            >
+              {isKorean ? '카메라 끄기' : 'Close Camera'}
+            </Button>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-3">
+            <Button
+              onClick={startCamera}
+              disabled={isCompressing}
+              className={cn(
+                "w-full h-14 bg-gold hover:bg-gold-light text-background font-semibold text-lg",
+                isKorean && "font-[var(--font-noto-kr)] text-base"
+              )}
+            >
+              <Camera className="w-5 h-5 mr-3" />
+              {isKorean ? '카메라 켜기' : 'Open Camera'}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isCompressing}
+              className={cn(
+                "w-full h-12 border-gold/40 text-gold hover:bg-gold/10",
+                isKorean && "font-[var(--font-noto-kr)]"
+              )}
+            >
+              <ImagePlus className="w-5 h-5 mr-2" />
+              {isCompressing ? (isKorean ? '압축 중...' : 'Compressing...') : t("capture.selectPhoto")}
             </Button>
           </div>
         )}

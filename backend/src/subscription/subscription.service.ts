@@ -151,6 +151,45 @@ export class SubscriptionService {
     return { success: true, message: '구독이 취소되었습니다. 다음 갱신일부터 FREE로 변경됩니다.' };
   }
 
+  async removePaymentMethod(userId: string) {
+    // 활성 구독 확인
+    const activeSubscription = await this.prisma.subscription.findFirst({
+      where: { userId, status: 'ACTIVE' },
+    });
+
+    // 활성 구독이 있으면 먼저 취소
+    if (activeSubscription) {
+      await this.prisma.subscription.update({
+        where: { id: activeSubscription.id },
+        data: { status: 'CANCELLED' },
+      });
+
+      // 사용자 멤버십을 FREE로 변경
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: { membership: 'FREE' },
+      });
+    }
+
+    // 결제 수단 제거
+    const paymentMethod = await this.prisma.paymentMethod.findFirst({
+      where: { userId },
+    });
+
+    if (paymentMethod) {
+      await this.prisma.paymentMethod.delete({
+        where: { id: paymentMethod.id },
+      });
+    }
+
+    return { 
+      success: true, 
+      message: activeSubscription 
+        ? '구독이 취소되고 결제 수단이 제거되었습니다.' 
+        : '결제 수단이 제거되었습니다.' 
+    };
+  }
+
   /**
    * 자동 갱신 처리 (매월/매년 실행)
    */
