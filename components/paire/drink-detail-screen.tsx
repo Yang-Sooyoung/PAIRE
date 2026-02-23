@@ -18,6 +18,9 @@ interface DrinkDetailScreenProps {
     tastingNotes: string[]
     image: string
     price: string
+    foodPairings?: string[]
+    occasions?: string[]
+    tastes?: string[]
   }
   onBack: () => void
   onAddToCart: () => void
@@ -29,12 +32,134 @@ export function DrinkDetailScreen({ drink, onBack, onAddToCart }: DrinkDetailScr
   const [isWishlisted, setIsWishlisted] = useState(false)
   const [addedToCart, setAddedToCart] = useState(false)
 
-  const flavorProfile = {
-    [t("detail.sweetness")]: 30,
-    [t("detail.acidity")]: 65,
-    [t("detail.body")]: 80,
-    [t("detail.tannin")]: 70,
+  // 음료 타입별 Flavor Profile 계산
+  const calculateFlavorProfile = () => {
+    const type = drink.type.toLowerCase()
+    const tastes = drink.tastes || []
+    
+    // 기본값
+    let sweetness = 50
+    let acidity = 50
+    let body = 50
+    let tannin = 50
+    
+    // 타입별 기본 프로필
+    if (type.includes('red wine')) {
+      sweetness = 20
+      acidity = 60
+      body = 80
+      tannin = 75
+    } else if (type.includes('white wine')) {
+      sweetness = 30
+      acidity = 70
+      body = 40
+      tannin = 20
+    } else if (type.includes('sparkling')) {
+      sweetness = 40
+      acidity = 80
+      body = 30
+      tannin = 10
+    } else if (type.includes('whisky')) {
+      sweetness = 25
+      acidity = 30
+      body = 90
+      tannin = 60
+    } else if (type.includes('cocktail')) {
+      sweetness = 60
+      acidity = 50
+      body = 40
+      tannin = 10
+    } else if (type.includes('tea')) {
+      sweetness = 20
+      acidity = 40
+      body = 30
+      tannin = 50
+    } else if (type.includes('non-alcoholic')) {
+      sweetness = 50
+      acidity = 40
+      body = 20
+      tannin = 5
+    }
+    
+    // tastes 배열로 조정
+    if (tastes.includes('sweet')) sweetness += 20
+    if (tastes.includes('bitter')) {
+      sweetness -= 15
+      tannin += 15
+    }
+    if (tastes.includes('sour')) acidity += 20
+    if (tastes.includes('light')) body -= 20
+    if (tastes.includes('medium')) body = 50
+    if (tastes.includes('heavy')) body += 20
+    
+    // 0-100 범위로 제한
+    return {
+      [t("detail.sweetness")]: Math.max(0, Math.min(100, sweetness)),
+      [t("detail.acidity")]: Math.max(0, Math.min(100, acidity)),
+      [t("detail.body")]: Math.max(0, Math.min(100, body)),
+      [t("detail.tannin")]: Math.max(0, Math.min(100, tannin)),
+    }
   }
+
+  // Perfect For 아이콘 매핑
+  const getPerfectForItems = () => {
+    const occasions = drink.occasions || []
+    const foodPairings = drink.foodPairings || []
+    
+    const items = []
+    
+    // occasions 기반
+    if (occasions.includes('date')) {
+      items.push({ icon: 'sparkles', label: isKorean ? '데이트' : 'Date Night' })
+    }
+    if (occasions.includes('gathering')) {
+      items.push({ icon: 'wine', label: isKorean ? '모임' : 'Gatherings' })
+    }
+    if (occasions.includes('solo-drinking') || occasions.includes('solo-meal')) {
+      items.push({ icon: 'droplet', label: isKorean ? '혼자' : 'Solo Time' })
+    }
+    if (occasions.includes('camping')) {
+      items.push({ icon: 'sparkles', label: isKorean ? '캠핑' : 'Camping' })
+    }
+    
+    // foodPairings 기반 (occasions가 부족할 경우)
+    if (items.length < 3 && foodPairings.includes('meat')) {
+      items.push({ icon: 'droplet', label: isKorean ? '고기 요리' : 'Meat Dishes' })
+    }
+    if (items.length < 3 && foodPairings.includes('seafood')) {
+      items.push({ icon: 'wine', label: isKorean ? '해산물' : 'Seafood' })
+    }
+    if (items.length < 3 && foodPairings.includes('dessert')) {
+      items.push({ icon: 'sparkles', label: isKorean ? '디저트' : 'Desserts' })
+    }
+    
+    // 기본값 (데이터가 없을 경우)
+    if (items.length === 0) {
+      items.push(
+        { icon: 'wine', label: t("detail.fineDining") },
+        { icon: 'sparkles', label: t("detail.celebrations") },
+        { icon: 'droplet', label: isKorean ? '특별한 순간' : 'Special Moments' }
+      )
+    }
+    
+    return items.slice(0, 3) // 최대 3개
+  }
+
+  // 페어리 노트 번역
+  const translateFairyNote = (description: string) => {
+    if (!description) return ""
+    
+    // 영어 모드이고 한글 텍스트인 경우
+    if (!isKorean && /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(description)) {
+      // 간단한 번역 매핑 (실제로는 백엔드에서 처리하는 것이 좋음)
+      return "This drink pairs perfectly with your dish, creating a harmonious balance of flavors."
+    }
+    
+    return description
+  }
+
+  const flavorProfile = calculateFlavorProfile()
+  const perfectForItems = getPerfectForItems()
 
   const handleAddToCart = () => {
     setAddedToCart(true)
@@ -172,39 +297,21 @@ export function DrinkDetailScreen({ drink, onBack, onAddToCart }: DrinkDetailScr
             {t("detail.perfectFor")}
           </h3>
           <div className="flex gap-4">
-            <div className="flex flex-col items-center gap-2">
-              <div className="w-14 h-14 rounded-full bg-card border border-border flex items-center justify-center">
-                <Wine className="w-6 h-6 text-gold" />
+            {perfectForItems.map((item, index) => (
+              <div key={index} className="flex flex-col items-center gap-2">
+                <div className="w-14 h-14 rounded-full bg-card border border-border flex items-center justify-center">
+                  {item.icon === 'wine' && <Wine className="w-6 h-6 text-gold" />}
+                  {item.icon === 'sparkles' && <Sparkles className="w-6 h-6 text-gold" />}
+                  {item.icon === 'droplet' && <Droplet className="w-6 h-6 text-gold" />}
+                </div>
+                <span className={cn(
+                  "text-xs text-muted-foreground text-center",
+                  isKorean && "font-[var(--font-noto-kr)]"
+                )}>
+                  {item.label}
+                </span>
               </div>
-              <span className={cn(
-                "text-xs text-muted-foreground",
-                isKorean && "font-[var(--font-noto-kr)]"
-              )}>
-                {t("detail.fineDining")}
-              </span>
-            </div>
-            <div className="flex flex-col items-center gap-2">
-              <div className="w-14 h-14 rounded-full bg-card border border-border flex items-center justify-center">
-                <Sparkles className="w-6 h-6 text-gold" />
-              </div>
-              <span className={cn(
-                "text-xs text-muted-foreground",
-                isKorean && "font-[var(--font-noto-kr)]"
-              )}>
-                {t("detail.celebrations")}
-              </span>
-            </div>
-            <div className="flex flex-col items-center gap-2">
-              <div className="w-14 h-14 rounded-full bg-card border border-border flex items-center justify-center">
-                <Droplet className="w-6 h-6 text-gold" />
-              </div>
-              <span className={cn(
-                "text-xs text-muted-foreground",
-                isKorean && "font-[var(--font-noto-kr)]"
-              )}>
-                {t("detail.redMeat")}
-              </span>
-            </div>
+            ))}
           </div>
         </motion.div>
 
@@ -224,7 +331,7 @@ export function DrinkDetailScreen({ drink, onBack, onAddToCart }: DrinkDetailScr
             "text-muted-foreground leading-relaxed",
             isKorean && "font-[var(--font-noto-kr)] text-sm leading-relaxed"
           )}>
-            {drink.descriptionKey ? t(drink.descriptionKey) : drink.description}
+            {translateFairyNote(drink.description)}
           </p>
         </motion.div>
       </div>
