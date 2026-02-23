@@ -33,6 +33,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# capacitor native projects
+/android
+/ios
+
 # documentation (development notes)
 BACKEND_CHECKLIST.md
 COMPLETION_SUMMARY.md
