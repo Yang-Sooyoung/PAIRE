@@ -75,10 +75,15 @@ export default function PairePage() {
     setIsLoadingRecommendation(true)
     
     try {
+      // 이미지 URL 처리 (placeholder 이미지는 null로 전달)
+      const imageUrl = capturedImage && !capturedImage.includes('paire-fairy') 
+        ? capturedImage 
+        : undefined
+
       // 백엔드 API 호출
       const response = await createRecommendation(
         {
-          imageUrl: capturedImage,
+          imageUrl,
           occasion: prefs.occasion,
           tastes: prefs.tastes,
         },
@@ -90,7 +95,16 @@ export default function PairePage() {
       setScreen("recommendation")
     } catch (error: any) {
       console.error('추천 생성 실패:', error)
-      alert(error.message || '추천을 생성하는데 실패했습니다.')
+      
+      // 사용자 친화적 에러 메시지
+      let errorMessage = '추천을 생성하는데 실패했습니다.'
+      if (error.message.includes('일일 추천 한도')) {
+        errorMessage = '오늘의 무료 추천을 모두 사용했습니다. PREMIUM으로 업그레이드하시겠어요?'
+      } else if (error.message.includes('로그인')) {
+        errorMessage = '로그인이 필요한 서비스입니다.'
+      }
+      
+      alert(errorMessage)
       setScreen("preference")
     } finally {
       setIsLoadingRecommendation(false)
@@ -208,6 +222,7 @@ export default function PairePage() {
         <PreferenceScreen 
           onSubmit={handlePreferenceSubmit} 
           onBack={() => menuText ? setScreen("menu-input") : setScreen("capture")}
+          isLoading={isLoadingRecommendation}
         />
       )}
       

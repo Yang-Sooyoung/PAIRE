@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils"
 interface PreferenceScreenProps {
   onSubmit: (preferences: { occasion: string; tastes: string[] }) => void
   onBack: () => void
+  isLoading?: boolean
 }
 
 const occasionIcons = {
@@ -30,7 +31,7 @@ const tasteIcons = {
   coffee: Coffee,
 }
 
-export function PreferenceScreen({ onSubmit, onBack }: PreferenceScreenProps) {
+export function PreferenceScreen({ onSubmit, onBack, isLoading }: PreferenceScreenProps) {
   const { language, t } = useI18n()
   const isKorean = language === "ko"
   const [selectedOccasion, setSelectedOccasion] = useState<string | null>(null)
@@ -177,13 +178,13 @@ export function PreferenceScreen({ onSubmit, onBack }: PreferenceScreenProps) {
       <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-background via-background to-transparent">
         <Button
           onClick={handleSubmit}
-          disabled={!selectedOccasion}
+          disabled={!selectedOccasion || isLoading}
           className={cn(
             "w-full h-14 bg-gold hover:bg-gold-light text-background font-semibold text-lg disabled:opacity-50 disabled:cursor-not-allowed",
             isKorean && "font-[var(--font-noto-kr)] text-base"
           )}
         >
-          {t("preference.submit")}
+          {isLoading ? t("preference.loading") || "추천 생성 중..." : t("preference.submit")}
         </Button>
       </div>
     </div>
