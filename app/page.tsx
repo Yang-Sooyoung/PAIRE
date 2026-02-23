@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useUserStore } from "@/app/store/userStore"
+import { createRecommendation } from "@/app/api/recommendation"
 import { HomeScreen } from "@/components/paire/home-screen"
 import { CaptureScreen } from "@/components/paire/capture-screen"
 import { LoadingScreen } from "@/components/paire/loading-screen"
@@ -33,16 +34,19 @@ interface Drink {
 
 export default function PairePage() {
   const router = useRouter()
-  const { user } = useUserStore()
+  const { user, token } = useUserStore()
   const [screen, setScreen] = useState<Screen>("home")
   const [capturedImage, setCapturedImage] = useState<string>("")
   const [preferences, setPreferences] = useState<{ occasion: string; tastes: string[] }>({
     occasion: "",
     tastes: [],
   })
+  const [recommendedDrinks, setRecommendedDrinks] = useState<Drink[]>([])
+  const [fairyMessage, setFairyMessage] = useState<string>("")
   const [selectedDrink, setSelectedDrink] = useState<Drink | null>(null)
   const [menuText, setMenuText] = useState<string>("")
   const [isReady, setIsReady] = useState(false)
+  const [isLoadingRecommendation, setIsLoadingRecommendation] = useState(false)
 
   // 초기화 완료 후 준비
   useEffect(() => {
@@ -66,9 +70,31 @@ export default function PairePage() {
     setScreen("preference")
   }
 
-  const handlePreferenceSubmit = (prefs: { occasion: string; tastes: string[] }) => {
+  const handlePreferenceSubmit = async (prefs: { occasion: string; tastes: string[] }) => {
     setPreferences(prefs)
-    setScreen("recommendation")
+    setIsLoadingRecommendation(true)
+    
+    try {
+      // 백엔드 API 호출
+      const response = await createRecommendation(
+        {
+          imageUrl: capturedImage,
+          occasion: prefs.occasion,
+          tastes: prefs.tastes,
+        },
+        token || undefined
+      )
+
+      setRecommendedDrinks(response.recommendation.drinks)
+      setFairyMessage(response.recommendation.fairyMessage)
+      setScreen("recommendation")
+    } catch (error: any) {
+      console.error('추천 생성 실패:', error)
+      alert(error.message || '추천을 생성하는데 실패했습니다.')
+      setScreen("preference")
+    } finally {
+      setIsLoadingRecommendation(false)
+    }
   }
 
   const handleSelectDrink = (drink: Drink) => {
@@ -86,8 +112,11 @@ export default function PairePage() {
     alert("Added to cart! (Demo)")
   }
 
-  const handleRefresh = () => {
-    // In a real app, this would fetch new recommendations
+  const handleRefresh = async () => {
+    // 새로운 추천 가져오기
+    if (preferences.occasion && preferences.tastes.length > 0) {
+      await handlePreferenceSubmit(preferences)
+    }
   }
 
   const goHome = () => {
@@ -95,6 +124,8 @@ export default function PairePage() {
     setCapturedImage("")
     setMenuText("")
     setPreferences({ occasion: "", tastes: [] })
+    setRecommendedDrinks([])
+    setFairyMessage("")
     setSelectedDrink(null)
   }
 
@@ -184,6 +215,8 @@ export default function PairePage() {
         <RecommendationScreen 
           imageUrl={capturedImage}
           preferences={preferences}
+          drinks={recommendedDrinks}
+          fairyMessage={fairyMessage}
           onSelect={handleSelectDrink}
           onBack={() => setScreen("preference")}
           onRefresh={handleRefresh}

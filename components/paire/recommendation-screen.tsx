@@ -10,6 +10,8 @@ import { cn } from "@/lib/utils"
 interface RecommendationScreenProps {
   imageUrl: string
   preferences: { occasion: string; tastes: string[] }
+  drinks?: Drink[]
+  fairyMessage?: string
   onSelect: (drink: Drink) => void
   onBack: () => void
   onRefresh: () => void
@@ -19,52 +21,16 @@ interface Drink {
   id: string
   name: string
   type: string
-  typeKey: string
   description: string
-  descriptionKey: string
   tastingNotes: string[]
-  image: string
+  image: string | null
   price: string
 }
 
-const sampleDrinks: Drink[] = [
-  {
-    id: "1",
-    name: "Château Margaux 2018",
-    type: "Red Wine",
-    typeKey: "drinks.redWine",
-    description: "Your dish has deep, rich flavors. This elegant wine will gracefully carry those notes into a lingering finish.",
-    descriptionKey: "drinks.desc1",
-    tastingNotes: ["Blackcurrant", "Violet", "Cedar"],
-    image: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&h=500&fit=crop",
-    price: "$89",
-  },
-  {
-    id: "2",
-    name: "Dom Pérignon 2013",
-    type: "Champagne",
-    typeKey: "drinks.champagne",
-    description: "The subtle textures in your meal call for something that dances — light bubbles to lift every bite.",
-    descriptionKey: "drinks.desc2",
-    tastingNotes: ["Citrus", "Brioche", "Mineral"],
-    image: "https://images.unsplash.com/photo-1594372365401-3b5ff14eaaed?w=400&h=500&fit=crop",
-    price: "$245",
-  },
-  {
-    id: "3",
-    name: "Hibiki Harmony",
-    type: "Japanese Whisky",
-    typeKey: "drinks.whisky",
-    description: "When flavors are this refined, a gentle whisky adds warmth without overwhelming the palate.",
-    descriptionKey: "drinks.desc3",
-    tastingNotes: ["Honey", "Orange Peel", "White Chocolate"],
-    image: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?w=400&h=500&fit=crop",
-    price: "$75",
-  },
-]
-
 export function RecommendationScreen({
   imageUrl,
+  drinks,
+  fairyMessage,
   onSelect,
   onBack,
   onRefresh,
@@ -74,14 +40,28 @@ export function RecommendationScreen({
   const [currentIndex, setCurrentIndex] = useState(0)
   const [direction, setDirection] = useState(0)
 
-  const currentDrink = sampleDrinks[currentIndex]
+  // 실제 데이터가 없으면 빈 배열 사용
+  const displayDrinks = drinks && drinks.length > 0 ? drinks : []
+  
+  if (displayDrinks.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex items-center justify-center p-4">
+        <div className="text-center">
+          <p className="text-white text-xl mb-4">추천을 생성하는 중입니다...</p>
+          <p className="text-slate-400">잠시만 기다려주세요.</p>
+        </div>
+      </div>
+    )
+  }
+
+  const currentDrink = displayDrinks[currentIndex]
 
   const paginate = (newDirection: number) => {
     setDirection(newDirection)
     setCurrentIndex((prev) => {
       const next = prev + newDirection
-      if (next < 0) return sampleDrinks.length - 1
-      if (next >= sampleDrinks.length) return 0
+      if (next < 0) return displayDrinks.length - 1
+      if (next >= displayDrinks.length) return 0
       return next
     })
   }
