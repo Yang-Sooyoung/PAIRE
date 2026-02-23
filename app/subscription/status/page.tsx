@@ -30,13 +30,49 @@ export default function SubscriptionStatusPage() {
       try {
         const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
         
-        const response = await fetch(`${API_URL}/subscription/status`, {
+        let currentToken = token;
+        let response = await fetch(`${API_URL}/subscription/status`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
+            'Authorization': `Bearer ${currentToken}`,
           },
         });
+
+        // 401 에러인 경우 토큰 갱신 후 재시도
+        if (response.status === 401) {
+          console.log('Token expired, attempting to refresh for status check...');
+          
+          const storedRefreshToken = localStorage.getItem('refreshToken');
+          if (storedRefreshToken) {
+            try {
+              const refreshResponse = await fetch(`${API_URL}/auth/refresh`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ refreshToken: storedRefreshToken }),
+              });
+
+              if (refreshResponse.ok) {
+                const refreshData = await refreshResponse.json();
+                currentToken = refreshData.accessToken;
+                
+                localStorage.setItem('accessToken', refreshData.accessToken);
+                localStorage.setItem('refreshToken', refreshData.refreshToken);
+                
+                // 새 토큰으로 재시도
+                response = await fetch(`${API_URL}/subscription/status`, {
+                  method: 'GET',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${currentToken}`,
+                  },
+                });
+              }
+            } catch (refreshError) {
+              console.error('Token refresh failed:', refreshError);
+            }
+          }
+        }
 
         if (response.ok) {
           const data = await response.json();
@@ -45,6 +81,10 @@ export default function SubscriptionStatusPage() {
         } else if (response.status === 404) {
           // 404는 구독 정보가 없는 정상 상황
           setFetchError(false);
+        } else if (response.status === 401) {
+          // 토큰 갱신 후에도 401이면 로그인 필요
+          console.log('Authentication failed, redirecting to login');
+          setFetchError(true);
         } else {
           setFetchError(true);
         }
