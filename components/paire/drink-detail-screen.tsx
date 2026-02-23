@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { ArrowLeft, Wine, Droplet, Sparkles, ShoppingCart, Heart, Check } from "lucide-react"
+import { ArrowLeft, Wine, Droplet, Sparkles, ShoppingCart, Heart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import { useI18n } from "@/lib/i18n/context"
@@ -23,14 +23,12 @@ interface DrinkDetailScreenProps {
     tastes?: string[]
   }
   onBack: () => void
-  onAddToCart: () => void
 }
 
-export function DrinkDetailScreen({ drink, onBack, onAddToCart }: DrinkDetailScreenProps) {
+export function DrinkDetailScreen({ drink, onBack }: DrinkDetailScreenProps) {
   const { language, t } = useI18n()
   const isKorean = language === "ko"
   const [isWishlisted, setIsWishlisted] = useState(false)
-  const [addedToCart, setAddedToCart] = useState(false)
 
   // 음료 타입별 Flavor Profile 계산
   const calculateFlavorProfile = () => {
@@ -161,9 +159,10 @@ export function DrinkDetailScreen({ drink, onBack, onAddToCart }: DrinkDetailScr
   const flavorProfile = calculateFlavorProfile()
   const perfectForItems = getPerfectForItems()
 
-  const handleAddToCart = () => {
-    setAddedToCart(true)
-    onAddToCart()
+  const handlePurchase = () => {
+    // 네이버 쇼핑 검색으로 이동
+    const searchQuery = encodeURIComponent(drink.name)
+    window.open(`https://search.shopping.naver.com/search/all?query=${searchQuery}`, '_blank')
   }
 
   return (
@@ -348,24 +347,14 @@ export function DrinkDetailScreen({ drink, onBack, onAddToCart }: DrinkDetailScr
             <Heart className={`w-5 h-5 ${isWishlisted ? "fill-gold" : ""}`} />
           </Button>
           <Button
-            onClick={handleAddToCart}
-            disabled={addedToCart}
+            onClick={handlePurchase}
             className={cn(
-              "flex-1 h-14 bg-gold hover:bg-gold-light text-background font-semibold text-lg disabled:opacity-100",
+              "flex-1 h-14 bg-gold hover:bg-gold-light text-background font-semibold text-lg",
               isKorean && "font-[var(--font-noto-kr)] text-base"
             )}
           >
-            {addedToCart ? (
-              <>
-                <Check className="w-5 h-5 mr-2" />
-                {t("detail.addedToCart")}
-              </>
-            ) : (
-              <>
-                <ShoppingCart className="w-5 h-5 mr-2" />
-                {t("detail.addToCart")}
-              </>
-            )}
+            <ShoppingCart className="w-5 h-5 mr-2" />
+            {isKorean ? '구매하기' : 'Buy Now'}
           </Button>
         </div>
       </div>

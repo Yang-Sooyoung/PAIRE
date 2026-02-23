@@ -158,10 +158,6 @@ export default function PairePage() {
     setScreen("preference")
   }
 
-  const handleAddToCart = () => {
-    alert("Added to cart! (Demo)")
-  }
-
   const handleRefresh = async () => {
     // 새로운 추천 가져오기
     if (preferences.occasion && preferences.tastes.length > 0) {
@@ -278,7 +274,6 @@ export default function PairePage() {
         <DrinkDetailScreen
           drink={selectedDrink}
           onBack={() => setScreen("recommendation")}
-          onAddToCart={handleAddToCart}
         />
       )}
 
