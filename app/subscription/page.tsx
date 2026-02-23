@@ -7,6 +7,7 @@ import { useUserStore } from '@/app/store/userStore';
 import { PLANS, type Plan } from './constants/subscriptionPlans';
 import { loadTossPayments } from '@tosspayments/sdk';
 import { Button } from '@/components/ui/button';
+import { CustomDialog } from '@/components/ui/custom-dialog';
 import { useRouter } from 'next/navigation';
 import { Check, ArrowLeft } from 'lucide-react';
 import { PaymentMethodCard } from '@/components/subscription/PaymentMethodCard';
@@ -23,6 +24,12 @@ export default function SubscriptionPage() {
   const [selectedPlan] = useState<Plan>(PLANS[0]);
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
   const [loading, setLoading] = useState(false);
+  const [showDialog, setShowDialog] = useState(false);
+  const [dialogConfig, setDialogConfig] = useState<{ type: 'info' | 'success' | 'warning' | 'error' | 'confirm', title: string, description: string }>({ 
+    type: 'info', 
+    title: '', 
+    description: '' 
+  });
   const router = useRouter();
 
   const getPlanPrice = (plan: Plan) => {
@@ -156,15 +163,37 @@ export default function SubscriptionPage() {
       });
     } catch (error) {
       console.error(error);
-      alert('결제 수단 등록 중 오류가 발생했습니다.');
+      setDialogConfig({
+        type: 'error',
+        title: '등록 실패',
+        description: '결제 수단 등록 중 오류가 발생했습니다.',
+      });
+      setShowDialog(true);
     } finally {
       setLoading(false);
     }
   };
 
   const handleSubscribe = async () => {
-    if (!user || !token) return alert('로그인 필요');
-    if (!methodRegistered && !billingKey) return alert('결제수단을 먼저 등록하세요.');
+    if (!user || !token) {
+      setDialogConfig({
+        type: 'warning',
+        title: '로그인 필요',
+        description: '로그인이 필요한 서비스입니다.',
+      });
+      setShowDialog(true);
+      return;
+    }
+    
+    if (!methodRegistered && !billingKey) {
+      setDialogConfig({
+        type: 'warning',
+        title: '결제수단 등록 필요',
+        description: '결제수단을 먼저 등록해주세요.',
+      });
+      setShowDialog(true);
+      return;
+    }
 
     try {
       setLoading(true);
@@ -188,11 +217,21 @@ export default function SubscriptionPage() {
         setUser({ ...user, membership: 'PREMIUM' });
         router.push('/subscription/success');
       } else {
-        alert(res.data?.message ?? '구독 생성 실패');
+        setDialogConfig({
+          type: 'error',
+          title: '구독 생성 실패',
+          description: res.data?.message ?? '구독 생성에 실패했습니다.',
+        });
+        setShowDialog(true);
       }
     } catch (err: any) {
       console.error('subscribe error', err?.response?.data ?? err?.message);
-      alert(err?.response?.data?.message ?? err?.message ?? '구독 요청 실패');
+      setDialogConfig({
+        type: 'error',
+        title: '구독 요청 실패',
+        description: err?.response?.data?.message ?? err?.message ?? '구독 요청에 실패했습니다.',
+      });
+      setShowDialog(true);
     } finally {
       setLoading(false);
     }
@@ -364,6 +403,16 @@ export default function SubscriptionPage() {
           </button>
         </div>
       </div>
+
+      {/* Custom Dialog */}
+      <CustomDialog
+        isOpen={showDialog}
+        onClose={() => setShowDialog(false)}
+        type={dialogConfig.type}
+        title={dialogConfig.title}
+        description={dialogConfig.description}
+        confirmText="확인"
+      />
     </div>
   );
 }

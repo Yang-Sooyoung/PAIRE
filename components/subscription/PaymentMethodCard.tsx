@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { CreditCard, Trash2 } from 'lucide-react';
+import { CustomDialog } from '@/components/ui/custom-dialog';
 import axios from 'axios';
 import { useUserStore } from '@/app/store/userStore';
 import { useRouter } from 'next/navigation';
@@ -14,25 +15,24 @@ interface PaymentMethodCardProps {
     onRemoved: () => void;
 }
 
-export function PaymentMethodCard({ billingKey, token, onRemoved }: PaymentMethodCardProps) {
+export function PaymentMethodCard({ billingKey, token }: PaymentMethodCardProps) {
     const [loading, setLoading] = useState(false);
+    const [showConfirm, setShowConfirm] = useState(false);
+    const [showSuccess, setShowSuccess] = useState(false);
+    const [showError, setShowError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const { refreshTokenIfNeeded } = useUserStore();
     const router = useRouter();
 
     const handleRemove = async () => {
-        if (!confirm('결제 수단을 제거하시겠습니까? 구독이 취소됩니다.')) {
-            return;
-        }
-
         try {
             setLoading(true);
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
             let currentToken = token;
-            let response;
 
             try {
-                response = await axios.post(
+                await axios.post(
                     `${apiUrl}/subscription/remove-method`,
                     {},
                     {
@@ -47,7 +47,7 @@ export function PaymentMethodCard({ billingKey, token, onRemoved }: PaymentMetho
 
                     if (newToken) {
                         currentToken = newToken;
-                        response = await axios.post(
+                        await axios.post(
                             `${apiUrl}/subscription/remove-method`,
                             {},
                             {
@@ -64,41 +64,76 @@ export function PaymentMethodCard({ billingKey, token, onRemoved }: PaymentMetho
                 }
             }
 
-            alert('결제 수단이 제거되었습니다.');
-            
-            // 페이지 새로고침으로 상태 업데이트
-            window.location.reload();
+            setShowSuccess(true);
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
         } catch (error: any) {
             console.error('결제 수단 제거 실패:', error);
-            alert(error.response?.data?.message || '결제 수단 제거에 실패했습니다.');
+            setErrorMessage(error.response?.data?.message || '결제 수단 제거에 실패했습니다.');
+            setShowError(true);
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="bg-secondary border border-border rounded-lg p-6">
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gold/10 rounded-full flex items-center justify-center">
-                        <CreditCard className="w-6 h-6 text-gold" />
+        <>
+            <div className="bg-secondary border border-border rounded-lg p-6">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-gold/10 rounded-full flex items-center justify-center">
+                            <CreditCard className="w-6 h-6 text-gold" />
+                        </div>
+                        <div>
+                            <p className="text-foreground font-medium">등록된 결제 수단</p>
+                            <p className="text-muted-foreground text-sm">카드 •••• {billingKey.slice(-4)}</p>
+                        </div>
                     </div>
-                    <div>
-                        <p className="text-foreground font-medium">등록된 결제 수단</p>
-                        <p className="text-muted-foreground text-sm">카드 •••• {billingKey.slice(-4)}</p>
-                    </div>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowConfirm(true)}
+                        disabled={loading}
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                    >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        제거
+                    </Button>
                 </div>
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleRemove}
-                    disabled={loading}
-                    className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                >
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    제거
-                </Button>
             </div>
-        </div>
+
+            {/* Confirm Dialog */}
+            <CustomDialog
+                isOpen={showConfirm}
+                onClose={() => setShowConfirm(false)}
+                onConfirm={handleRemove}
+                type="confirm"
+                title="결제 수단을 제거하시겠어요?"
+                description="결제 수단을 제거하면 구독이 취소됩니다. 계속하시겠습니까?"
+                confirmText="제거"
+                cancelText="취소"
+            />
+
+            {/* Success Dialog */}
+            <CustomDialog
+                isOpen={showSuccess}
+                onClose={() => setShowSuccess(false)}
+                type="success"
+                title="제거 완료"
+                description="결제 수단이 성공적으로 제거되었습니다."
+                confirmText="확인"
+            />
+
+            {/* Error Dialog */}
+            <CustomDialog
+                isOpen={showError}
+                onClose={() => setShowError(false)}
+                type="error"
+                title="제거 실패"
+                description={errorMessage}
+                confirmText="확인"
+            />
+        </>
     );
 }
