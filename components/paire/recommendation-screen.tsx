@@ -112,6 +112,37 @@ export function RecommendationScreen({
   // 실제 데이터가 없으면 빈 배열 사용
   const displayDrinks = drinks && drinks.length > 0 ? drinks : []
   
+  // 페어리 메시지 번역 (백엔드에서 한글로 오는 경우 영어로 변환)
+  const translateFairyMessage = (message: string) => {
+    if (!message) return ""
+    
+    // 이미 영어인 경우 그대로 반환
+    if (!isKorean && /^[a-zA-Z\s.,!?'-]+$/.test(message)) {
+      return message
+    }
+    
+    // 한글 메시지를 영어로 번역하는 매핑
+    const messageTranslations: Record<string, string> = {
+      "이 음식과 완벽하게 어울리는 음료를 찾았어요!": "I found the perfect drink to pair with your dish!",
+      "오늘의 분위기에 딱 맞는 추천이에요.": "This is the perfect recommendation for today's mood.",
+      "당신의 취향을 고려해서 골랐어요.": "I chose this considering your preferences.",
+      "특별한 순간을 더 특별하게 만들어줄 거예요.": "This will make your special moment even more special.",
+      "이 조합은 정말 환상적이에요!": "This combination is absolutely fantastic!",
+    }
+    
+    // 정확히 일치하는 번역이 있으면 사용
+    if (!isKorean && messageTranslations[message]) {
+      return messageTranslations[message]
+    }
+    
+    // 기본 메시지
+    if (!isKorean) {
+      return "I found the perfect drink to pair with your dish!"
+    }
+    
+    return message
+  }
+  
   if (displayDrinks.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex items-center justify-center p-4">
@@ -218,7 +249,7 @@ export function RecommendationScreen({
             "text-foreground text-sm leading-relaxed",
             isKorean && "font-[var(--font-noto-kr)] text-xs leading-relaxed"
           )}>
-            {fairyMessage || currentDrink.description || t("recommendation.defaultMessage")}
+            {translateFairyMessage(fairyMessage || currentDrink.description || t("recommendation.defaultMessage"))}
           </p>
         </div>
       </motion.div>
@@ -237,13 +268,13 @@ export function RecommendationScreen({
             className="bg-card rounded-2xl border border-border overflow-hidden"
           >
             {/* Drink Image */}
-            <div className="relative h-64 bg-secondary">
+            <div className="relative h-48 bg-secondary">
               <img
                 src={currentDrink.image || "/placeholder.svg"}
                 alt={currentDrink.name}
-                className="w-full h-full object-contain"
+                className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-card/80 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
             </div>
 
             {/* Drink Info */}

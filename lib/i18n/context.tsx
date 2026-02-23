@@ -135,6 +135,7 @@ const translations = {
       title: "Fairy's Pick",
       seeOther: "See Other Picks",
       selectThis: "Select This",
+      defaultMessage: "I found the perfect drink to pair with your dish!",
     },
     detail: {
       tastingNotes: "Tasting Notes",
@@ -311,6 +312,7 @@ const translations = {
       title: "요정의 추천",
       seeOther: "다른 추천 보기",
       selectThis: "이걸로 할게요",
+      defaultMessage: "이 음식과 완벽하게 어울리는 음료를 찾았어요!",
     },
     detail: {
       tastingNotes: "테이스팅 노트",
