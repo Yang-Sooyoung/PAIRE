@@ -21,8 +21,8 @@ export default function SubscriptionPage() {
 
   const getPlanPrice = (plan: Plan) => {
     return billingPeriod === 'yearly'
-        ? plan.priceYearly
-        : plan.priceMonthly;
+      ? plan.priceYearly
+      : plan.priceMonthly;
   };
 
   useEffect(() => {
@@ -111,97 +111,95 @@ export default function SubscriptionPage() {
   };
 
   return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-slate-900 to-slate-800 px-4 py-12">
-        <div className="w-full max-w-2xl">
-          {/* 헤더 */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-light text-white mb-2">PREMIUM 구독</h1>
-            <p className="text-slate-400">무제한 음료 추천으로 매 순간을 특별하게</p>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-slate-900 to-slate-800 px-4 py-12">
+      <div className="w-full max-w-2xl">
+        {/* 헤더 */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-light text-white mb-2">PREMIUM 구독</h1>
+          <p className="text-slate-400">무제한 음료 추천으로 매 순간을 특별하게</p>
+        </div>
+
+        {/* 플랜 카드 */}
+        <div className="bg-slate-800 border border-slate-700 rounded-lg p-8 mb-8">
+          <div className="flex justify-between items-start mb-6">
+            <div>
+              <h2 className="text-2xl font-light text-white mb-2">{selectedPlan.title}</h2>
+              <p className="text-slate-400">{selectedPlan.description}</p>
+            </div>
           </div>
 
-          {/* 플랜 카드 */}
-          <div className="bg-slate-800 border border-slate-700 rounded-lg p-8 mb-8">
-            <div className="flex justify-between items-start mb-6">
-              <div>
-                <h2 className="text-2xl font-light text-white mb-2">{selectedPlan.title}</h2>
-                <p className="text-slate-400">{selectedPlan.description}</p>
-              </div>
-            </div>
-
-            {/* 가격 선택 */}
-            <div className="flex gap-4 mb-8">
-              <button
-                  onClick={() => setBillingPeriod('monthly')}
-                  className={`flex-1 py-3 px-4 rounded-lg transition ${
-                      billingPeriod === 'monthly'
-                          ? 'bg-amber-600 text-white'
-                          : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                  }`}
-              >
-                <div className="font-semibold">월간</div>
-                <div className="text-sm">₩{selectedPlan.priceMonthly.toLocaleString()}</div>
-              </button>
-              <button
-                  onClick={() => setBillingPeriod('yearly')}
-                  className={`flex-1 py-3 px-4 rounded-lg transition ${
-                      billingPeriod === 'yearly'
-                          ? 'bg-amber-600 text-white'
-                          : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                  }`}
-              >
-                <div className="font-semibold">연간</div>
-                <div className="text-sm">₩{selectedPlan.priceYearly.toLocaleString()}</div>
-              </button>
-            </div>
-
-            {/* 기능 목록 */}
-            <div className="space-y-3 mb-8">
-              {selectedPlan.features.map((feature, idx) => (
-                  <div key={idx} className="flex items-center gap-3 text-slate-300">
-                    <Check className="w-5 h-5 text-amber-500 flex-shrink-0" />
-                    <span>{feature}</span>
-                  </div>
-              ))}
-            </div>
-
-            {/* 결제 수단 */}
-            <div className="mb-8 pb-8 border-b border-slate-700">
-              <h3 className="text-sm font-semibold text-slate-300 mb-3">결제 수단</h3>
-              {methodRegistered ? (
-                  <div className="text-slate-400 text-sm">
-                    ✓ 등록된 결제수단: **** **** **** {billingKey.slice(-4)}
-                  </div>
-              ) : (
-                  <Button
-                      onClick={handleRegisterBilling}
-                      disabled={loading}
-                      className="w-full bg-slate-700 hover:bg-slate-600 text-white"
-                  >
-                    {loading ? '등록 중...' : '결제수단 등록'}
-                  </Button>
-              )}
-            </div>
-
-            {/* 구독 버튼 */}
-            <Button
-                onClick={handleSubscribe}
-                disabled={loading || !methodRegistered}
-                className="w-full bg-amber-600 hover:bg-amber-700 text-white py-3 text-lg font-semibold"
-            >
-              {loading ? '처리 중...' : `구독하기 — ₩${getPlanPrice(selectedPlan).toLocaleString()}`}
-            </Button>
-          </div>
-
-          {/* 취소 버튼 */}
-          <div className="text-center">
+          {/* 가격 선택 */}
+          <div className="flex gap-4 mb-8">
             <button
-                onClick={() => router.back()}
-                className="text-slate-400 hover:text-slate-300 transition"
+              onClick={() => setBillingPeriod('monthly')}
+              className={`flex-1 py-3 px-4 rounded-lg transition ${billingPeriod === 'monthly'
+                  ? 'bg-amber-600 text-white'
+                  : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                }`}
             >
-              돌아가기
+              <div className="font-semibold">월간</div>
+              <div className="text-sm">₩{selectedPlan.priceMonthly.toLocaleString()}</div>
+            </button>
+            <button
+              onClick={() => setBillingPeriod('yearly')}
+              className={`flex-1 py-3 px-4 rounded-lg transition ${billingPeriod === 'yearly'
+                  ? 'bg-amber-600 text-white'
+                  : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                }`}
+            >
+              <div className="font-semibold">연간</div>
+              <div className="text-sm">₩{selectedPlan.priceYearly.toLocaleString()}</div>
             </button>
           </div>
+
+          {/* 기능 목록 */}
+          <div className="space-y-3 mb-8">
+            {selectedPlan.features.map((feature, idx) => (
+              <div key={idx} className="flex items-center gap-3 text-slate-300">
+                <Check className="w-5 h-5 text-amber-500 flex-shrink-0" />
+                <span>{feature}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* 결제 수단 */}
+          <div className="mb-8 pb-8 border-b border-slate-700">
+            <h3 className="text-sm font-semibold text-slate-300 mb-3">결제 수단</h3>
+            {methodRegistered ? (
+              <div className="text-slate-400 text-sm">
+                ✓ 등록된 결제수단: **** **** **** {billingKey.slice(-4)}
+              </div>
+            ) : (
+              <Button
+                onClick={handleRegisterBilling}
+                disabled={loading}
+                className="w-full bg-slate-700 hover:bg-slate-600 text-white"
+              >
+                {loading ? '등록 중...' : '결제수단 등록'}
+              </Button>
+            )}
+          </div>
+
+          {/* 구독 버튼 */}
+          <Button
+            onClick={handleSubscribe}
+            disabled={loading || !methodRegistered}
+            className="w-full bg-amber-600 hover:bg-amber-700 text-white py-3 text-lg font-semibold"
+          >
+            {loading ? '처리 중...' : `구독하기 — ₩${getPlanPrice(selectedPlan).toLocaleString()}`}
+          </Button>
+        </div>
+
+        {/* 취소 버튼 */}
+        <div className="text-center">
+          <button
+            onClick={() => router.back()}
+            className="text-slate-400 hover:text-slate-300 transition"
+          >
+            돌아가기
+          </button>
         </div>
       </div>
+    </div>
   );
 }
