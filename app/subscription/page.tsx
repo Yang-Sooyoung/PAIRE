@@ -39,7 +39,9 @@ export default function SubscriptionPage() {
 
     (async () => {
       try {
-        const r = await axios.get('/api/subscription/methods', {
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+        
+        const r = await axios.get(`${API_URL}/subscription/methods`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -85,6 +87,7 @@ export default function SubscriptionPage() {
 
     try {
       setLoading(true);
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
       const priceNumber = Number(getPlanPrice(selectedPlan));
       const interval = billingPeriod === 'monthly' ? 'MONTHLY' : 'ANNUALLY';
 
@@ -96,7 +99,7 @@ export default function SubscriptionPage() {
         billingKey,
       };
 
-      const res = await axios.post('/api/subscription/create', payload, {
+      const res = await axios.post(`${API_URL}/subscription/create`, payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
