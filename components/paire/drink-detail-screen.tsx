@@ -3,6 +3,7 @@
 import { motion } from "framer-motion"
 import { ArrowLeft, Wine, Droplet, Sparkles, ShoppingCart, Heart } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { CustomDialog } from "@/components/ui/custom-dialog"
 import { useState, useEffect } from "react"
 import { useI18n } from "@/lib/i18n/context"
 import { cn } from "@/lib/utils"
@@ -33,6 +34,17 @@ export function DrinkDetailScreen({ drink, onBack }: DrinkDetailScreenProps) {
   const { user } = useUserStore()
   const [isWishlisted, setIsWishlisted] = useState(false)
   const [isLoadingFavorite, setIsLoadingFavorite] = useState(false)
+  const [showDialog, setShowDialog] = useState(false)
+  const [dialogConfig, setDialogConfig] = useState<{
+    type: 'info' | 'success' | 'warning' | 'error' | 'confirm'
+    title: string
+    description: string
+    onConfirm?: () => void
+  }>({
+    type: 'info',
+    title: '',
+    description: '',
+  })
 
   // 즐겨찾기 상태 확인
   useEffect(() => {
@@ -57,26 +69,40 @@ export function DrinkDetailScreen({ drink, onBack }: DrinkDetailScreenProps) {
   // 즐겨찾기 토글
   const handleToggleFavorite = async () => {
     if (!user) {
-      alert(isKorean ? '로그인이 필요합니다.' : 'Please login first.')
+      setDialogConfig({
+        type: 'warning',
+        title: isKorean ? '로그인 필요' : 'Login Required',
+        description: isKorean ? '로그인이 필요합니다.' : 'Please login first.',
+      })
+      setShowDialog(true)
       return
     }
 
     // 최신 토큰 가져오기
     const currentToken = useUserStore.getState().token
     if (!currentToken) {
-      alert(isKorean ? '로그인이 필요합니다.' : 'Please login first.')
+      setDialogConfig({
+        type: 'warning',
+        title: isKorean ? '로그인 필요' : 'Login Required',
+        description: isKorean ? '로그인이 필요합니다.' : 'Please login first.',
+      })
+      setShowDialog(true)
       return
     }
 
     if (user.membership !== 'PREMIUM') {
-      const confirmUpgrade = confirm(
-        isKorean
+      setDialogConfig({
+        type: 'confirm',
+        title: isKorean ? 'PREMIUM 전용 기능' : 'PREMIUM Feature',
+        description: isKorean
           ? '즐겨찾기는 PREMIUM 멤버만 이용할 수 있습니다.\n업그레이드 하시겠어요?'
-          : 'Favorites are available for PREMIUM members only.\nWould you like to upgrade?'
-      )
-      if (confirmUpgrade) {
-        window.location.href = '/subscription'
-      }
+          : 'Favorites are available for PREMIUM members only.\nWould you like to upgrade?',
+        onConfirm: () => {
+          setShowDialog(false)
+          window.location.href = '/subscription'
+        }
+      })
+      setShowDialog(true)
       return
     }
 
@@ -90,7 +116,12 @@ export function DrinkDetailScreen({ drink, onBack }: DrinkDetailScreenProps) {
         setIsWishlisted(true)
       }
     } catch (error: any) {
-      alert(error.message || (isKorean ? '오류가 발생했습니다.' : 'An error occurred.'))
+      setDialogConfig({
+        type: 'error',
+        title: isKorean ? '오류' : 'Error',
+        description: error.message || (isKorean ? '오류가 발생했습니다.' : 'An error occurred.'),
+      })
+      setShowDialog(true)
     } finally {
       setIsLoadingFavorite(false)
     }
@@ -426,6 +457,18 @@ export function DrinkDetailScreen({ drink, onBack }: DrinkDetailScreenProps) {
           </Button>
         </div>
       </div>
+
+      {/* Custom Dialog */}
+      <CustomDialog
+        isOpen={showDialog}
+        onClose={() => setShowDialog(false)}
+        type={dialogConfig.type}
+        title={dialogConfig.title}
+        description={dialogConfig.description}
+        confirmText={dialogConfig.type === 'confirm' ? (isKorean ? '확인' : 'Confirm') : undefined}
+        cancelText={dialogConfig.type === 'confirm' ? (isKorean ? '취소' : 'Cancel') : undefined}
+        onConfirm={dialogConfig.onConfirm}
+      />
     </div>
   )
 }
