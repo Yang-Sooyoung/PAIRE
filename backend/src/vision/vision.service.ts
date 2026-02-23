@@ -7,7 +7,25 @@ export class VisionService {
   private client: vision.ImageAnnotatorClient;
 
   constructor() {
-    // service-account-key.json 경로 설정
+    // Railway 환경에서는 환경 변수로 credentials 설정
+    if (process.env.GOOGLE_CREDENTIALS_JSON) {
+      try {
+        const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON);
+        this.client = new vision.ImageAnnotatorClient({
+          credentials,
+        });
+        console.log('Vision API initialized with JSON credentials');
+      } catch (error) {
+        console.error('Failed to parse GOOGLE_CREDENTIALS_JSON:', error);
+        // Fallback to file
+        this.initializeWithFile();
+      }
+    } else {
+      this.initializeWithFile();
+    }
+  }
+
+  private initializeWithFile() {
     const keyPath = process.env.GOOGLE_APPLICATION_CREDENTIALS ||
       path.join(process.cwd(), 'service-account-key.json');
 
