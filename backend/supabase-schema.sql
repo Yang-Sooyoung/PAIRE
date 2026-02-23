@@ -1,0 +1,93 @@
+-- PAIRÉ Database Schema for Supabase
+
+-- Create enum types
+CREATE TYPE "Membership" AS ENUM ('FREE', 'PREMIUM');
+CREATE TYPE "BillingInterval" AS ENUM ('MONTHLY', 'ANNUALLY');
+CREATE TYPE "SubscriptionStatus" AS ENUM ('ACTIVE', 'CANCELLED', 'FAILED');
+CREATE TYPE "PaymentStatus" AS ENUM ('PENDING', 'COMPLETED', 'FAILED', 'CANCELLED');
+
+-- Users table
+CREATE TABLE "users" (
+    "id" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "username" TEXT NOT NULL,
+    "nickname" TEXT,
+    "membership" "Membership" NOT NULL DEFAULT 'FREE',
+    "roles" TEXT[] DEFAULT ARRAY['USER']::TEXT[],
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "users_pkey" PRIMARY KEY ("id")
+);
+
+-- Subscriptions table
+CREATE TABLE "subscriptions" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "membership" "Membership" NOT NULL,
+    "interval" "BillingInterval" NOT NULL,
+    "price" INTEGER NOT NULL,
+    "billingKey" TEXT NOT NULL,
+    "nextBillingDate" TIMESTAMP(3) NOT NULL,
+    "status" "SubscriptionStatus" NOT NULL DEFAULT 'ACTIVE',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "subscriptions_pkey" PRIMARY KEY ("id")
+);
+
+-- Recommendations table
+CREATE TABLE "recommendations" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT,
+    "imageUrl" TEXT,
+    "occasion" TEXT NOT NULL,
+    "tastes" TEXT[],
+    "drinks" JSONB NOT NULL,
+    "fairyMessage" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "recommendations_pkey" PRIMARY KEY ("id")
+);
+
+-- Payments table
+CREATE TABLE "payments" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "paymentKey" TEXT NOT NULL,
+    "orderId" TEXT NOT NULL,
+    "amount" INTEGER NOT NULL,
+    "status" "PaymentStatus" NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "payments_pkey" PRIMARY KEY ("id")
+);
+
+-- Drinks table
+CREATE TABLE "drinks" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "type" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "tastingNotes" TEXT[],
+    "image" TEXT,
+    "price" TEXT NOT NULL,
+    "foodPairings" TEXT[],
+    "occasions" TEXT[],
+    "tastes" TEXT[],
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "drinks_pkey" PRIMARY KEY ("id")
+);
+
+-- Create unique indexes
+CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+CREATE UNIQUE INDEX "payments_paymentKey_key" ON "payments"("paymentKey");
+CREATE UNIQUE INDEX "payments_orderId_key" ON "payments"("orderId");
+
+-- Add foreign key constraints
+ALTER TABLE "subscriptions" ADD CONSTRAINT "subscriptions_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "recommendations" ADD CONSTRAINT "recommendations_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;

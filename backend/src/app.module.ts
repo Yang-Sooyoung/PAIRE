@@ -8,6 +8,7 @@ import { SubscriptionModule } from './subscription/subscription.module';
 import { PaymentModule } from './payment/payment.module';
 import { VisionModule } from './vision/vision.module';
 import { TossModule } from './toss/toss.module';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -23,5 +24,6 @@ import { TossModule } from './toss/toss.module';
     VisionModule,
     TossModule,
   ],
+  controllers: [AppController],
 })
-export class AppModule {}
+export class AppModule { }
