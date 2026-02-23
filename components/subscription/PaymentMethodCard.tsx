@@ -65,7 +65,9 @@ export function PaymentMethodCard({ billingKey, token, onRemoved }: PaymentMetho
             }
 
             alert('결제 수단이 제거되었습니다.');
-            onRemoved();
+            
+            // 페이지 새로고침으로 상태 업데이트
+            window.location.reload();
         } catch (error: any) {
             console.error('결제 수단 제거 실패:', error);
             alert(error.response?.data?.message || '결제 수단 제거에 실패했습니다.');
