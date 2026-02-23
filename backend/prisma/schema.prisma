@@ -1,0 +1,129 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============ Users ============
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  username  String
+  nickname  String?
+  membership Membership @default(FREE)
+  roles     String[] @default(["USER"])
+  
+  // Relations
+  subscriptions Subscription[]
+  recommendations Recommendation[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("users")
+}
+
+enum Membership {
+  FREE
+  PREMIUM
+}
+
+// ============ Subscriptions ============
+model Subscription {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  membership Membership
+  interval  BillingInterval
+  price     Int
+  billingKey String
+  
+  nextBillingDate DateTime
+  status    SubscriptionStatus @default(ACTIVE)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("subscriptions")
+}
+
+enum BillingInterval {
+  MONTHLY
+  ANNUALLY
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  FAILED
+}
+
+// ============ Recommendations ============
+model Recommendation {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  
+  imageUrl  String?
+  occasion  String
+  tastes    String[]
+  drinks    Json     // Array of drink objects
+  fairyMessage String?
+  
+  createdAt DateTime @default(now())
+  
+  @@map("recommendations")
+}
+
+// ============ Payments ============
+model Payment {
+  id        String   @id @default(cuid())
+  userId    String
+  
+  paymentKey String @unique
+  orderId   String @unique
+  amount    Int
+  status    PaymentStatus
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("payments")
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+// ============ Drinks ============
+model Drink {
+  id        String   @id @default(cuid())
+  name      String
+  type      String   // sparkling, red wine, white wine, tea, non-alcoholic, etc.
+  description String
+  tastingNotes String[] // fruity, elegant, light, etc.
+  image     String?
+  price     String
+  
+  // Pairing info
+  foodPairings String[] // seafood, meat, pasta, cheese, etc.
+  occasions String[]   // date, solo-drinking, camping, gathering, solo-meal
+  tastes    String[]   // sweet, bitter, sour, light, medium, heavy
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("drinks")
+}
+
