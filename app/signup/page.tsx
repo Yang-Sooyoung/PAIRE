@@ -26,6 +26,11 @@ export default function SignUpPage() {
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const handleOAuthLogin = (provider: 'google' | 'kakao') => {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+    window.location.href = `${API_URL}/auth/${provider}`;
+  };
+
   const handleStep1Submit = (e: React.FormEvent) => {
     e.preventDefault();
     if (email && password) {

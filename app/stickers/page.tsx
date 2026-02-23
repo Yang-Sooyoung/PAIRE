@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUserStore } from '@/app/store/userStore';
+import { getUserStickers, checkAndUnlockStickers } from '@/app/api/sticker';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Sparkles, Lock } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/context';
@@ -134,14 +135,36 @@ export default function StickersPage() {
       return;
     }
 
-    // TODO: 백엔드에서 잠금 해제된 스티커 가져오기
-    // 임시로 첫 추천과 프리미엄 멤버 스티커만 해제
-    const mockUnlocked = ['first-recommendation'];
-    if (user.membership === 'PREMIUM') {
-      mockUnlocked.push('premium-member');
-    }
-    setUnlockedStickers(mockUnlocked);
-    setLoading(false);
+    const fetchStickers = async () => {
+      try {
+        // 최신 토큰 가져오기
+        const currentToken = useUserStore.getState().token;
+        if (!currentToken) {
+          router.push('/login');
+          return;
+        }
+
+        // 스티커 체크 및 잠금 해제
+        await checkAndUnlockStickers(currentToken);
+
+        // 스티커 목록 가져오기
+        const response = await getUserStickers(currentToken);
+        const unlockedIds = response.stickers.map((s: any) => s.id);
+        setUnlockedStickers(unlockedIds);
+      } catch (error: any) {
+        console.error('Failed to fetch stickers:', error);
+        // 에러 발생 시 임시 데이터 사용
+        const mockUnlocked = ['first-recommendation'];
+        if (user.membership === 'PREMIUM') {
+          mockUnlocked.push('premium-member');
+        }
+        setUnlockedStickers(mockUnlocked);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStickers();
   }, [user, router]);
 
   if (loading) {
