@@ -1,0 +1,41 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files
+.env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# documentation (development notes)
+BACKEND_CHECKLIST.md
+COMPLETION_SUMMARY.md
+CURRENT_STATUS.md
+FINAL_STATUS.md
+IMPLEMENTATION_NOTES.md
+PRIORITY_ROADMAP.md
+QUICK_START.md
+SETUP_GUIDE.md
+STORE_COMPLIANCE.md
+BACKEND_INTEGRATION_GUIDE.md
+FINAL_BACKEND_STATUS.md
+DRINKS_DATABASE_COMPLETE.md
