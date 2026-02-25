@@ -294,7 +294,7 @@ export default function SubscriptionPage() {
         return;
       }
 
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 
       const response = await fetch(`${API_URL}/credit/purchase`, {
         method: 'POST',
@@ -306,6 +306,41 @@ export default function SubscriptionPage() {
       });
 
       if (!response.ok) {
+        // 401 에러면 토큰 갱신 시도
+        if (response.status === 401) {
+          const newToken = await refreshTokenIfNeeded();
+          if (newToken) {
+            // 재시도
+            const retryResponse = await fetch(`${API_URL}/credit/purchase`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${newToken}`,
+              },
+              body: JSON.stringify({ packageType: pkg.id }),
+            });
+
+            if (!retryResponse.ok) {
+              throw new Error('구매 생성 실패');
+            }
+
+            const { orderId, amount, orderName } = await retryResponse.json();
+
+            const tossPayments = await loadTossPayments(process.env.NEXT_PUBLIC_TOSS_TEST_CLIENT_KEY!);
+
+            await tossPayments.requestPayment('카드', {
+              amount,
+              orderId,
+              orderName,
+              successUrl: `${window.location.origin}/credit/success`,
+              failUrl: `${window.location.origin}/credit/fail`,
+            });
+            return;
+          } else {
+            router.push('/login');
+            return;
+          }
+        }
         throw new Error('구매 생성 실패');
       }
 

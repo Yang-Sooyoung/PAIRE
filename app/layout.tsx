@@ -1,7 +1,6 @@
 import React from "react"
 import type { Metadata, Viewport } from 'next'
 import { Cormorant_Garamond, Noto_Sans_KR } from 'next/font/google'
-import { Analytics } from '@vercel/analytics/next'
 import { I18nProvider } from "@/lib/i18n/context"
 import './globals.css'
 
@@ -59,7 +58,6 @@ export default function RootLayout({
         <I18nProvider>
           {children}
         </I18nProvider>
-        <Analytics />
       </body>
     </html>
   )
