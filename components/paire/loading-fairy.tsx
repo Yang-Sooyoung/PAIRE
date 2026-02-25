@@ -68,7 +68,7 @@ export function LoadingFairy({
           transition={{ delay: 0.2, type: "spring" }}
           className="mb-6"
         >
-          <div className="bg-black rounded-full p-2 inline-block">
+          <div className="bg-black rounded-full p-4 inline-block shadow-xl">
             <img
               src={fairyImage}
               alt="PAIRÉ Fairy"

@@ -138,6 +138,9 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
 
   // 음료 타입별 Flavor Profile 계산
   const calculateFlavorProfile = () => {
+    if (!drink.type) {
+      return { sweetness: 50, acidity: 50, body: 50 }
+    }
     const type = drink.type.toLowerCase()
     const tastes = drink.tastes || []
 

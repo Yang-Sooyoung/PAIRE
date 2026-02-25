@@ -190,29 +190,33 @@ export class RecommendationService {
    * AI 추천 결과에 음료 상세 정보 추가
    */
   private async enrichDrinkData(recommendations: any[]): Promise<any[]> {
-    return recommendations.map(rec => {
-      // GPT가 생성한 음료 정보가 있으면 직접 사용
-      if (rec.description && rec.tastingNotes && rec.image) {
-        return {
-          id: rec.drinkId,
-          name: rec.drinkName,
-          nameEn: rec.drinkNameEn || rec.drinkName,
-          type: rec.drinkType,
-          description: rec.description,
-          tastingNotes: rec.tastingNotes || [],
-          image: rec.image,
-          price: rec.price,
-          purchaseUrl: `https://www.coupang.com/np/search?q=${encodeURIComponent(rec.drinkName)}`,
-          // AI 추천 정보
-          aiReason: rec.reason,
-          aiScore: rec.score,
-          pairingNotes: rec.pairingNotes,
-        };
-      }
+    const enrichedDrinks = await Promise.all(
+      recommendations.map(async (rec) => {
+        // GPT가 생성한 음료 정보가 있으면 직접 사용
+        if (rec.description && rec.tastingNotes && rec.image) {
+          return {
+            id: rec.drinkId,
+            name: rec.drinkName,
+            nameEn: rec.drinkNameEn || rec.drinkName,
+            type: rec.drinkType || 'unknown',
+            description: rec.description,
+            tastingNotes: rec.tastingNotes || [],
+            image: rec.image,
+            price: rec.price,
+            purchaseUrl: `https://www.coupang.com/np/search?q=${encodeURIComponent(rec.drinkName)}`,
+            // AI 추천 정보
+            aiReason: rec.reason,
+            aiScore: rec.score,
+            pairingNotes: rec.pairingNotes,
+          };
+        }
 
-      // DB에서 음료 찾기 (기존 방식)
-      return this.findDrinkInDB(rec);
-    }).filter(Boolean);
+        // DB에서 음료 찾기 (기존 방식)
+        return await this.findDrinkInDB(rec);
+      })
+    );
+
+    return enrichedDrinks.filter(Boolean);
   }
 
   /**

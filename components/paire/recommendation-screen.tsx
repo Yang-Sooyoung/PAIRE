@@ -165,12 +165,14 @@ export function RecommendationScreen({
 
   // 음료 타입 번역
   const translateDrinkType = (type: string) => {
+    if (!type) return type
     const translation = drinkTypeTranslations[type.toLowerCase()]
     return translation ? translation[language] : type
   }
 
   // 테이스팅 노트 번역
   const translateTastingNote = (note: string) => {
+    if (!note) return note
     const translation = tastingNoteTranslations[note.toLowerCase()]
     return translation ? translation[language] : note
   }
