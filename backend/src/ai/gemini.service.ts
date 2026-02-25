@@ -143,8 +143,42 @@ export class GeminiService {
     tastes?: string[],
     priceRange?: string,
   ): any[] {
+    // 논알콜 필터링 (최우선)
+    let filteredDrinks = drinks;
+    if (tastes && tastes.includes('non-alcoholic')) {
+      filteredDrinks = drinks.filter((drink) => {
+        const type = drink.type.toLowerCase();
+        const isNonAlcoholic = 
+          type.includes('non-alcoholic') || 
+          type.includes('tea') || 
+          type.includes('coffee') ||
+          type.includes('juice') ||
+          type.includes('논알콜') ||
+          type.includes('차') ||
+          type.includes('커피');
+        return isNonAlcoholic;
+      });
+    } else if (tastes && tastes.includes('alcoholic')) {
+      // 알콜만 필터링
+      filteredDrinks = drinks.filter((drink) => {
+        const type = drink.type.toLowerCase();
+        const isAlcoholic = 
+          type.includes('wine') || 
+          type.includes('whisky') || 
+          type.includes('cocktail') ||
+          type.includes('beer') ||
+          type.includes('sake') ||
+          type.includes('와인') ||
+          type.includes('위스키') ||
+          type.includes('칵테일') ||
+          type.includes('맥주') ||
+          type.includes('사케');
+        return isAlcoholic;
+      });
+    }
+
     // 가격 범위 필터링
-    let filteredByPrice = drinks;
+    let filteredByPrice = filteredDrinks;
     if (priceRange) {
       const priceRanges = {
         budget: [0, 10000],
@@ -153,7 +187,7 @@ export class GeminiService {
         luxury: [50000, 999999],
       };
       const [min, max] = priceRanges[priceRange] || [0, 999999];
-      filteredByPrice = drinks.filter((drink) => {
+      filteredByPrice = filteredDrinks.filter((drink) => {
         const price = parseInt(drink.price.replace(/[^0-9]/g, '')) || 0;
         return price >= min && price <= max;
       });
@@ -238,6 +272,8 @@ export class GeminiService {
 상황: ${occasion ? occasionMap[occasion] || occasion : '일반'}
 선호: ${tastes?.join(', ') || '없음'}
 ${priceRange ? `예산: ${priceRangeMap[priceRange] || priceRange}` : ''}
+${tastes?.includes('non-alcoholic') ? '**중요: 논알콜 음료만 추천**' : ''}
+${tastes?.includes('alcoholic') ? '**중요: 알콜 음료만 추천**' : ''}
 
 음료목록 (ID|이름|타입|가격|맛):
 ${drinkList}

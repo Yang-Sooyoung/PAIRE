@@ -372,11 +372,13 @@ export function RecommendationScreen({
         animate={{ opacity: 1, y: 0 }}
         className="px-6 mb-6 flex items-start gap-3"
       >
-        <img
-          src={fairyImage}
-          alt="PAIRÉ Fairy"
-          className="w-14 h-14 rounded-full object-cover border-2 border-gold/30 flex-shrink-0"
-        />
+        <div className="bg-black rounded-full p-1 flex-shrink-0">
+          <img
+            src={fairyImage}
+            alt="PAIRÉ Fairy"
+            className="w-12 h-12 rounded-full object-cover"
+          />
+        </div>
         <div className="flex-1 bg-card rounded-2xl rounded-tl-none p-4 border border-border">
           <p className={cn(
             "text-foreground text-sm leading-relaxed",
