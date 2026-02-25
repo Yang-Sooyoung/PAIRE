@@ -1,4 +1,4 @@
-// 국가 및 지역 감지 유틸리티
+// 국가 및 지역 감지 유틸리티 (Capacitor 지원)
 export type CountryCode = 'KR' | 'US' | 'OTHER';
 export type PaymentProvider = 'toss' | 'stripe';
 export type ShoppingPlatform = 'coupang' | 'vivino' | 'amazon';
@@ -12,50 +12,75 @@ interface RegionConfig {
 }
 
 /**
- * 사용자의 국가 코드 감지
- * 1. localStorage에 저장된 국가 (사용자가 직접 선택한 경우)
- * 2. 브라우저 언어 설정
- * 3. Intl API를 통한 타임존 기반 추정
+ * Capacitor 앱 여부 감지
+ */
+export function isCapacitorApp(): boolean {
+  if (typeof window === 'undefined') return false;
+  // @ts-ignore
+  return !!(window.Capacitor);
+}
+
+/**
+ * 사용자의 국가 코드 감지 (동기)
  */
 export function detectCountry(): CountryCode {
-  // 모바일 앱에서 전달한 국가 코드 확인 (window.ReactNativeWebView)
-  if (typeof window !== 'undefined') {
-    // @ts-ignore
-    if (window.ReactNativeWebView?.country) {
-      // @ts-ignore
-      const country = window.ReactNativeWebView.country;
-      if (country === 'KR') return 'KR';
-      if (country === 'US') return 'US';
-      return 'OTHER';
-    }
+  if (typeof window === 'undefined') return 'OTHER';
 
-    // localStorage에 저장된 국가
-    const savedCountry = localStorage.getItem('paire-country');
-    if (savedCountry === 'KR' || savedCountry === 'US' || savedCountry === 'OTHER') {
-      return savedCountry as CountryCode;
-    }
+  // localStorage에 저장된 국가
+  const savedCountry = localStorage.getItem('paire-country');
+  if (savedCountry === 'KR' || savedCountry === 'US' || savedCountry === 'OTHER') {
+    return savedCountry as CountryCode;
+  }
 
-    // 브라우저 언어 설정으로 추정
-    const language = navigator.language || navigator.languages?.[0] || '';
-    if (language.startsWith('ko')) return 'KR';
-    if (language.startsWith('en-US')) return 'US';
+  // 브라우저 언어 설정으로 추정
+  const language = navigator.language || navigator.languages?.[0] || '';
+  if (language.startsWith('ko')) return 'KR';
+  if (language.startsWith('en-US')) return 'US';
 
-    // Intl API로 타임존 기반 추정
-    try {
-      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      if (timeZone.includes('Seoul') || timeZone.includes('Asia/Seoul')) return 'KR';
-      if (timeZone.includes('America/New_York') || timeZone.includes('America/Los_Angeles')) return 'US';
-    } catch (e) {
-      console.error('Failed to detect timezone:', e);
-    }
+  // Intl API로 타임존 기반 추정
+  try {
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (timeZone.includes('Seoul') || timeZone.includes('Asia/Seoul')) return 'KR';
+    if (timeZone.includes('America/New_York') || timeZone.includes('America/Los_Angeles')) return 'US';
+  } catch (e) {
+    console.error('Failed to detect timezone:', e);
   }
 
   // 기본값: 언어 설정 기반
-  const currentLanguage = typeof window !== 'undefined' 
-    ? localStorage.getItem('paire-language') 
-    : 'en';
-  
+  const currentLanguage = localStorage.getItem('paire-language') || 'en';
   return currentLanguage === 'ko' ? 'KR' : 'OTHER';
+}
+
+/**
+ * Capacitor Device 정보로 국가 감지 (비동기)
+ */
+export async function detectCountryWithDevice(): Promise<CountryCode> {
+  if (typeof window === 'undefined') return 'OTHER';
+
+  // localStorage 우선
+  const savedCountry = localStorage.getItem('paire-country');
+  if (savedCountry === 'KR' || savedCountry === 'US' || savedCountry === 'OTHER') {
+    return savedCountry as CountryCode;
+  }
+
+  // Capacitor 앱인 경우 Device 정보 사용
+  if (isCapacitorApp()) {
+    try {
+      // @ts-ignore
+      const { Device } = window.Capacitor.Plugins;
+      const languageCode = await Device.getLanguageCode();
+      
+      console.log('Capacitor Language:', languageCode);
+      
+      if (languageCode.value?.startsWith('ko')) return 'KR';
+      if (languageCode.value?.startsWith('en-US')) return 'US';
+    } catch (e) {
+      console.error('Failed to get Capacitor device info:', e);
+    }
+  }
+
+  // 동기 방식으로 폴백
+  return detectCountry();
 }
 
 /**
@@ -166,14 +191,40 @@ export function generateShoppingLink(
 }
 
 /**
- * 모바일 앱 여부 감지
+ * 모바일 앱 여부 감지 (Capacitor 또는 React Native)
  */
 export function isMobileApp(): boolean {
   if (typeof window === 'undefined') return false;
   
-  // React Native WebView 감지
+  // Capacitor 감지
+  // @ts-ignore
+  if (window.Capacitor) return true;
+  
+  // React Native WebView 감지 (폴백)
   // @ts-ignore
   return !!(window.ReactNativeWebView || window.isReactNativeWebView);
+}
+
+/**
+ * Capacitor Browser로 외부 링크 열기
+ */
+export async function openExternalLink(url: string) {
+  if (typeof window === 'undefined') return;
+  
+  // Capacitor 앱인 경우
+  if (isCapacitorApp()) {
+    try {
+      // @ts-ignore
+      const { Browser } = window.Capacitor.Plugins;
+      await Browser.open({ url });
+      return;
+    } catch (e) {
+      console.error('Failed to open with Capacitor Browser:', e);
+    }
+  }
+  
+  // 일반 브라우저
+  window.open(url, '_blank');
 }
 
 /**
@@ -182,6 +233,8 @@ export function isMobileApp(): boolean {
 export function postMessageToApp(message: any) {
   if (typeof window === 'undefined') return;
   
+  // Capacitor는 직접 플러그인 호출하므로 불필요
+  // React Native WebView 폴백
   // @ts-ignore
   if (window.ReactNativeWebView?.postMessage) {
     // @ts-ignore

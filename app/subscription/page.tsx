@@ -221,18 +221,8 @@ export default function SubscriptionPage() {
     if (!user || !token) {
       setDialogConfig({
         type: 'warning',
-        title: '로그인 필요',
-        description: '로그인이 필요한 서비스입니다.',
-      });
-      setShowDialog(true);
-      return;
-    }
-
-    if (!methodRegistered && !billingKey) {
-      setDialogConfig({
-        type: 'warning',
-        title: '결제수단 등록 필요',
-        description: '결제수단을 먼저 등록해주세요.',
+        title: isKorean ? '로그인 필요' : 'Login Required',
+        description: isKorean ? '로그인이 필요한 서비스입니다.' : 'Please login to continue.',
       });
       setShowDialog(true);
       return;
@@ -241,8 +231,52 @@ export default function SubscriptionPage() {
     try {
       setLoading(true);
       const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
-      const priceNumber = Number(getPlanPrice(selectedPlan));
 
+      // Stripe 결제 (해외)
+      if (regionConfig.paymentProvider === 'stripe') {
+        // Stripe Price ID 매핑 (환경변수에서 가져오기)
+        const stripePriceId = selectedPlan.interval === 'MONTHLY'
+          ? process.env.NEXT_PUBLIC_STRIPE_PRICE_MONTHLY
+          : process.env.NEXT_PUBLIC_STRIPE_PRICE_YEARLY;
+
+        if (!stripePriceId) {
+          throw new Error('Stripe price ID is not configured');
+        }
+
+        const currentToken = useUserStore.getState().token || token;
+        const response = await axios.post(
+          `${API_URL}/stripe/create-subscription-session`,
+          {
+            priceId: stripePriceId,
+            planId: selectedPlan.id,
+            successUrl: `${window.location.origin}/subscription/success`,
+            cancelUrl: `${window.location.origin}/subscription`,
+          },
+          {
+            headers: { Authorization: `Bearer ${currentToken}` },
+          }
+        );
+
+        // Stripe Checkout으로 리다이렉트
+        if (response.data.url) {
+          window.location.href = response.data.url;
+        }
+        return;
+      }
+
+      // 토스페이먼츠 결제 (한국)
+      if (!methodRegistered && !billingKey) {
+        setDialogConfig({
+          type: 'warning',
+          title: '결제수단 등록 필요',
+          description: '결제수단을 먼저 등록해주세요.',
+        });
+        setShowDialog(true);
+        setLoading(false);
+        return;
+      }
+
+      const priceNumber = Number(getPlanPrice(selectedPlan));
       const payload = {
         planId: selectedPlan.id,
         membership: selectedPlan.membership,
@@ -252,7 +286,6 @@ export default function SubscriptionPage() {
       };
 
       let currentToken = useUserStore.getState().token || token;
-
       let res = await axios.post(`${API_URL}/subscription/create`, payload, {
         headers: { Authorization: `Bearer ${currentToken}` },
       });
@@ -271,31 +304,32 @@ export default function SubscriptionPage() {
     } catch (err: any) {
       if (err?.response?.status === 401) {
         const newToken = await refreshTokenIfNeeded();
-
         if (newToken) {
-          try {
-            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
-            const priceNumber = Number(getPlanPrice(selectedPlan));
+          // 토큰 갱신 후 재시도는 토스페이먼츠만
+          if (regionConfig.paymentProvider === 'toss') {
+            try {
+              const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+              const priceNumber = Number(getPlanPrice(selectedPlan));
+              const payload = {
+                planId: selectedPlan.id,
+                membership: selectedPlan.membership,
+                interval: selectedPlan.interval,
+                price: priceNumber,
+                billingKey,
+              };
 
-            const payload = {
-              planId: selectedPlan.id,
-              membership: selectedPlan.membership,
-              interval: selectedPlan.interval,
-              price: priceNumber,
-              billingKey,
-            };
+              const res = await axios.post(`${API_URL}/subscription/create`, payload, {
+                headers: { Authorization: `Bearer ${newToken}` },
+              });
 
-            const res = await axios.post(`${API_URL}/subscription/create`, payload, {
-              headers: { Authorization: `Bearer ${newToken}` },
-            });
-
-            if (res.data?.subscription || res.data?.success) {
-              setUser({ ...user, membership: 'PREMIUM' });
-              router.push('/subscription/success');
-              return;
+              if (res.data?.subscription || res.data?.success) {
+                setUser({ ...user, membership: 'PREMIUM' });
+                router.push('/subscription/success');
+                return;
+              }
+            } catch (retryErr: any) {
+              console.error('Retry subscribe error', retryErr);
             }
-          } catch (retryErr: any) {
-            console.error('Retry subscribe error', retryErr);
           }
         } else {
           router.push('/login');
@@ -305,8 +339,8 @@ export default function SubscriptionPage() {
 
       setDialogConfig({
         type: 'error',
-        title: '구독 요청 실패',
-        description: err?.response?.data?.message ?? err?.message ?? '구독 요청에 실패했습니다.',
+        title: isKorean ? '구독 요청 실패' : 'Subscription Failed',
+        description: err?.response?.data?.message ?? err?.message ?? (isKorean ? '구독 요청에 실패했습니다.' : 'Failed to create subscription.'),
       });
       setShowDialog(true);
     } finally {
@@ -581,21 +615,24 @@ export default function SubscriptionPage() {
                   </>
                 )}
                 
-                {/* 해외: Stripe (준비 중) */}
+                {/* 해외: Stripe */}
                 {regionConfig.paymentProvider === 'stripe' && (
                   <div className={cn(
-                    "p-4 bg-secondary/50 border border-border rounded-lg text-center",
+                    "p-4 bg-secondary/50 border border-border rounded-lg",
                     isKorean && "font-[var(--font-noto-kr)]"
                   )}>
-                    <p className="text-muted-foreground mb-2">
-                      {isKorean 
-                        ? '해외 결제는 준비 중입니다' 
-                        : 'International payments coming soon'}
-                    </p>
+                    <div className="flex items-center gap-2 mb-2">
+                      <svg className="w-12 h-5" viewBox="0 0 60 25" fill="none">
+                        <path d="M59.64 14.28h-8.06c.19 1.93 1.6 2.55 3.2 2.55 1.64 0 2.96-.37 4.05-.95v3.32a8.33 8.33 0 0 1-4.56 1.1c-4.01 0-6.83-2.5-6.83-7.48 0-4.19 2.39-7.52 6.3-7.52 3.92 0 5.96 3.28 5.96 7.5 0 .4-.04 1.26-.06 1.48zm-5.92-5.62c-1.03 0-2.17.73-2.17 2.58h4.25c0-1.85-1.07-2.58-2.08-2.58zM40.95 20.3c-1.44 0-2.32-.6-2.9-1.04l-.02 4.63-4.12.87V5.57h3.76l.08 1.02a4.7 4.7 0 0 1 3.23-1.29c2.9 0 5.62 2.6 5.62 7.4 0 5.23-2.7 7.6-5.65 7.6zM40 8.95c-.95 0-1.54.34-1.97.81l.02 6.12c.4.44.98.78 1.95.78 1.52 0 2.54-1.65 2.54-3.87 0-2.15-1.04-3.84-2.54-3.84zM28.24 5.57h4.13v14.44h-4.13V5.57zm0-4.7L32.37 0v3.36l-4.13.88V.88zm-4.32 9.35v9.79H19.8V5.57h3.7l.12 1.22c1-1.77 3.07-1.41 3.62-1.22v3.79c-.52-.17-2.29-.43-3.32.86zm-8.55 4.72c0 2.43 2.6 1.68 3.12 1.46v3.36c-.55.3-1.54.54-2.89.54a4.15 4.15 0 0 1-4.27-4.24l.01-13.17 4.02-.86v3.54h3.14V9.1h-3.13v5.85zm-4.91.7c0 2.97-2.31 4.66-5.73 4.66a11.2 11.2 0 0 1-4.46-.93v-3.93c1.38.75 3.1 1.31 4.46 1.31.92 0 1.53-.24 1.53-1C6.26 13.77 0 14.51 0 9.95 0 7.04 2.28 5.3 5.62 5.3c1.36 0 2.72.2 4.09.75v3.88a9.23 9.23 0 0 0-4.1-1.06c-.86 0-1.44.25-1.44.9 0 1.85 6.29.97 6.29 5.88z" fill="#635BFF"/>
+                      </svg>
+                      <span className="text-sm text-muted-foreground">
+                        {isKorean ? '안전한 국제 결제' : 'Secure International Payment'}
+                      </span>
+                    </div>
                     <p className="text-xs text-muted-foreground">
                       {isKorean
-                        ? 'Stripe를 통한 안전한 결제가 곧 제공됩니다'
-                        : 'Secure payments via Stripe will be available soon'}
+                        ? 'Stripe를 통해 신용카드, 체크카드, Apple Pay, Google Pay 등 다양한 결제 수단을 사용할 수 있습니다.'
+                        : 'Pay with credit card, debit card, Apple Pay, Google Pay, and more via Stripe.'}
                     </p>
                   </div>
                 )}
@@ -604,7 +641,7 @@ export default function SubscriptionPage() {
               {/* 구독 버튼 */}
               <Button
                 onClick={handleSubscribe}
-                disabled={loading || !methodRegistered || regionConfig.paymentProvider === 'stripe'}
+                disabled={loading || (regionConfig.paymentProvider === 'toss' && !methodRegistered)}
                 className={cn(
                   "w-full bg-gold hover:bg-gold-light text-background py-3 text-lg font-semibold disabled:opacity-50",
                   isKorean && "font-[var(--font-noto-kr)]"
@@ -612,8 +649,6 @@ export default function SubscriptionPage() {
               >
                 {loading 
                   ? t('subscription.processing') 
-                  : regionConfig.paymentProvider === 'stripe'
-                  ? (isKorean ? '준비 중' : 'Coming Soon')
                   : `${t('subscription.planPrice')}${regionConfig.currencySymbol}${getPlanPrice(selectedPlan).toLocaleString()}`
                 }
               </Button>

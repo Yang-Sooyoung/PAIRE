@@ -9,7 +9,7 @@ import { useI18n } from "@/lib/i18n/context"
 import { cn } from "@/lib/utils"
 import { useUserStore } from "@/app/store/userStore"
 import { addFavorite, removeFavorite, checkFavorite } from "@/app/api/favorite"
-import { generateShoppingLink, detectCountry, isMobileApp, postMessageToApp } from "@/lib/region-detector"
+import { generateShoppingLink, detectCountry, openExternalLink } from "@/lib/region-detector"
 
 interface DrinkDetailScreenProps {
   drink: {
@@ -269,32 +269,16 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
   const flavorProfile = calculateFlavorProfile()
   const perfectForItems = getPerfectForItems()
 
-  const handlePurchase = () => {
+  const handlePurchase = async () => {
     const country = detectCountry();
     
     // 쿠팡 구매 링크가 있고 한국이면 해당 링크로
     if (drink.purchaseUrl && country === 'KR') {
-      // 모바일 앱이면 앱에 메시지 전송
-      if (isMobileApp()) {
-        postMessageToApp({
-          type: 'OPEN_EXTERNAL_LINK',
-          url: drink.purchaseUrl,
-        });
-      } else {
-        window.open(drink.purchaseUrl, '_blank');
-      }
+      await openExternalLink(drink.purchaseUrl);
     } else {
       // 지역별 쇼핑 링크 생성
       const shoppingLink = generateShoppingLink(drink.name, drink.type, country);
-      
-      if (isMobileApp()) {
-        postMessageToApp({
-          type: 'OPEN_EXTERNAL_LINK',
-          url: shoppingLink,
-        });
-      } else {
-        window.open(shoppingLink, '_blank');
-      }
+      await openExternalLink(shoppingLink);
     }
   }
 
