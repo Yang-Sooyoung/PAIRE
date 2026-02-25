@@ -47,7 +47,7 @@ export default function UserInfoPage() {
         }
 
         // 오늘 사용한 추천 횟수 조회
-        const historyResponse = await fetch(`${API_URL}/recommendation/history?limit=100`, {
+        const historyResponse = await fetch(`${API_URL}/recommendation/history?limit=100&offset=0`, {
           headers: { Authorization: `Bearer ${currentToken}` },
         });
 

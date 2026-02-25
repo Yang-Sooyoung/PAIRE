@@ -6,15 +6,20 @@ import { AuthService } from '../auth.service';
 @Injectable()
 export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
   constructor(private authService: AuthService) {
-    super({
-      clientID: process.env.KAKAO_CLIENT_ID,
-      clientSecret: process.env.KAKAO_CLIENT_SECRET || '',
-      callbackURL: process.env.KAKAO_CALLBACK_URL || 'http://localhost:3001/api/auth/kakao/callback',
+    const clientID = process.env.KAKAO_CLIENT_ID;
+    const clientSecret = process.env.KAKAO_CLIENT_SECRET;
+    const callbackURL = process.env.KAKAO_CALLBACK_URL || 'http://localhost:3001/api/auth/kakao/callback';
+    
+    console.log('KakaoStrategy config:', {
+      clientID: clientID ? `${clientID.substring(0, 10)}...` : 'NOT SET',
+      hasClientSecret: !!clientSecret,
+      callbackURL,
     });
     
-    console.log('KakaoStrategy initialized with:', {
-      clientID: process.env.KAKAO_CLIENT_ID,
-      callbackURL: process.env.KAKAO_CALLBACK_URL,
+    super({
+      clientID,
+      clientSecret: clientSecret || undefined, // undefined if not set
+      callbackURL,
     });
   }
 

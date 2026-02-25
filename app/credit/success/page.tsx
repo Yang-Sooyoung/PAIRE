@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useUserStore } from '@/app/store/userStore';
 import { motion } from 'framer-motion';
@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils';
 
-export default function CreditSuccessPage() {
+function CreditSuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useUserStore();
@@ -179,5 +179,20 @@ export default function CreditSuccessPage() {
         </motion.div>
       </div>
     </div>
+  );
+}
+
+export default function CreditSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <Sparkles className="w-12 h-12 text-gold animate-pulse mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    }>
+      <CreditSuccessContent />
+    </Suspense>
   );
 }
