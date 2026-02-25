@@ -17,8 +17,23 @@ async function bootstrap() {
     process.env.FRONTEND_URL,
   ].filter(Boolean);
 
+  console.log('🔧 CORS Configuration:', {
+    nodeEnv: process.env.NODE_ENV,
+    allowedOrigins,
+  });
+
   app.enableCors({
-    origin: process.env.NODE_ENV === 'production' ? allowedOrigins : true,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.warn(`⚠️ CORS blocked origin: ${origin}`);
+        callback(null, false);
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
