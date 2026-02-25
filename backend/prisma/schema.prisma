@@ -149,9 +149,6 @@ model Drink {
   occasions String[]   // date, solo-drinking, camping, gathering, solo-meal
   tastes    String[]   // sweet, bitter, sour, light, medium, heavy
   
-  // Relations
-  favorites Favorite[]
-  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
@@ -165,7 +162,6 @@ model Favorite {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   drinkId   String
-  drink     Drink    @relation(fields: [drinkId], references: [id], onDelete: Cascade)
   drinkName String
   drinkType String
   drinkImage String?

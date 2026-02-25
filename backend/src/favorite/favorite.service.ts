@@ -67,34 +67,39 @@ export class FavoriteService {
     const favorites = await this.prisma.favorite.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' },
-      include: {
-        drink: true, // 음료 상세 정보 포함
-      },
     });
 
-    // 음료 상세 정보와 함께 반환
-    const favoritesWithDetails = favorites.map(fav => ({
-      id: fav.id,
-      drinkId: fav.drinkId,
-      drinkName: fav.drinkName,
-      drinkType: fav.drinkType,
-      drinkImage: fav.drinkImage,
-      createdAt: fav.createdAt,
-      // 음료 상세 정보
-      drink: fav.drink ? {
-        id: fav.drink.id,
-        name: fav.drink.name,
-        type: fav.drink.type,
-        description: fav.drink.description,
-        tastingNotes: fav.drink.tastingNotes,
-        image: fav.drink.image,
-        price: fav.drink.price,
-        purchaseUrl: fav.drink.purchaseUrl,
-        foodPairings: fav.drink.foodPairings,
-        occasions: fav.drink.occasions,
-        tastes: fav.drink.tastes,
-      } : null,
-    }));
+    // 각 favorite에 대해 drink 정보를 별도로 조회
+    const favoritesWithDetails = await Promise.all(
+      favorites.map(async (fav) => {
+        const drink = await this.prisma.drink.findUnique({
+          where: { id: fav.drinkId },
+        });
+
+        return {
+          id: fav.id,
+          drinkId: fav.drinkId,
+          drinkName: fav.drinkName,
+          drinkType: fav.drinkType,
+          drinkImage: fav.drinkImage,
+          createdAt: fav.createdAt,
+          // 음료 상세 정보 (존재하는 경우에만)
+          drink: drink ? {
+            id: drink.id,
+            name: drink.name,
+            type: drink.type,
+            description: drink.description,
+            tastingNotes: drink.tastingNotes,
+            image: drink.image,
+            price: drink.price,
+            purchaseUrl: drink.purchaseUrl,
+            foodPairings: drink.foodPairings,
+            occasions: drink.occasions,
+            tastes: drink.tastes,
+          } : null,
+        };
+      })
+    );
 
     return { favorites: favoritesWithDetails };
   }
