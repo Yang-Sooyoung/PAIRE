@@ -118,6 +118,7 @@ export default function PairePage() {
         imageUrl,
         occasion: prefs.occasion,
         tastes: prefs.tastes,
+        priceRange: prefs.priceRange,
       })
 
       setRecommendedDrinks(response.recommendation.drinks)

@@ -141,35 +141,58 @@ export class GeminiService {
     foodAnalysis: FoodAnalysis,
     occasion?: string,
     tastes?: string[],
+    priceRange?: string,
   ): any[] {
+    // 가격 범위 필터링
+    let filteredByPrice = drinks;
+    if (priceRange) {
+      const priceRanges = {
+        budget: [0, 10000],
+        moderate: [10000, 30000],
+        premium: [30000, 50000],
+        luxury: [50000, 999999],
+      };
+      const [min, max] = priceRanges[priceRange] || [0, 999999];
+      filteredByPrice = drinks.filter((drink) => {
+        const price = parseInt(drink.price.replace(/[^0-9]/g, '')) || 0;
+        return price >= min && price <= max;
+      });
+    }
+
     // 음식 카테고리와 키워드를 기반으로 점수 계산
-    return drinks
+    return filteredByPrice
       .map((drink) => {
         let score = 0;
 
         // 음식 페어링 매칭
         const foodPairings = drink.foodPairings || [];
-        if (foodPairings.some((pairing: string) =>
-          foodAnalysis.keywords.some(keyword =>
-            pairing.toLowerCase().includes(keyword.toLowerCase())
+        if (
+          foodPairings.some((pairing: string) =>
+            foodAnalysis.keywords.some((keyword) =>
+              pairing.toLowerCase().includes(keyword.toLowerCase()),
+            ),
           )
-        )) {
+        ) {
           score += 10;
         }
 
         // 카테고리 매칭
-        if (foodPairings.some((pairing: string) =>
-          pairing.toLowerCase().includes(foodAnalysis.category.toLowerCase())
-        )) {
+        if (
+          foodPairings.some((pairing: string) =>
+            pairing.toLowerCase().includes(foodAnalysis.category.toLowerCase()),
+          )
+        ) {
           score += 5;
         }
 
         // 맛 선호도 매칭
         if (tastes && tastes.length > 0) {
           const tastingNotes = drink.tastingNotes || [];
-          if (tastingNotes.some((note: string) =>
-            tastes.some(taste => note.toLowerCase().includes(taste.toLowerCase()))
-          )) {
+          if (
+            tastingNotes.some((note: string) =>
+              tastes.some((taste) => note.toLowerCase().includes(taste.toLowerCase())),
+            )
+          ) {
             score += 3;
           }
         }
