@@ -210,41 +210,49 @@ export class RecommendationService {
     console.log('Occasion:', occasion);
     console.log('Tastes:', tastes);
 
-    // 1. 기본 필터링 (상황에 맞지 않는 음료 제외)
+    // 1. 상황 필터링 (필수)
     let candidates = allDrinks.filter((drink) => {
       const occasions = drink.occasions as string[];
       if (occasion === 'all') return true;
+      // 정확히 매칭되거나 범용(all)인 경우만
       return occasions.includes(occasion) || occasions.includes('all');
     });
 
-    // 2. 취향 필터링 (취향이 있으면 매칭되는 것만)
+    console.log('Candidates after occasion filter:', candidates.length);
+
+    // 2. 취향 필터링 (선택 사항이지만 중요)
     if (tastes && tastes.length > 0) {
-      candidates = candidates.filter((drink) => {
+      const tasteFiltered = candidates.filter((drink) => {
         const drinkTastes = drink.tastes as string[];
+        // 최소 1개 이상의 취향이 매칭되어야 함
         return tastes.some((taste) => drinkTastes.includes(taste));
       });
-    }
 
-    console.log('Candidates after filtering:', candidates.length);
-
-    // 후보가 없으면 필터링 완화
-    if (candidates.length === 0) {
-      console.log('No candidates found, relaxing filters...');
-      // 상황 필터만 적용
-      candidates = allDrinks.filter((drink) => {
-        const occasions = drink.occasions as string[];
-        if (occasion === 'all') return true;
-        return occasions.includes(occasion) || occasions.includes('all');
-      });
-
-      // 그래도 없으면 전체 음료 사용
-      if (candidates.length === 0) {
-        console.log('Still no candidates, using all drinks...');
-        candidates = allDrinks;
+      // 취향 매칭되는 음료가 충분히 있으면 사용
+      if (tasteFiltered.length >= 5) {
+        candidates = tasteFiltered;
+        console.log('Using taste-filtered candidates:', candidates.length);
+      } else {
+        console.log('Not enough taste matches, keeping all occasion matches');
       }
     }
 
     console.log('Final candidates:', candidates.length);
+
+    // 후보가 너무 적으면 필터링 완화
+    if (candidates.length < 3) {
+      console.log('Too few candidates, relaxing filters...');
+      candidates = allDrinks.filter((drink) => {
+        const occasions = drink.occasions as string[];
+        return occasions.includes('all');
+      });
+
+      // 그래도 없으면 전체 음료 사용
+      if (candidates.length < 3) {
+        console.log('Using all drinks as fallback');
+        candidates = allDrinks;
+      }
+    }
 
     // 3. 점수 계산
     const scores = candidates.map((drink) => {

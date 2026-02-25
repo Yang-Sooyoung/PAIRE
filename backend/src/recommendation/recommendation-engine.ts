@@ -49,7 +49,7 @@ export function calculateDrinkScore(
     for (const rule of pairingRules) {
       // 음료 타입 매칭
       if (rule.drinkTypes.includes(drink.type)) {
-        menuMatchScore += 40;
+        menuMatchScore += 50;
         reason = rule.reason;
       }
       
@@ -58,39 +58,54 @@ export function calculateDrinkScore(
       const matchingTastes = drinkTastes.filter(taste => 
         rule.drinkTastes.includes(taste)
       );
-      menuMatchScore += matchingTastes.length * 20;
+      menuMatchScore += matchingTastes.length * 15;
     }
+  } else {
+    // 페어링 룰이 없으면 기본 점수
+    menuMatchScore = 30;
   }
 
   // 기본 음식 페어링 점수
   const foodPairings = drink.foodPairings as string[];
   if (foodPairings.includes('all')) {
-    menuMatchScore += 10;
+    menuMatchScore += 20;
   }
 
-  // 2. 상황 매칭 점수
+  // 2. 상황 매칭 점수 (더 엄격하게)
   const drinkOccasions = drink.occasions as string[];
   if (occasion !== 'all') {
     if (drinkOccasions.includes(occasion)) {
-      situationMatchScore = 100;
+      situationMatchScore = 100; // 완벽한 매칭
     } else if (drinkOccasions.includes('all')) {
-      situationMatchScore = 50;
+      situationMatchScore = 30; // 범용 음료는 낮은 점수
+    } else {
+      situationMatchScore = 0; // 매칭 안 되면 0점
     }
   } else {
     situationMatchScore = 50;
   }
 
-  // 3. 취향 매칭 점수
+  // 3. 취향 매칭 점수 (더 정확하게)
   if (tastes && tastes.length > 0) {
     const drinkTastes = drink.tastes as string[];
     const matchingTastes = drinkTastes.filter(taste => tastes.includes(taste));
-    tasteMatchScore = (matchingTastes.length / tastes.length) * 100;
+    
+    if (matchingTastes.length > 0) {
+      // 매칭된 취향 비율로 점수 계산
+      tasteMatchScore = (matchingTastes.length / tastes.length) * 100;
+      // 보너스: 모든 취향이 매칭되면 추가 점수
+      if (matchingTastes.length === tastes.length) {
+        tasteMatchScore += 20;
+      }
+    } else {
+      tasteMatchScore = 0; // 취향이 하나도 안 맞으면 0점
+    }
   } else {
     tasteMatchScore = 50; // 취향 선택 안 했으면 중립
   }
 
-  // 4. 인기도 점수 (나중에 실제 데이터로 대체)
-  popularityScore = 50; // 기본값
+  // 4. 인기도 점수 (약간의 랜덤성 추가)
+  popularityScore = 40 + Math.random() * 20; // 40-60 사이
 
   // 최종 점수 계산 (가중 평균)
   const totalScore = 
@@ -143,13 +158,24 @@ export function generateRecommendationReason(
 }
 
 /**
- * 상위 N개 음료 선택
+ * 상위 N개 음료 선택 (다양성 추가)
  */
 export function selectTopDrinks(
   scores: RecommendationScore[],
   limit: number = 3
 ): RecommendationScore[] {
-  return scores
-    .sort((a, b) => b.totalScore - a.totalScore)
-    .slice(0, limit);
+  // 점수 순으로 정렬
+  const sorted = scores.sort((a, b) => b.totalScore - a.totalScore);
+  
+  // 상위 10개 중에서 랜덤하게 선택 (다양성 확보)
+  const topCandidates = sorted.slice(0, Math.min(10, sorted.length));
+  
+  // Fisher-Yates 셔플로 랜덤하게 섞기
+  for (let i = topCandidates.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [topCandidates[i], topCandidates[j]] = [topCandidates[j], topCandidates[i]];
+  }
+  
+  // 상위 limit개 반환
+  return topCandidates.slice(0, limit);
 }
