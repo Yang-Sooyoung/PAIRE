@@ -55,7 +55,7 @@ export class GeminiService {
     if (cached) {
       this.logger.log(`Cache hit for key: ${cacheKey}`);
       return {
-        recommendations: cached.recommendations as DrinkRecommendation[],
+        recommendations: cached.recommendations as unknown as DrinkRecommendation[],
         fairyMessage: cached.fairyMessage,
         fromCache: true,
       };
