@@ -449,6 +449,9 @@ export class RecommendationService {
   async getDetail(id: string, userId?: string) {
     const recommendation = await this.prisma.recommendation.findUnique({
       where: { id },
+      include: {
+        drinks: true,
+      },
     });
 
     if (!recommendation) {
@@ -460,6 +463,6 @@ export class RecommendationService {
       throw new BadRequestException('접근 권한이 없습니다.');
     }
 
-    return recommendation;
+    return { recommendation };
   }
 }
