@@ -3,189 +3,162 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUserStore } from '@/app/store/userStore';
-import { getUserStickers, checkAndUnlockStickers } from '@/app/api/sticker';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Sparkles, Lock } from 'lucide-react';
+import { ArrowLeft, Lock, Sparkles, Loader2 } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils';
+import axios from 'axios';
 
-// 스티커 정의
-const STICKERS = [
+interface Sticker {
+  id: string;
+  name: string;
+  nameEn: string;
+  description: string;
+  descriptionEn: string;
+  emoji: string;
+  condition: string;
+  conditionEn: string;
+  unlocked: boolean;
+  unlockedAt?: string;
+}
+
+const STICKERS: Omit<Sticker, 'unlocked' | 'unlockedAt'>[] = [
   {
     id: 'first-recommendation',
-    emoji: '🌟',
-    nameKo: '첫 만남',
-    nameEn: 'First Meeting',
-    descKo: '첫 추천을 받았어요',
-    descEn: 'Got your first recommendation',
-    condition: 'recommendation_count >= 1',
+    name: '첫 추천',
+    nameEn: 'First Step',
+    description: '첫 번째 추천을 받았어요',
+    descriptionEn: 'Received your first recommendation',
+    emoji: '🎉',
+    condition: '추천 1회',
+    conditionEn: '1 recommendation',
   },
   {
     id: 'wine-lover',
-    emoji: '🍷',
-    nameKo: '와인 러버',
+    name: '와인 러버',
     nameEn: 'Wine Lover',
-    descKo: '와인을 5번 추천받았어요',
-    descEn: 'Got wine recommended 5 times',
-    condition: 'wine_count >= 5',
+    description: '와인 추천을 10번 받았어요',
+    descriptionEn: 'Received 10 wine recommendations',
+    emoji: '🍷',
+    condition: '와인 추천 10회',
+    conditionEn: '10 wine recommendations',
   },
   {
     id: 'night-owl',
+    name: '야행성',
+    nameEn: 'Night Owl',
+    description: '밤 11시 이후 추천을 5번 받았어요',
+    descriptionEn: 'Got 5 recommendations after 11 PM',
     emoji: '🌙',
-    nameKo: '밤의 요정',
-    nameEn: 'Night Fairy',
-    descKo: '밤 10시 이후에 추천받았어요',
-    descEn: 'Got recommendation after 10 PM',
-    condition: 'late_night_recommendation',
+    condition: '밤 11시 이후 추천 5회',
+    conditionEn: '5 recommendations after 11 PM',
   },
   {
-    id: 'early-bird',
-    emoji: '☀️',
-    nameKo: '아침 요정',
-    nameEn: 'Morning Fairy',
-    descKo: '아침 7시 전에 추천받았어요',
-    descEn: 'Got recommendation before 7 AM',
-    condition: 'early_morning_recommendation',
+    id: 'passionate',
+    name: '열정적',
+    nameEn: 'Passionate',
+    description: '일주일 연속 추천을 받았어요',
+    descriptionEn: 'Got recommendations for 7 days straight',
+    emoji: '🔥',
+    condition: '7일 연속 추천',
+    conditionEn: '7 days streak',
   },
   {
     id: 'premium-member',
-    emoji: '👑',
-    nameKo: '프리미엄 요정',
-    nameEn: 'Premium Fairy',
-    descKo: 'PREMIUM 멤버가 되었어요',
-    descEn: 'Became a PREMIUM member',
-    condition: 'is_premium',
+    name: '프리미엄 멤버',
+    nameEn: 'Premium Member',
+    description: '프리미엄 구독을 시작했어요',
+    descriptionEn: 'Started premium subscription',
+    emoji: '💎',
+    condition: '프리미엄 구독',
+    conditionEn: 'Premium subscription',
   },
   {
-    id: 'collector',
-    emoji: '💝',
-    nameKo: '수집가',
-    nameEn: 'Collector',
-    descKo: '즐겨찾기 10개를 모았어요',
-    descEn: 'Collected 10 favorites',
-    condition: 'favorite_count >= 10',
+    id: 'perfectionist',
+    name: '완벽주의자',
+    nameEn: 'Perfectionist',
+    description: '즐겨찾기를 20개 모았어요',
+    descriptionEn: 'Collected 20 favorites',
+    emoji: '🎯',
+    condition: '즐겨찾기 20개',
+    conditionEn: '20 favorites',
   },
   {
     id: 'explorer',
-    emoji: '🗺️',
-    nameKo: '탐험가',
+    name: '탐험가',
     nameEn: 'Explorer',
-    descKo: '5가지 다른 종류의 음료를 추천받았어요',
-    descEn: 'Got 5 different drink types',
-    condition: 'drink_type_variety >= 5',
+    description: '5가지 다른 음료 타입을 추천받았어요',
+    descriptionEn: 'Tried 5 different drink types',
+    emoji: '🗺️',
+    condition: '5가지 음료 타입',
+    conditionEn: '5 drink types',
   },
   {
     id: 'social-butterfly',
-    emoji: '🦋',
-    nameKo: '사교적인 요정',
+    name: '소셜 버터플라이',
     nameEn: 'Social Butterfly',
-    descKo: '친구 모임 상황으로 10번 추천받았어요',
-    descEn: 'Got 10 recommendations for gatherings',
-    condition: 'gathering_count >= 10',
-  },
-  {
-    id: 'romantic',
-    emoji: '💕',
-    nameKo: '로맨틱 요정',
-    nameEn: 'Romantic Fairy',
-    descKo: '데이트 상황으로 5번 추천받았어요',
-    descEn: 'Got 5 recommendations for dates',
-    condition: 'date_count >= 5',
-  },
-  {
-    id: 'solo-master',
-    emoji: '🌸',
-    nameKo: '나홀로 마스터',
-    nameEn: 'Solo Master',
-    descKo: '혼자 즐기기 상황으로 10번 추천받았어요',
-    descEn: 'Got 10 solo recommendations',
-    condition: 'solo_count >= 10',
-  },
-  {
-    id: 'week-warrior',
-    emoji: '🔥',
-    nameKo: '일주일 챌린저',
-    nameEn: 'Week Warrior',
-    descKo: '7일 연속 추천받았어요',
-    descEn: 'Got recommendations for 7 days straight',
-    condition: 'consecutive_days >= 7',
-  },
-  {
-    id: 'sharing-fairy',
-    emoji: '✨',
-    nameKo: '공유의 요정',
-    nameEn: 'Sharing Fairy',
-    descKo: '추천을 5번 공유했어요',
-    descEn: 'Shared recommendations 5 times',
-    condition: 'share_count >= 5',
+    description: '추천을 10번 공유했어요',
+    descriptionEn: 'Shared 10 recommendations',
+    emoji: '🦋',
+    condition: '공유 10회',
+    conditionEn: '10 shares',
   },
 ];
 
 export default function StickersPage() {
   const router = useRouter();
-  const { user } = useUserStore();
+  const { user, token } = useUserStore();
   const { language } = useI18n();
   const isKorean = language === 'ko';
-  const [unlockedStickers, setUnlockedStickers] = useState<string[]>([]);
+  const [stickers, setStickers] = useState<Sticker[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) {
+    if (!user || !token) {
       router.push('/login');
       return;
     }
 
-    const fetchStickers = async () => {
-      try {
-        // 최신 토큰 가져오기
-        const currentToken = useUserStore.getState().token;
-        if (!currentToken) {
-          router.push('/login');
-          return;
-        }
-
-        // 스티커 체크 및 잠금 해제
-        await checkAndUnlockStickers(currentToken);
-
-        // 스티커 목록 가져오기
-        const response = await getUserStickers(currentToken);
-        const unlockedIds = response.stickers.map((s: any) => s.id);
-        setUnlockedStickers(unlockedIds);
-      } catch (error: any) {
-        console.error('Failed to fetch stickers:', error);
-        // 에러 발생 시 임시 데이터 사용
-        const mockUnlocked = ['first-recommendation'];
-        if (user.membership === 'PREMIUM') {
-          mockUnlocked.push('premium-member');
-        }
-        setUnlockedStickers(mockUnlocked);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchStickers();
-  }, [user, router]);
+  }, [user, token, router]);
+
+  const fetchStickers = async () => {
+    try {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+      const response = await axios.get(`${API_URL}/sticker/my-stickers`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const unlockedIds = new Set(response.data.stickers.map((s: any) => s.stickerId));
+      const unlockedMap = new Map(
+        response.data.stickers.map((s: any) => [s.stickerId, s.unlockedAt])
+      );
+
+      const allStickers = STICKERS.map((sticker) => ({
+        ...sticker,
+        unlocked: unlockedIds.has(sticker.id),
+        unlockedAt: unlockedMap.get(sticker.id),
+      }));
+
+      setStickers(allStickers);
+    } catch (error) {
+      console.error('Failed to fetch stickers:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const unlockedCount = stickers.filter((s) => s.unlocked).length;
+  const totalCount = stickers.length;
+  const progress = (unlockedCount / totalCount) * 100;
 
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <Sparkles className="w-12 h-12 text-gold animate-pulse mx-auto mb-4" />
-          <p className={cn(
-            "text-muted-foreground",
-            isKorean && "font-[var(--font-noto-kr)]"
-          )}>
-            {isKorean ? '스티커를 불러오는 중...' : 'Loading stickers...'}
-          </p>
-        </div>
+        <Loader2 className="w-12 h-12 text-gold animate-spin" />
       </div>
     );
   }
-
-  const unlockedCount = unlockedStickers.length;
-  const totalCount = STICKERS.length;
-  const progress = (unlockedCount / totalCount) * 100;
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
@@ -197,149 +170,158 @@ export default function StickersPage() {
 
       {/* 헤더 */}
       <div className="bg-card/50 backdrop-blur-sm border-b border-border sticky top-0 z-10">
-        <div className="max-w-2xl mx-auto px-4 py-4 flex items-center gap-4">
+        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center gap-4">
           <button
             onClick={() => router.back()}
             className="text-gold hover:text-gold-light transition"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className={cn(
-            "text-2xl font-light text-foreground tracking-wide",
-            isKorean && "font-[var(--font-noto-kr)] tracking-normal"
-          )}>
-            {isKorean ? '수집한 스티커' : 'Collected Stickers'}
+          <h1
+            className={cn(
+              'text-2xl font-light text-foreground tracking-wide',
+              isKorean && 'font-[var(--font-noto-kr)] tracking-normal'
+            )}
+          >
+            {isKorean ? '스티커 컬렉션' : 'Sticker Collection'}
           </h1>
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 py-8 relative z-10">
+      <div className="max-w-4xl mx-auto px-4 py-12 relative z-10">
         {/* 진행도 */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-card border border-border rounded-xl p-6 mb-8"
+          className="bg-gradient-to-br from-gold/10 to-gold/5 border border-gold/20 rounded-xl p-6 mb-8"
         >
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className={cn(
-                "text-xl font-semibold text-foreground mb-1",
-                isKorean && "font-[var(--font-noto-kr)]"
-              )}>
+              <h2
+                className={cn(
+                  'text-xl font-light text-foreground mb-1',
+                  isKorean && 'font-[var(--font-noto-kr)]'
+                )}
+              >
                 {isKorean ? '수집 진행도' : 'Collection Progress'}
               </h2>
-              <p className={cn(
-                "text-muted-foreground text-sm",
-                isKorean && "font-[var(--font-noto-kr)]"
-              )}>
+              <p className="text-muted-foreground text-sm">
                 {unlockedCount} / {totalCount} {isKorean ? '개 수집' : 'collected'}
               </p>
             </div>
             <div className="text-4xl">
-              {progress === 100 ? '🎉' : '✨'}
+              <Sparkles className="w-10 h-10 text-gold" />
             </div>
           </div>
-          
+
           {/* 진행 바 */}
-          <div className="h-3 bg-secondary rounded-full overflow-hidden">
+          <div className="w-full h-3 bg-secondary rounded-full overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
-              transition={{ duration: 1, ease: "easeOut" }}
-              className="h-full bg-gradient-to-r from-gold-dim to-gold rounded-full"
+              transition={{ duration: 1, ease: 'easeOut' }}
+              className="h-full bg-gradient-to-r from-gold to-gold-light"
             />
           </div>
         </motion.div>
 
         {/* 스티커 그리드 */}
-        <div className="grid grid-cols-3 gap-4">
-          {STICKERS.map((sticker, index) => {
-            const isUnlocked = unlockedStickers.includes(sticker.id);
-            
-            return (
-              <motion.div
-                key={sticker.id}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: index * 0.05 }}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {stickers.map((sticker, index) => (
+            <motion.div
+              key={sticker.id}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: index * 0.05 }}
+              className={cn(
+                'relative bg-card border rounded-xl p-6 transition-all',
+                sticker.unlocked
+                  ? 'border-gold/30 hover:border-gold/50 hover:shadow-lg hover:shadow-gold/10'
+                  : 'border-border opacity-60'
+              )}
+            >
+              {/* 잠금 아이콘 */}
+              {!sticker.unlocked && (
+                <div className="absolute top-3 right-3">
+                  <Lock className="w-4 h-4 text-muted-foreground" />
+                </div>
+              )}
+
+              {/* 이모지 */}
+              <div
                 className={cn(
-                  "relative aspect-square rounded-xl border-2 p-4 flex flex-col items-center justify-center transition-all",
-                  isUnlocked
-                    ? "bg-gradient-to-br from-gold/10 to-gold/5 border-gold/30 hover:border-gold/50"
-                    : "bg-card border-border opacity-50"
+                  'text-5xl mb-3 text-center',
+                  !sticker.unlocked && 'grayscale opacity-30'
                 )}
               >
-                {/* 스티커 이모지 */}
-                <div className={cn(
-                  "text-5xl mb-2 transition-all",
-                  !isUnlocked && "grayscale blur-sm"
-                )}>
-                  {isUnlocked ? sticker.emoji : '🔒'}
-                </div>
+                {sticker.emoji}
+              </div>
 
-                {/* 스티커 이름 */}
-                <p className={cn(
-                  "text-xs font-medium text-center mb-1",
-                  isUnlocked ? "text-foreground" : "text-muted-foreground",
-                  isKorean && "font-[var(--font-noto-kr)]"
-                )}>
-                  {isKorean ? sticker.nameKo : sticker.nameEn}
+              {/* 이름 */}
+              <h3
+                className={cn(
+                  'text-center font-semibold text-foreground mb-2',
+                  isKorean && 'font-[var(--font-noto-kr)]'
+                )}
+              >
+                {isKorean ? sticker.name : sticker.nameEn}
+              </h3>
+
+              {/* 설명 */}
+              <p
+                className={cn(
+                  'text-xs text-center text-muted-foreground mb-2',
+                  isKorean && 'font-[var(--font-noto-kr)]'
+                )}
+              >
+                {isKorean ? sticker.description : sticker.descriptionEn}
+              </p>
+
+              {/* 조건 */}
+              <div
+                className={cn(
+                  'text-xs text-center px-2 py-1 rounded-full',
+                  sticker.unlocked
+                    ? 'bg-gold/10 text-gold'
+                    : 'bg-secondary text-muted-foreground'
+                )}
+              >
+                {isKorean ? sticker.condition : sticker.conditionEn}
+              </div>
+
+              {/* 해제 날짜 */}
+              {sticker.unlocked && sticker.unlockedAt && (
+                <p className="text-xs text-center text-muted-foreground mt-2">
+                  {new Date(sticker.unlockedAt).toLocaleDateString(
+                    isKorean ? 'ko-KR' : 'en-US',
+                    { month: 'short', day: 'numeric' }
+                  )}
                 </p>
-
-                {/* 설명 (잠금 해제된 것만) */}
-                {isUnlocked && (
-                  <p className={cn(
-                    "text-[10px] text-muted-foreground text-center leading-tight",
-                    isKorean && "font-[var(--font-noto-kr)]"
-                  )}>
-                    {isKorean ? sticker.descKo : sticker.descEn}
-                  </p>
-                )}
-
-                {/* 잠금 아이콘 */}
-                {!isUnlocked && (
-                  <Lock className="absolute top-2 right-2 w-3 h-3 text-muted-foreground" />
-                )}
-
-                {/* 반짝임 효과 (잠금 해제된 것만) */}
-                {isUnlocked && (
-                  <motion.div
-                    className="absolute inset-0 rounded-xl"
-                    animate={{
-                      boxShadow: [
-                        '0 0 0 0 rgba(212, 175, 55, 0)',
-                        '0 0 20px 5px rgba(212, 175, 55, 0.3)',
-                        '0 0 0 0 rgba(212, 175, 55, 0)',
-                      ],
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      repeatDelay: 3,
-                    }}
-                  />
-                )}
-              </motion.div>
-            );
-          })}
+              )}
+            </motion.div>
+          ))}
         </div>
 
         {/* 안내 메시지 */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="mt-8 text-center"
-        >
-          <p className={cn(
-            "text-muted-foreground text-sm",
-            isKorean && "font-[var(--font-noto-kr)]"
-          )}>
-            {isKorean
-              ? '✨ 다양한 활동을 하면서 스티커를 모아보세요!'
-              : '✨ Collect stickers through various activities!'}
-          </p>
-        </motion.div>
+        {unlockedCount === 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="text-center mt-12"
+          >
+            <p
+              className={cn(
+                'text-muted-foreground',
+                isKorean && 'font-[var(--font-noto-kr)]'
+              )}
+            >
+              {isKorean
+                ? '추천을 받고 스티커를 수집해보세요! ✨'
+                : 'Get recommendations and collect stickers! ✨'}
+            </p>
+          </motion.div>
+        )}
       </div>
     </div>
   );

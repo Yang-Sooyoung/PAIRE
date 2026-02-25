@@ -145,6 +145,38 @@ export default function SettingsPage() {
             "text-xs text-gold-dim uppercase tracking-widest font-light px-6 pt-6 pb-4",
             isKorean && "font-[var(--font-noto-kr)] normal-case tracking-normal"
           )}>
+            {isKorean ? '내 활동' : 'My Activity'}
+          </h2>
+          <div className="divide-y divide-border">
+            <button
+              onClick={() => router.push('/stickers')}
+              className="w-full px-6 py-4 flex items-center justify-between hover:bg-gold/5 transition text-left group"
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">✨</span>
+                <span className={cn(
+                  "text-foreground/80 group-hover:text-foreground transition",
+                  isKorean && "font-[var(--font-noto-kr)]"
+                )}>
+                  {isKorean ? '스티커 컬렉션' : 'Sticker Collection'}
+                </span>
+              </div>
+              <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-gold/60 transition" />
+            </button>
+          </div>
+        </motion.section>
+
+        {/* 약관 & 정책 */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.15 }}
+          className="bg-card backdrop-blur-sm border border-border rounded-xl overflow-hidden"
+        >
+          <h2 className={cn(
+            "text-xs text-gold-dim uppercase tracking-widest font-light px-6 pt-6 pb-4",
+            isKorean && "font-[var(--font-noto-kr)] normal-case tracking-normal"
+          )}>
             {t('settings.termsAndPolicies')}
           </h2>
           <div className="divide-y divide-border">
