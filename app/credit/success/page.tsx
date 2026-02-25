@@ -48,7 +48,7 @@ function CreditSuccessContent() {
           }
         }
 
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://paire-back.up.railway.app/api';
         console.log('Confirming payment with API:', API_URL);
 
         const response = await fetch(`${API_URL}/credit/confirm`, {
