@@ -4,9 +4,10 @@ import { RecommendationController } from './recommendation.controller';
 import { PrismaModule } from '@/prisma/prisma.module';
 import { VisionModule } from '@/vision/vision.module';
 import { StorageModule } from '@/storage/storage.module';
+import { AiModule } from '@/ai/ai.module';
 
 @Module({
-  imports: [PrismaModule, VisionModule, StorageModule],
+  imports: [PrismaModule, VisionModule, StorageModule, AiModule],
   controllers: [RecommendationController],
   providers: [RecommendationService],
 })

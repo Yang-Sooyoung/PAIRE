@@ -2,6 +2,7 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { VisionService } from '@/vision/vision.service';
 import { StorageService } from '@/storage/storage.service';
+import { GeminiService } from '@/ai/gemini.service';
 import {
   normalizeMenuItems,
   findPairingRules,
@@ -19,6 +20,7 @@ export class RecommendationService {
     private prisma: PrismaService,
     private visionService: VisionService,
     private storageService: StorageService,
+    private geminiService: GeminiService,
   ) { }
 
   async createRecommendation(userId: string | null, dto: any) {
@@ -56,6 +58,7 @@ export class RecommendationService {
     let imageUrl = dto.imageUrl;
     let detectedFoods: string[] = [];
     let pairingReason = '';
+    let useAiRecommendation = false;
 
     if (imageUrl) {
       // base64 이미지면 Supabase에 업로드
@@ -73,20 +76,55 @@ export class RecommendationService {
       // Vision API로 음식 인식 (base64는 스킵)
       if (!imageUrl.startsWith('data:image')) {
         try {
-          detectedFoods = await this.visionService.detectFoodLabels(imageUrl);
-          console.log('Detected foods:', detectedFoods);
+          // Vision으로 상세 분석
+          const foodAnalysis = await this.visionService.analyzeFoodImage(imageUrl);
+          console.log('Food analysis:', foodAnalysis);
+          
+          detectedFoods = foodAnalysis.keywords;
+          useAiRecommendation = true;
 
-          // 메뉴 정규화 및 페어링 룰 적용
-          const normalizedMenus = normalizeMenuItems(detectedFoods);
-          console.log('Normalized menus:', normalizedMenus);
+          // Gemini AI로 추천 생성
+          const aiResult = await this.geminiService.recommendDrinks(
+            foodAnalysis,
+            dto.occasion,
+            dto.tastes,
+          );
 
-          const pairingRules = findPairingRules(normalizedMenus);
-          console.log('Pairing rules:', pairingRules);
+          console.log('AI recommendation:', {
+            fromCache: aiResult.fromCache,
+            recommendations: aiResult.recommendations.length,
+          });
 
-          pairingReason = generatePairingReason(normalizedMenus, pairingRules);
+          // AI 추천 결과를 사용
+          const recommendedDrinks = await this.enrichDrinkData(aiResult.recommendations);
+
+          const recommendation = {
+            id: `rec_${Date.now()}`,
+            drinks: recommendedDrinks,
+            detectedFoods,
+            fairyMessage: aiResult.fairyMessage,
+            createdAt: new Date(),
+          };
+
+          // 데이터베이스에 저장
+          if (userId) {
+            await this.prisma.recommendation.create({
+              data: {
+                userId,
+                imageUrl,
+                occasion: dto.occasion,
+                tastes: dto.tastes,
+                drinks: recommendedDrinks,
+                fairyMessage: aiResult.fairyMessage,
+              },
+            });
+          }
+
+          return { recommendation };
         } catch (error) {
-          console.error('Vision API 오류:', error);
+          console.error('AI recommendation failed, falling back to rule-based:', error);
           detectedFoods = ['음식'];
+          useAiRecommendation = false;
         }
       } else {
         detectedFoods = ['음식'];
@@ -133,6 +171,36 @@ export class RecommendationService {
     }
 
     return { recommendation };
+  }
+
+  /**
+   * AI 추천 결과에 음료 상세 정보 추가
+   */
+  private async enrichDrinkData(recommendations: any[]): Promise<any[]> {
+    const drinkIds = recommendations.map(r => r.drinkId);
+    const drinks = await this.prisma.drink.findMany({
+      where: { id: { in: drinkIds } },
+    });
+
+    return recommendations.map(rec => {
+      const drink = drinks.find(d => d.id === rec.drinkId);
+      if (!drink) return null;
+
+      return {
+        id: drink.id,
+        name: drink.name,
+        type: drink.type,
+        description: drink.description,
+        tastingNotes: drink.tastingNotes,
+        image: drink.image,
+        price: drink.price,
+        purchaseUrl: drink.purchaseUrl,
+        // AI 추천 정보 추가
+        aiReason: rec.reason,
+        aiScore: rec.score,
+        pairingNotes: rec.pairingNotes,
+      };
+    }).filter(Boolean);
   }
 
   /**
