@@ -127,7 +127,7 @@ export class SubscriptionScheduler {
   /**
    * 매주 월요일 자정에 만료된 구독 정리
    */
-  @Cron(CronExpression.MONDAY_TO_FRIDAY_AT_MIDNIGHT)
+  @Cron('0 0 0 * * 1') // 매주 월요일 자정
   async cleanupExpiredSubscriptions() {
     this.logger.log('Starting expired subscription cleanup...');
 
