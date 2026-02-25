@@ -56,14 +56,21 @@ apiClient.interceptors.response.use(
 
     // refresh 엔드포인트는 재시도하지 않음
     if (originalRequest.url?.includes('/auth/refresh')) {
+      console.log('Refresh token failed, clearing auth state');
       // refresh 실패 시 로그아웃
       useUserStore.getState().logout();
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login';
+      }
       return Promise.reject(error);
     }
 
     // 401 에러이고 재시도하지 않은 경우
     if (error.response?.status === 401 && !originalRequest._retry) {
+      console.log('401 error detected, attempting token refresh');
+      
       if (isRefreshing) {
+        console.log('Token refresh already in progress, queuing request');
         // 이미 갱신 중이면 큐에 추가
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
@@ -83,9 +90,11 @@ apiClient.interceptors.response.use(
       isRefreshing = true;
 
       try {
+        console.log('Attempting to refresh token...');
         const newToken = await useUserStore.getState().refreshTokenIfNeeded();
 
         if (newToken) {
+          console.log('Token refreshed successfully');
           // localStorage 업데이트
           localStorage.setItem('accessToken', newToken);
 
@@ -98,16 +107,15 @@ apiClient.interceptors.response.use(
 
           return apiClient(originalRequest);
         } else {
+          console.log('Token refresh returned null');
           processQueue(new Error('Token refresh failed'), null);
-          // 토큰 갱신 실패 - 로그아웃
-          useUserStore.getState().logout();
+          // 토큰 갱신 실패해도 바로 로그아웃하지 않음
           return Promise.reject(new Error('Authentication required'));
         }
       } catch (refreshError) {
-        processQueue(refreshError, null);
         console.error('Token refresh error:', refreshError);
-        // 갱신 실패 시 로그아웃
-        useUserStore.getState().logout();
+        processQueue(refreshError, null);
+        // 갱신 실패해도 바로 로그아웃하지 않음
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

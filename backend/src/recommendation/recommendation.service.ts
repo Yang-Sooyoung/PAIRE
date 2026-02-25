@@ -24,13 +24,20 @@ export class RecommendationService {
   ) { }
 
   async createRecommendation(userId: string | null, dto: any) {
+    console.log('=== createRecommendation called ===');
+    console.log('userId:', userId);
+    console.log('dto:', { occasion: dto.occasion, tastes: dto.tastes, hasImage: !!dto.imageUrl });
+    
     // 권한 체크 (비로그인, FREE, CREDIT, PREMIUM)
     if (userId) {
       const user = await this.prisma.user.findUnique({ where: { id: userId } });
+      console.log('User found:', { id: user?.id, membership: user?.membership, credits: user?.credits });
 
       if (user?.membership === 'PREMIUM') {
+        console.log('PREMIUM user - unlimited recommendations');
         // PREMIUM: 무제한
       } else if (user && user.credits > 0) {
+        console.log('User has credits, decrementing...');
         // 크레딧 보유: 크레딧 차감
         await this.prisma.user.update({
           where: { id: userId },
@@ -46,12 +53,15 @@ export class RecommendationService {
             createdAt: { gte: today },
           },
         });
+        console.log('FREE user daily recommendation count:', count);
         if (count >= 1) {
           throw new BadRequestException(
             '일일 추천 한도(1회)를 초과했습니다. 크레딧을 구매하거나 PREMIUM으로 업그레이드하세요.'
           );
         }
       }
+    } else {
+      console.log('No userId provided - guest user');
     }
 
     // 이미지 처리
