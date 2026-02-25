@@ -10,6 +10,7 @@ import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { removeFavorite, getDrinkDetail } from '@/app/api/favorite';
+import { translateDrinkType, translateTastingNote } from '@/lib/drink-translations';
 
 // 음료 상세 데이터 타입
 interface DrinkDetail {
@@ -165,8 +166,11 @@ export default function FavoriteDetailPage() {
             )}>
               {drink.name}
             </h2>
-            <p className="text-lg text-muted-foreground mb-4">
-              {drink.type}
+            <p className={cn(
+              "text-lg text-muted-foreground mb-4",
+              isKorean && "font-[var(--font-noto-kr)]"
+            )}>
+              {translateDrinkType(drink.type, language)}
             </p>
             <p className={cn(
               "text-foreground leading-relaxed mb-4",
@@ -192,9 +196,12 @@ export default function FavoriteDetailPage() {
                 {drink.tastingNotes.map((note, i) => (
                   <span
                     key={i}
-                    className="px-3 py-1.5 rounded-full bg-gold/10 text-gold text-sm"
+                    className={cn(
+                      "px-3 py-1.5 rounded-full bg-gold/10 text-gold text-sm",
+                      isKorean && "font-[var(--font-noto-kr)]"
+                    )}
                   >
-                    {note}
+                    {translateTastingNote(note, language)}
                   </span>
                 ))}
               </div>

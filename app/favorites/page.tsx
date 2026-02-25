@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { CustomDialog } from '@/components/ui/custom-dialog';
 import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils';
+import { translateDrinkType } from '@/lib/drink-translations';
 
 interface Favorite {
   id: string;
@@ -263,8 +264,11 @@ export default function FavoritesPage() {
                   )}>
                     {favorite.drinkName}
                   </h3>
-                  <p className="text-xs text-muted-foreground truncate">
-                    {favorite.drinkType}
+                  <p className={cn(
+                    "text-xs text-muted-foreground truncate",
+                    isKorean && "font-[var(--font-noto-kr)]"
+                  )}>
+                    {translateDrinkType(favorite.drinkType, language)}
                   </p>
                 </div>
               </motion.div>

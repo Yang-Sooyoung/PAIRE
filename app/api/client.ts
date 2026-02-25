@@ -68,7 +68,7 @@ apiClient.interceptors.response.use(
     // 401 에러이고 재시도하지 않은 경우
     if (error.response?.status === 401 && !originalRequest._retry) {
       console.log('401 error detected, attempting token refresh');
-      
+
       if (isRefreshing) {
         console.log('Token refresh already in progress, queuing request');
         // 이미 갱신 중이면 큐에 추가

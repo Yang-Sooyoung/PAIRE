@@ -12,6 +12,10 @@ export class RecommendationController {
   async createRecommendation(@Request() req: any, @Body() dto: any) {
     // 비로그인 사용자도 추천 가능 (일일 한도 체크는 서비스에서)
     const userId = req.user?.sub || null;
+    console.log('=== Recommendation Controller ===');
+    console.log('req.user:', req.user);
+    console.log('userId:', userId);
+    console.log('dto:', dto);
     return this.recommendationService.createRecommendation(userId, dto);
   }
 
