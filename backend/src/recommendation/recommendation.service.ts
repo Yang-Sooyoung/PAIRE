@@ -145,9 +145,6 @@ export class RecommendationService {
     }
 
     // 폴백: 기존 룰 기반 추천 엔진
-      detectedFoods = ['음식'];
-    }
-    // 폴백: 기존 룰 기반 추천 엔진
     console.log('Using rule-based recommendation engine');
     const recommendedDrinks = await this.recommendDrinks(
       detectedFoods,
