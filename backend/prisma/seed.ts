@@ -18,7 +18,7 @@ async function main() {
       foodPairings: ['seafood', 'pasta', 'cheese', 'dessert'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:'https://link.coupang.com/a/dSHWC9'
+      purchaseUrl: 'https://link.coupang.com/a/dSHWC9'
     },
     {
       name: 'Moët & Chandon Brut',
@@ -30,7 +30,7 @@ async function main() {
       foodPairings: ['seafood', 'pasta', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:'https://link.coupang.com/a/dSHZaP'
+      purchaseUrl: 'https://link.coupang.com/a/dSHZaP'
     },
     {
       name: 'Veuve Clicquot Yellow Label',
@@ -42,7 +42,7 @@ async function main() {
       foodPairings: ['seafood', 'cheese', 'dessert'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:'https://link.coupang.com/a/dSH5ti'
+      purchaseUrl: 'https://link.coupang.com/a/dSH5ti'
     },
     {
       name: 'Prosecco Superiore DOCG',
@@ -54,7 +54,7 @@ async function main() {
       foodPairings: ['seafood', 'pasta', 'light dishes'],
       occasions: ['gathering', 'camping'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:'https://link.coupang.com/a/dSH50p'
+      purchaseUrl: 'https://link.coupang.com/a/dSH50p'
     },
     {
       name: 'Cava Reserva',
@@ -66,7 +66,7 @@ async function main() {
       foodPairings: ['seafood', 'cheese', 'pasta'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:'https://link.coupang.com/a/dSH6lB'
+      purchaseUrl: 'https://link.coupang.com/a/dSH6lB'
     },
     {
       name: 'Champagne Rosé',
@@ -78,7 +78,7 @@ async function main() {
       foodPairings: ['seafood', 'dessert', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:'https://link.coupang.com/a/dSH6RW'
+      purchaseUrl: 'https://link.coupang.com/a/dSH6RW'
     },
     {
       name: 'Franciacorta Brut',
@@ -90,7 +90,7 @@ async function main() {
       foodPairings: ['seafood', 'pasta', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'medium'],
-      purchaseUrl:'https://link.coupang.com/a/dSH7Dp'
+      purchaseUrl: 'https://link.coupang.com/a/dSH7Dp'
     },
     {
       name: 'Crémant de Bourgogne',
@@ -102,7 +102,7 @@ async function main() {
       foodPairings: ['seafood', 'cheese', 'light dishes'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:'https://link.coupang.com/a/dSH7Zw'
+      purchaseUrl: 'https://link.coupang.com/a/dSH7Zw'
     },
     {
       name: 'Asti Spumante',
@@ -114,7 +114,7 @@ async function main() {
       foodPairings: ['dessert', 'cheese', 'light dishes'],
       occasions: ['gathering', 'date'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:'https://link.coupang.com/a/dSIbxU'
+      purchaseUrl: 'https://link.coupang.com/a/dSIbxU'
     },
     {
       name: 'Lambrusco Rosso',
@@ -126,7 +126,7 @@ async function main() {
       foodPairings: ['pasta', 'meat', 'cheese'],
       occasions: ['gathering', 'solo-meal'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:'https://link.coupang.com/a/dSIa8f'
+      purchaseUrl: 'https://link.coupang.com/a/dSIa8f'
     },
     {
       name: 'Sekt Riesling',
@@ -138,7 +138,7 @@ async function main() {
       foodPairings: ['seafood', 'cheese', 'light dishes'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:'https://link.coupang.com/a/dSIcdz'
+      purchaseUrl: 'https://link.coupang.com/a/dSIcdz'
     },
     {
       name: 'Blanc de Blancs Champagne',
@@ -150,7 +150,7 @@ async function main() {
       foodPairings: ['seafood', 'cheese', 'light dishes'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:'https://link.coupang.com/a/dSIcD9'
+      purchaseUrl: 'https://link.coupang.com/a/dSIcD9'
     },
     {
       name: 'English Sparkling Wine',
@@ -162,7 +162,7 @@ async function main() {
       foodPairings: ['seafood', 'cheese', 'dessert'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:'https://link.coupang.com/a/dSIc5i'
+      purchaseUrl: 'https://link.coupang.com/a/dSIc5i'
     },
     {
       name: 'Champagne Blanc de Noirs',
@@ -174,7 +174,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'pasta'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'medium'],
-      purchaseUrl:'https://link.coupang.com/a/dSIdmX'
+      purchaseUrl: 'https://link.coupang.com/a/dSIdmX'
     },
     {
       name: 'Crémant d\'Alsace',
@@ -186,7 +186,7 @@ async function main() {
       foodPairings: ['seafood', 'cheese', 'light dishes'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:'https://link.coupang.com/a/dSId1D'
+      purchaseUrl: 'https://link.coupang.com/a/dSId1D'
     },
     // 레드 와인 (30개)
     {
@@ -199,7 +199,7 @@ async function main() {
       foodPairings: ['meat', 'steak', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['bitter', 'heavy'],
-      purchaseUrl:'https://link.coupang.com/a/dSIfox'
+      purchaseUrl: 'https://link.coupang.com/a/dSIfox'
     },
     {
       name: 'Penfolds Grange',
@@ -211,7 +211,7 @@ async function main() {
       foodPairings: ['meat', 'steak', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['bitter', 'heavy'],
-      purchaseUrl:'https://link.coupang.com/a/dSIfK1'
+      purchaseUrl: 'https://link.coupang.com/a/dSIfK1'
     },
     {
       name: 'Barolo DOCG',
@@ -223,7 +223,7 @@ async function main() {
       foodPairings: ['meat', 'truffle', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['bitter', 'heavy'],
-      purchaseUrl:'https://link.coupang.com/a/dSIgcS'
+      purchaseUrl: 'https://link.coupang.com/a/dSIgcS'
     },
     {
       name: 'Brunello di Montalcino',
@@ -235,7 +235,7 @@ async function main() {
       foodPairings: ['meat', 'pasta', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['bitter', 'heavy'],
-      purchaseUrl:'https://link.coupang.com/a/dSIgKM'
+      purchaseUrl: 'https://link.coupang.com/a/dSIgKM'
     },
     {
       name: 'Amarone della Valpolicella',
@@ -247,7 +247,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'chocolate'],
       occasions: ['date', 'solo-drinking'],
       tastes: ['sweet', 'heavy'],
-      purchaseUrl:'https://link.coupang.com/a/dSIg8b'
+      purchaseUrl: 'https://link.coupang.com/a/dSIg8b'
     },
     {
       name: 'Châteauneuf-du-Pape',
@@ -259,7 +259,7 @@ async function main() {
       foodPairings: ['meat', 'stew', 'cheese'],
       occasions: ['gathering', 'solo-drinking'],
       tastes: ['bitter', 'heavy'],
-      purchaseUrl:'https://link.coupang.com/a/dSIhzS'
+      purchaseUrl: 'https://link.coupang.com/a/dSIhzS'
     },
     {
       name: 'Rioja Gran Reserva',
@@ -271,7 +271,7 @@ async function main() {
       foodPairings: ['meat', 'tapas', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['bitter', 'medium'],
-      purchaseUrl:'https://link.coupang.com/a/dSIhRy'
+      purchaseUrl: 'https://link.coupang.com/a/dSIhRy'
     },
     {
       name: 'Pinot Noir Burgundy',
@@ -283,7 +283,7 @@ async function main() {
       foodPairings: ['meat', 'fish', 'mushroom'],
       occasions: ['date', 'gathering'],
       tastes: ['bitter', 'medium'],
-      purchaseUrl:'https://link.coupang.com/a/dSIieG'
+      purchaseUrl: 'https://link.coupang.com/a/dSIieG'
     },
     {
       name: 'Malbec Mendoza',
@@ -295,7 +295,7 @@ async function main() {
       foodPairings: ['meat', 'bbq', 'cheese'],
       occasions: ['gathering', 'camping'],
       tastes: ['sweet', 'heavy'],
-      purchaseUrl:'https://link.coupang.com/a/dSIiD0'
+      purchaseUrl: 'https://link.coupang.com/a/dSIiD0'
     },
     {
       name: 'Cabernet Sauvignon Napa',
@@ -307,7 +307,7 @@ async function main() {
       foodPairings: ['meat', 'steak', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['bitter', 'heavy'],
-      purchaseUrl:'https://link.coupang.com/a/dSIi8q'
+      purchaseUrl: 'https://link.coupang.com/a/dSIi8q'
     },
     {
       name: 'Syrah Côtes du Rhône',
@@ -319,7 +319,7 @@ async function main() {
       foodPairings: ['meat', 'stew', 'cheese'],
       occasions: ['gathering', 'solo-drinking'],
       tastes: ['bitter', 'heavy'],
-      purchaseUrl:'https://link.coupang.com/a/dSIjnf'
+      purchaseUrl: 'https://link.coupang.com/a/dSIjnf'
     },
     {
       name: 'Zinfandel California',
@@ -331,7 +331,7 @@ async function main() {
       foodPairings: ['meat', 'bbq', 'pizza'],
       occasions: ['gathering', 'camping'],
       tastes: ['sweet', 'medium'],
-      purchaseUrl:'https://link.coupang.com/a/dSIjNs'
+      purchaseUrl: 'https://link.coupang.com/a/dSIjNs'
     },
     {
       name: 'Merlot Bordeaux',
@@ -343,7 +343,7 @@ async function main() {
       foodPairings: ['meat', 'pasta', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'medium'],
-      purchaseUrl:'https://link.coupang.com/a/dSIj9v'
+      purchaseUrl: 'https://link.coupang.com/a/dSIj9v'
     },
     {
       name: 'Sangiovese Chianti Classico',
@@ -355,7 +355,7 @@ async function main() {
       foodPairings: ['pasta', 'pizza', 'cheese'],
       occasions: ['gathering', 'solo-meal'],
       tastes: ['bitter', 'medium'],
-      purchaseUrl:'https://link.coupang.com/a/dSIkoS'
+      purchaseUrl: 'https://link.coupang.com/a/dSIkoS'
     },
     {
       name: 'Tempranillo Ribera del Duero',
@@ -367,7 +367,7 @@ async function main() {
       foodPairings: ['meat', 'tapas', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['bitter', 'medium'],
-      purchaseUrl:'https://link.coupang.com/a/dSIkCD'
+      purchaseUrl: 'https://link.coupang.com/a/dSIkCD'
     },
     {
       name: 'Grenache GSM Blend',
@@ -379,7 +379,7 @@ async function main() {
       foodPairings: ['meat', 'bbq', 'cheese'],
       occasions: ['gathering', 'camping'],
       tastes: ['sweet', 'medium'],
-      purchaseUrl:'https://link.coupang.com/a/dSIkU2'
+      purchaseUrl: 'https://link.coupang.com/a/dSIkU2'
     },
     {
       name: 'Nebbiolo Barbaresco',
@@ -391,7 +391,7 @@ async function main() {
       foodPairings: ['meat', 'truffle', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['bitter', 'heavy'],
-      purchaseUrl:'https://link.coupang.com/a/dSIlbQ'
+      purchaseUrl: 'https://link.coupang.com/a/dSIlbQ'
     },
     {
       name: 'Carmenere Chile',
@@ -403,7 +403,7 @@ async function main() {
       foodPairings: ['meat', 'pasta', 'cheese'],
       occasions: ['gathering', 'solo-meal'],
       tastes: ['sweet', 'medium'],
-      purchaseUrl:'https://link.coupang.com/a/dSIlpa'
+      purchaseUrl: 'https://link.coupang.com/a/dSIlpa'
     },
     {
       name: 'Shiraz Australia',
@@ -415,7 +415,7 @@ async function main() {
       foodPairings: ['meat', 'bbq', 'cheese'],
       occasions: ['gathering', 'camping'],
       tastes: ['bitter', 'heavy'],
-      purchaseUrl:'https://link.coupang.com/a/dSImee'
+      purchaseUrl: 'https://link.coupang.com/a/dSImee'
     },
     {
       name: 'Primitivo Puglia',
@@ -427,7 +427,7 @@ async function main() {
       foodPairings: ['meat', 'pasta', 'cheese'],
       occasions: ['gathering', 'solo-meal'],
       tastes: ['sweet', 'heavy'],
-      purchaseUrl:'https://link.coupang.com/a/dSImDb'
+      purchaseUrl: 'https://link.coupang.com/a/dSImDb'
     },
     {
       name: 'Petite Sirah California',
@@ -439,7 +439,7 @@ async function main() {
       foodPairings: ['meat', 'steak', 'cheese'],
       occasions: ['gathering', 'solo-drinking'],
       tastes: ['bitter', 'heavy'],
-      purchaseUrl:'https://link.coupang.com/a/dSImWa'
+      purchaseUrl: 'https://link.coupang.com/a/dSImWa'
     },
     {
       name: 'Montepulciano d\'Abruzzo',
@@ -451,7 +451,7 @@ async function main() {
       foodPairings: ['pasta', 'pizza', 'cheese'],
       occasions: ['gathering', 'solo-meal'],
       tastes: ['sweet', 'medium'],
-      purchaseUrl:'https://link.coupang.com/a/dSInju'
+      purchaseUrl: 'https://link.coupang.com/a/dSInju'
     },
     {
       name: 'Pinotage South Africa',
@@ -463,7 +463,7 @@ async function main() {
       foodPairings: ['meat', 'bbq', 'cheese'],
       occasions: ['gathering', 'camping'],
       tastes: ['bitter', 'medium'],
-      purchaseUrl:'https://link.coupang.com/a/dSInQR'
+      purchaseUrl: 'https://link.coupang.com/a/dSInQR'
     },
     {
       name: 'Côtes du Rhône Villages',
@@ -475,7 +475,7 @@ async function main() {
       foodPairings: ['meat', 'stew', 'cheese'],
       occasions: ['gathering', 'solo-meal'],
       tastes: ['bitter', 'medium'],
-      purchaseUrl:'https://link.coupang.com/a/dSIrO9'
+      purchaseUrl: 'https://link.coupang.com/a/dSIrO9'
     },
     {
       name: 'Valpolicella Ripasso',
@@ -487,7 +487,7 @@ async function main() {
       foodPairings: ['meat', 'pasta', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'medium'],
-      purchaseUrl:'https://link.coupang.com/a/dSIsbR'
+      purchaseUrl: 'https://link.coupang.com/a/dSIsbR'
     },
     {
       name: 'Priorat DOCa',
@@ -499,7 +499,7 @@ async function main() {
       foodPairings: ['meat', 'steak', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['bitter', 'heavy'],
-      purchaseUrl:'https://link.coupang.com/a/dSIsvy'
+      purchaseUrl: 'https://link.coupang.com/a/dSIsvy'
     },
     {
       name: 'Douro Red Portugal',
@@ -511,7 +511,7 @@ async function main() {
       foodPairings: ['meat', 'stew', 'cheese'],
       occasions: ['gathering', 'solo-drinking'],
       tastes: ['bitter', 'heavy'],
-      purchaseUrl:'https://link.coupang.com/a/dSIs48'
+      purchaseUrl: 'https://link.coupang.com/a/dSIs48'
     },
     {
       name: 'Nero d\'Avola Sicily',
@@ -523,7 +523,7 @@ async function main() {
       foodPairings: ['pasta', 'pizza', 'cheese'],
       occasions: ['gathering', 'solo-meal'],
       tastes: ['sweet', 'medium'],
-      purchaseUrl:'https://link.coupang.com/a/dSItu5'
+      purchaseUrl: 'https://link.coupang.com/a/dSItu5'
     },
     {
       name: 'Aglianico Taurasi',
@@ -535,7 +535,7 @@ async function main() {
       foodPairings: ['meat', 'stew', 'cheese'],
       occasions: ['gathering', 'solo-drinking'],
       tastes: ['bitter', 'heavy'],
-      purchaseUrl:'https://link.coupang.com/a/dSItQk'
+      purchaseUrl: 'https://link.coupang.com/a/dSItQk'
     },
     {
       name: 'Touriga Nacional Portugal',
@@ -547,7 +547,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'chocolate'],
       occasions: ['date', 'solo-drinking'],
       tastes: ['bitter', 'heavy'],
-      purchaseUrl:'https://link.coupang.com/a/dSIumM'
+      purchaseUrl: 'https://link.coupang.com/a/dSIumM'
     },
     // 화이트 와인 (25개)
     {
@@ -560,7 +560,7 @@ async function main() {
       foodPairings: ['seafood', 'oyster', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['sour', 'light'],
-      purchaseUrl:'https://link.coupang.com/a/dSIuJp'
+      purchaseUrl: 'https://link.coupang.com/a/dSIuJp'
     },
     {
       name: 'Sancerre',
@@ -572,7 +572,7 @@ async function main() {
       foodPairings: ['seafood', 'salad', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['sour', 'light'],
-      purchaseUrl:'https://link.coupang.com/a/dSIu3b'
+      purchaseUrl: 'https://link.coupang.com/a/dSIu3b'
     },
     {
       name: 'Pouilly-Fuissé',
@@ -584,7 +584,7 @@ async function main() {
       foodPairings: ['seafood', 'chicken', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'medium'],
-      purchaseUrl:'https://link.coupang.com/a/dSIvna'
+      purchaseUrl: 'https://link.coupang.com/a/dSIvna'
     },
     {
       name: 'Riesling Mosel',
@@ -596,7 +596,7 @@ async function main() {
       foodPairings: ['seafood', 'spicy', 'dessert'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:'https://link.coupang.com/a/dSIvTK'
+      purchaseUrl: 'https://link.coupang.com/a/dSIvTK'
     },
     {
       name: 'Albariño Rías Baixas',
@@ -608,7 +608,7 @@ async function main() {
       foodPairings: ['seafood', 'salad', 'light dishes'],
       occasions: ['gathering', 'camping'],
       tastes: ['sour', 'light'],
-      purchaseUrl:'https://link.coupang.com/a/dSIwes'
+      purchaseUrl: 'https://link.coupang.com/a/dSIwes'
     },
     {
       name: 'Grüner Veltliner',
@@ -620,7 +620,7 @@ async function main() {
       foodPairings: ['seafood', 'vegetable', 'cheese'],
       occasions: ['gathering', 'solo-meal'],
       tastes: ['sour', 'light'],
-      purchaseUrl:'https://link.coupang.com/a/dSIwBs'
+      purchaseUrl: 'https://link.coupang.com/a/dSIwBs'
     },
     {
       name: 'Viognier Condrieu',
@@ -632,7 +632,7 @@ async function main() {
       foodPairings: ['seafood', 'chicken', 'spicy'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'medium'],
-      purchaseUrl:'https://link.coupang.com/a/dSIwSt'
+      purchaseUrl: 'https://link.coupang.com/a/dSIwSt'
     },
     {
       name: 'Gewürztraminer Alsace',
@@ -644,7 +644,7 @@ async function main() {
       foodPairings: ['spicy', 'cheese', 'dessert'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'medium'],
-      purchaseUrl:'https://link.coupang.com/a/dSIw8h'
+      purchaseUrl: 'https://link.coupang.com/a/dSIw8h'
     },
     {
       name: 'Pinot Grigio Alto Adige',
@@ -656,7 +656,7 @@ async function main() {
       foodPairings: ['seafood', 'salad', 'light dishes'],
       occasions: ['gathering', 'camping'],
       tastes: ['sour', 'light'],
-      purchaseUrl:'https://link.coupang.com/a/dSIxmX'
+      purchaseUrl: 'https://link.coupang.com/a/dSIxmX'
     },
     {
       name: 'Vermentino Sardinia',
@@ -668,7 +668,7 @@ async function main() {
       foodPairings: ['seafood', 'salad', 'light dishes'],
       occasions: ['gathering', 'camping'],
       tastes: ['sour', 'light'],
-      purchaseUrl:'https://link.coupang.com/a/dSIxEy'
+      purchaseUrl: 'https://link.coupang.com/a/dSIxEy'
     },
     {
       name: 'Chenin Blanc Loire',
@@ -680,7 +680,7 @@ async function main() {
       foodPairings: ['seafood', 'chicken', 'cheese'],
       occasions: ['gathering', 'solo-meal'],
       tastes: ['sweet', 'medium'],
-      purchaseUrl:'https://link.coupang.com/a/dSIxW0'
+      purchaseUrl: 'https://link.coupang.com/a/dSIxW0'
     },
     {
       name: 'Soave Classico',
@@ -692,7 +692,7 @@ async function main() {
       foodPairings: ['seafood', 'pasta', 'light dishes'],
       occasions: ['gathering', 'solo-meal'],
       tastes: ['sour', 'light'],
-      purchaseUrl:'https://link.coupang.com/a/dSIyd5'
+      purchaseUrl: 'https://link.coupang.com/a/dSIyd5'
     },
     {
       name: 'Muscadet Sèvre et Maine',
@@ -704,7 +704,7 @@ async function main() {
       foodPairings: ['seafood', 'oyster', 'light dishes'],
       occasions: ['gathering', 'camping'],
       tastes: ['sour', 'light'],
-      purchaseUrl:'https://link.coupang.com/a/dSIyv6'
+      purchaseUrl: 'https://link.coupang.com/a/dSIyv6'
     },
     {
       name: 'Fiano di Avellino',
@@ -716,7 +716,7 @@ async function main() {
       foodPairings: ['seafood', 'pasta', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'medium'],
-      purchaseUrl:'https://link.coupang.com/a/dSIyS7'
+      purchaseUrl: 'https://link.coupang.com/a/dSIyS7'
     },
     {
       name: 'Greco di Tufo',
@@ -728,7 +728,7 @@ async function main() {
       foodPairings: ['seafood', 'chicken', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['sour', 'medium'],
-      purchaseUrl:'https://link.coupang.com/a/dSIy8u'
+      purchaseUrl: 'https://link.coupang.com/a/dSIy8u'
     },
     {
       name: 'Verdejo Rueda',
@@ -740,7 +740,7 @@ async function main() {
       foodPairings: ['seafood', 'salad', 'tapas'],
       occasions: ['gathering', 'camping'],
       tastes: ['sour', 'light'],
-      purchaseUrl:'https://link.coupang.com/a/dSIznB'
+      purchaseUrl: 'https://link.coupang.com/a/dSIznB'
     },
     {
       name: 'Torrontés Argentina',
@@ -752,7 +752,7 @@ async function main() {
       foodPairings: ['seafood', 'spicy', 'light dishes'],
       occasions: ['gathering', 'camping'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:'https://link.coupang.com/a/dSIzET'
+      purchaseUrl: 'https://link.coupang.com/a/dSIzET'
     },
     {
       name: 'Assyrtiko Santorini',
@@ -764,7 +764,7 @@ async function main() {
       foodPairings: ['seafood', 'salad', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['sour', 'light'],
-      purchaseUrl:'https://link.coupang.com/a/dSICzS'
+      purchaseUrl: 'https://link.coupang.com/a/dSICzS'
     },
     {
       name: 'Vinho Verde',
@@ -776,7 +776,7 @@ async function main() {
       foodPairings: ['seafood', 'salad', 'light dishes'],
       occasions: ['gathering', 'camping'],
       tastes: ['sour', 'light'],
-      purchaseUrl:'https://link.coupang.com/a/dSICSc'
+      purchaseUrl: 'https://link.coupang.com/a/dSICSc'
     },
     {
       name: 'Chardonnay Napa Valley',
@@ -788,7 +788,7 @@ async function main() {
       foodPairings: ['seafood', 'chicken', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'medium'],
-      purchaseUrl:'https://link.coupang.com/a/dSIC9d'
+      purchaseUrl: 'https://link.coupang.com/a/dSIC9d'
     },
     {
       name: 'Sauvignon Blanc Marlborough',
@@ -800,7 +800,7 @@ async function main() {
       foodPairings: ['seafood', 'salad', 'cheese'],
       occasions: ['gathering', 'camping'],
       tastes: ['sour', 'light'],
-      purchaseUrl:'https://link.coupang.com/a/dSIDvP'
+      purchaseUrl: 'https://link.coupang.com/a/dSIDvP'
     },
     {
       name: 'Semillon Hunter Valley',
@@ -812,7 +812,7 @@ async function main() {
       foodPairings: ['seafood', 'chicken', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'medium'],
-      purchaseUrl:'https://link.coupang.com/a/dSIDQi'
+      purchaseUrl: 'https://link.coupang.com/a/dSIDQi'
     },
     {
       name: 'Pinot Blanc Alsace',
@@ -824,7 +824,7 @@ async function main() {
       foodPairings: ['seafood', 'chicken', 'light dishes'],
       occasions: ['gathering', 'solo-meal'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:'https://link.coupang.com/a/dSID9N'
+      purchaseUrl: 'https://link.coupang.com/a/dSID9N'
     },
     {
       name: 'Gavi di Gavi',
@@ -836,7 +836,7 @@ async function main() {
       foodPairings: ['seafood', 'salad', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['sour', 'light'],
-      purchaseUrl:'https://link.coupang.com/a/dSIEtz'
+      purchaseUrl: 'https://link.coupang.com/a/dSIEtz'
     },
     {
       name: 'Meursault',
@@ -848,7 +848,7 @@ async function main() {
       foodPairings: ['seafood', 'chicken', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'medium'],
-      purchaseUrl:'https://link.coupang.com/a/dSIEOU'
+      purchaseUrl: 'https://link.coupang.com/a/dSIEOU'
     },
     // 위스키 (20개)
     {
@@ -861,7 +861,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'chocolate'],
       occasions: ['solo-drinking', 'gathering'],
       tastes: ['bitter', 'heavy'],
-      purchaseUrl:'https://link.coupang.com/a/dSIE5a'
+      purchaseUrl: 'https://link.coupang.com/a/dSIE5a'
     },
     {
       name: 'Glenfiddich 15 Year',
@@ -873,7 +873,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'nuts'],
       occasions: ['solo-drinking', 'gathering'],
       tastes: ['bitter', 'medium'],
-      purchaseUrl:'https://link.coupang.com/a/dSIFHd'
+      purchaseUrl: 'https://link.coupang.com/a/dSIFHd'
     },
     {
       name: 'Lagavulin 16 Year',
@@ -885,7 +885,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'seafood'],
       occasions: ['solo-drinking', 'gathering'],
       tastes: ['bitter', 'heavy'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIHo7'
     },
     {
       name: 'Yamazaki 12 Year',
@@ -897,7 +897,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'chocolate'],
       occasions: ['solo-drinking', 'date'],
       tastes: ['sweet', 'medium'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIHKl'
     },
     {
       name: 'Hibiki Harmony',
@@ -909,7 +909,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'dessert'],
       occasions: ['solo-drinking', 'gathering'],
       tastes: ['sweet', 'medium'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIH3d'
     },
     {
       name: 'Johnnie Walker Blue Label',
@@ -921,7 +921,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'chocolate'],
       occasions: ['solo-drinking', 'gathering'],
       tastes: ['bitter', 'heavy'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIIma'
     },
     {
       name: 'Talisker 10 Year',
@@ -933,7 +933,7 @@ async function main() {
       foodPairings: ['meat', 'seafood', 'cheese'],
       occasions: ['solo-drinking', 'gathering'],
       tastes: ['bitter', 'heavy'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIIEg'
     },
     {
       name: 'Highland Park 12 Year',
@@ -945,7 +945,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'nuts'],
       occasions: ['solo-drinking', 'gathering'],
       tastes: ['bitter', 'medium'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIITm'
     },
     {
       name: 'Ardbeg 10 Year',
@@ -957,7 +957,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'seafood'],
       occasions: ['solo-drinking', 'gathering'],
       tastes: ['bitter', 'heavy'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIJdP'
     },
     {
       name: 'Glenmorangie 18 Year',
@@ -969,7 +969,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'dessert'],
       occasions: ['solo-drinking', 'date'],
       tastes: ['sweet', 'medium'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIJBq'
     },
     {
       name: 'Maker\'s Mark',
@@ -981,7 +981,7 @@ async function main() {
       foodPairings: ['meat', 'bbq', 'dessert'],
       occasions: ['gathering', 'solo-drinking'],
       tastes: ['sweet', 'medium'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIJZe'
     },
     {
       name: 'Woodford Reserve',
@@ -993,7 +993,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'chocolate'],
       occasions: ['solo-drinking', 'gathering'],
       tastes: ['sweet', 'medium'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIKu5'
     },
     {
       name: 'Buffalo Trace',
@@ -1005,7 +1005,7 @@ async function main() {
       foodPairings: ['meat', 'bbq', 'cheese'],
       occasions: ['gathering', 'camping'],
       tastes: ['sweet', 'medium'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIKOJ'
     },
     {
       name: 'Jack Daniel\'s Single Barrel',
@@ -1017,7 +1017,7 @@ async function main() {
       foodPairings: ['meat', 'bbq', 'cheese'],
       occasions: ['gathering', 'solo-drinking'],
       tastes: ['sweet', 'medium'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSILb2'
     },
     {
       name: 'Crown Royal Reserve',
@@ -1029,7 +1029,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'dessert'],
       occasions: ['gathering', 'solo-drinking'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSILIb'
     },
     {
       name: 'Jameson Black Barrel',
@@ -1041,7 +1041,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'dessert'],
       occasions: ['gathering', 'solo-drinking'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIMeL'
     },
     {
       name: 'Redbreast 12 Year',
@@ -1053,7 +1053,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'nuts'],
       occasions: ['solo-drinking', 'gathering'],
       tastes: ['sweet', 'medium'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIMua'
     },
     {
       name: 'Nikka From The Barrel',
@@ -1065,7 +1065,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'chocolate'],
       occasions: ['solo-drinking', 'gathering'],
       tastes: ['bitter', 'heavy'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIMZA'
     },
     {
       name: 'Balvenie 14 Year Caribbean Cask',
@@ -1077,7 +1077,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'dessert'],
       occasions: ['solo-drinking', 'date'],
       tastes: ['sweet', 'medium'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSINiG'
     },
     {
       name: 'Oban 14 Year',
@@ -1089,7 +1089,7 @@ async function main() {
       foodPairings: ['meat', 'seafood', 'cheese'],
       occasions: ['solo-drinking', 'gathering'],
       tastes: ['bitter', 'medium'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSINB6'
     },
     // 칵테일 (15개)
     {
@@ -1102,7 +1102,7 @@ async function main() {
       foodPairings: ['seafood', 'light dishes', 'spicy'],
       occasions: ['date', 'gathering', 'camping'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIN5c'
     },
     {
       name: 'Margarita',
@@ -1114,7 +1114,7 @@ async function main() {
       foodPairings: ['spicy', 'seafood', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['sour', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIOnv'
     },
     {
       name: 'Old Fashioned',
@@ -1126,7 +1126,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'chocolate'],
       occasions: ['solo-drinking', 'gathering'],
       tastes: ['bitter', 'medium'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIOGI'
     },
     {
       name: 'Negroni',
@@ -1138,7 +1138,7 @@ async function main() {
       foodPairings: ['cheese', 'meat', 'nuts'],
       occasions: ['gathering', 'solo-drinking'],
       tastes: ['bitter', 'medium'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIOUw'
     },
     {
       name: 'Espresso Martini',
@@ -1150,7 +1150,7 @@ async function main() {
       foodPairings: ['dessert', 'chocolate', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['bitter', 'medium'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIPlf'
     },
     {
       name: 'Aperol Spritz',
@@ -1162,7 +1162,7 @@ async function main() {
       foodPairings: ['light dishes', 'cheese', 'seafood'],
       occasions: ['gathering', 'camping'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIPOn'
     },
     {
       name: 'Manhattan',
@@ -1174,7 +1174,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'chocolate'],
       occasions: ['solo-drinking', 'gathering'],
       tastes: ['bitter', 'medium'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIP5H'
     },
     {
       name: 'Cosmopolitan',
@@ -1186,7 +1186,7 @@ async function main() {
       foodPairings: ['light dishes', 'seafood', 'dessert'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIQoy'
     },
     {
       name: 'Whiskey Sour',
@@ -1198,7 +1198,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'light dishes'],
       occasions: ['gathering', 'solo-drinking'],
       tastes: ['sour', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIQLZ'
     },
     {
       name: 'Daiquiri',
@@ -1210,7 +1210,7 @@ async function main() {
       foodPairings: ['seafood', 'light dishes', 'dessert'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIQ0d'
     },
     {
       name: 'Gin & Tonic',
@@ -1222,7 +1222,7 @@ async function main() {
       foodPairings: ['seafood', 'light dishes', 'cheese'],
       occasions: ['gathering', 'camping'],
       tastes: ['bitter', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIRjT'
     },
     {
       name: 'Moscow Mule',
@@ -1234,7 +1234,7 @@ async function main() {
       foodPairings: ['spicy', 'seafood', 'light dishes'],
       occasions: ['gathering', 'camping'],
       tastes: ['sour', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIRyh'
     },
     {
       name: 'Piña Colada',
@@ -1246,7 +1246,7 @@ async function main() {
       foodPairings: ['dessert', 'seafood', 'light dishes'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'medium'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIRLr'
     },
     {
       name: 'Bloody Mary',
@@ -1258,7 +1258,7 @@ async function main() {
       foodPairings: ['brunch', 'seafood', 'spicy'],
       occasions: ['gathering', 'solo-meal'],
       tastes: ['sour', 'medium'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIR1C'
     },
     {
       name: 'Mai Tai',
@@ -1270,7 +1270,7 @@ async function main() {
       foodPairings: ['seafood', 'spicy', 'dessert'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'medium'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSISkw'
     },
     // 차 (10개)
     {
@@ -1283,7 +1283,7 @@ async function main() {
       foodPairings: ['meat', 'fish', 'cheese', 'dessert'],
       occasions: ['date', 'gathering', 'solo-meal'],
       tastes: ['bitter', 'medium'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSISDC'
     },
     {
       name: 'Matcha Green Tea',
@@ -1295,7 +1295,7 @@ async function main() {
       foodPairings: ['dessert', 'light dishes', 'vegetable'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['bitter', 'medium'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSISUJ'
     },
     {
       name: 'Earl Grey',
@@ -1307,7 +1307,7 @@ async function main() {
       foodPairings: ['dessert', 'cheese', 'light dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['bitter', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSITaD'
     },
     {
       name: 'Jasmine Tea',
@@ -1319,7 +1319,7 @@ async function main() {
       foodPairings: ['seafood', 'light dishes', 'dessert'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSITmE'
     },
     {
       name: 'Pu-erh Tea Aged',
@@ -1331,7 +1331,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'heavy dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['bitter', 'heavy'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSITBK'
     },
     {
       name: 'Darjeeling First Flush',
@@ -1343,7 +1343,7 @@ async function main() {
       foodPairings: ['light dishes', 'dessert', 'cheese'],
       occasions: ['solo-meal', 'date'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSITQr'
     },
     {
       name: 'Sencha Green Tea',
@@ -1355,7 +1355,7 @@ async function main() {
       foodPairings: ['seafood', 'vegetable', 'light dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['bitter', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIT6B'
     },
     {
       name: 'Chamomile Tea',
@@ -1367,7 +1367,7 @@ async function main() {
       foodPairings: ['dessert', 'light dishes'],
       occasions: ['solo-meal'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIUm5'
     },
     {
       name: 'Rooibos Tea',
@@ -1379,7 +1379,7 @@ async function main() {
       foodPairings: ['dessert', 'light dishes', 'cheese'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIUHi'
     },
     {
       name: 'White Peony Tea',
@@ -1391,7 +1391,7 @@ async function main() {
       foodPairings: ['light dishes', 'dessert', 'seafood'],
       occasions: ['solo-meal', 'date'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIUVF'
     },
     // 비알콜 (10개)
     {
@@ -1404,7 +1404,7 @@ async function main() {
       foodPairings: ['all'],
       occasions: ['all'],
       tastes: ['light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIVg7'
     },
     {
       name: 'Fever-Tree Ginger Beer',
@@ -1416,7 +1416,7 @@ async function main() {
       foodPairings: ['spicy', 'meat', 'seafood'],
       occasions: ['gathering', 'solo-meal'],
       tastes: ['sour', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIVDo'
     },
     {
       name: 'Kombucha Original',
@@ -1428,7 +1428,7 @@ async function main() {
       foodPairings: ['light dishes', 'vegetable', 'seafood'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sour', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIVRz'
     },
     {
       name: 'Cold Pressed Green Juice',
@@ -1440,7 +1440,7 @@ async function main() {
       foodPairings: ['light dishes', 'salad'],
       occasions: ['solo-meal'],
       tastes: ['sour', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIV7D'
     },
     {
       name: 'Fresh Orange Juice',
@@ -1452,7 +1452,7 @@ async function main() {
       foodPairings: ['dessert', 'light dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIWo8'
     },
     {
       name: 'Elderflower Cordial',
@@ -1464,7 +1464,7 @@ async function main() {
       foodPairings: ['light dishes', 'dessert', 'cheese'],
       occasions: ['gathering', 'date'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIWDO'
     },
     {
       name: 'Virgin Mojito',
@@ -1476,7 +1476,7 @@ async function main() {
       foodPairings: ['seafood', 'light dishes', 'spicy'],
       occasions: ['gathering', 'camping'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIWUl'
     },
     {
       name: 'Seedlip Garden Non-Alcoholic Spirit',
@@ -1488,7 +1488,7 @@ async function main() {
       foodPairings: ['light dishes', 'seafood', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['bitter', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIXaa'
     },
     {
       name: 'Coconut Water',
@@ -1500,7 +1500,7 @@ async function main() {
       foodPairings: ['light dishes', 'seafood'],
       occasions: ['solo-meal', 'camping'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIXqy'
     },
     {
       name: 'Artisan Lemonade',
@@ -1512,7 +1512,7 @@ async function main() {
       foodPairings: ['light dishes', 'dessert', 'spicy'],
       occasions: ['gathering', 'camping'],
       tastes: ['sour', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIX3j'
     },
     {
       name: 'Perrier Sparkling Water',
@@ -1524,7 +1524,7 @@ async function main() {
       foodPairings: ['all'],
       occasions: ['all'],
       tastes: ['light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIYim'
     },
     {
       name: 'Tonic Water Premium',
@@ -1536,7 +1536,7 @@ async function main() {
       foodPairings: ['light dishes', 'seafood'],
       occasions: ['gathering', 'solo-meal'],
       tastes: ['bitter', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIYCa'
     },
     {
       name: 'Ginger Ale Premium',
@@ -1548,7 +1548,7 @@ async function main() {
       foodPairings: ['spicy', 'meat', 'seafood'],
       occasions: ['gathering', 'solo-meal'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIYTt'
     },
     {
       name: 'Cranberry Juice',
@@ -1560,7 +1560,7 @@ async function main() {
       foodPairings: ['light dishes', 'dessert'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sour', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIY5H'
     },
     {
       name: 'Apple Cider Non-Alcoholic',
@@ -1572,7 +1572,7 @@ async function main() {
       foodPairings: ['dessert', 'light dishes', 'cheese'],
       occasions: ['gathering', 'camping'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIZnP'
     },
     {
       name: 'Pomegranate Juice',
@@ -1584,7 +1584,7 @@ async function main() {
       foodPairings: ['dessert', 'light dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIZAn'
     },
     {
       name: 'Aloe Vera Drink',
@@ -1596,7 +1596,7 @@ async function main() {
       foodPairings: ['light dishes', 'dessert'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIZOu'
     },
     {
       name: 'Sparkling Apple Juice',
@@ -1608,7 +1608,7 @@ async function main() {
       foodPairings: ['dessert', 'light dishes', 'cheese'],
       occasions: ['gathering', 'camping'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSIZ08'
     },
     {
       name: 'Peach Iced Tea',
@@ -1620,7 +1620,7 @@ async function main() {
       foodPairings: ['light dishes', 'dessert'],
       occasions: ['gathering', 'camping'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSI0bH'
     },
     {
       name: 'Lemon Iced Tea',
@@ -1632,7 +1632,7 @@ async function main() {
       foodPairings: ['light dishes', 'seafood'],
       occasions: ['gathering', 'camping'],
       tastes: ['sour', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSI0pu'
     },
     {
       name: 'Mango Lassi',
@@ -1644,7 +1644,7 @@ async function main() {
       foodPairings: ['spicy', 'dessert', 'light dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sweet', 'medium'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSI0C7'
     },
     {
       name: 'Watermelon Juice',
@@ -1656,7 +1656,7 @@ async function main() {
       foodPairings: ['light dishes', 'dessert'],
       occasions: ['gathering', 'camping'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSI0T5'
     },
     {
       name: 'Pineapple Juice',
@@ -1668,7 +1668,7 @@ async function main() {
       foodPairings: ['seafood', 'spicy', 'dessert'],
       occasions: ['gathering', 'camping'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSI1ak'
     },
     {
       name: 'Grapefruit Juice',
@@ -1680,7 +1680,7 @@ async function main() {
       foodPairings: ['light dishes', 'seafood'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['bitter', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSI1sh'
     },
     {
       name: 'Strawberry Smoothie',
@@ -1692,7 +1692,7 @@ async function main() {
       foodPairings: ['dessert', 'light dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sweet', 'medium'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSI1HE'
     },
     {
       name: 'Green Smoothie',
@@ -1704,7 +1704,7 @@ async function main() {
       foodPairings: ['light dishes', 'salad'],
       occasions: ['solo-meal'],
       tastes: ['bitter', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSI1Vm'
     },
     {
       name: 'Berry Mix Smoothie',
@@ -1716,7 +1716,7 @@ async function main() {
       foodPairings: ['dessert', 'light dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sweet', 'medium'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSI3OJ'
     },
     {
       name: 'Iced Americano',
@@ -1728,7 +1728,7 @@ async function main() {
       foodPairings: ['dessert', 'light dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['bitter', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSI34x'
     },
     {
       name: 'Iced Latte',
@@ -1740,7 +1740,7 @@ async function main() {
       foodPairings: ['dessert', 'light dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSI4hG'
     },
     {
       name: 'Cold Brew Coffee',
@@ -1752,7 +1752,7 @@ async function main() {
       foodPairings: ['dessert', 'chocolate'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['bitter', 'medium'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSI4tF'
     },
     // 차 추가 (20개 더)
     {
@@ -1765,7 +1765,7 @@ async function main() {
       foodPairings: ['dessert', 'cheese', 'meat'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['bitter', 'medium'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSI8tu'
     },
     {
       name: 'Ceylon Tea',
@@ -1777,7 +1777,7 @@ async function main() {
       foodPairings: ['dessert', 'light dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['bitter', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSI8Xe'
     },
     {
       name: 'English Breakfast Tea',
@@ -1789,7 +1789,7 @@ async function main() {
       foodPairings: ['dessert', 'cheese', 'light dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['bitter', 'medium'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSI5co'
     },
     {
       name: 'Gyokuro Green Tea',
@@ -1801,7 +1801,7 @@ async function main() {
       foodPairings: ['seafood', 'light dishes', 'dessert'],
       occasions: ['solo-meal', 'date'],
       tastes: ['sweet', 'medium'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSI9TB'
     },
     {
       name: 'Hojicha Roasted Tea',
@@ -1813,7 +1813,7 @@ async function main() {
       foodPairings: ['dessert', 'light dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSJabN'
     },
     {
       name: 'Genmaicha Brown Rice Tea',
@@ -1825,7 +1825,7 @@ async function main() {
       foodPairings: ['light dishes', 'seafood', 'vegetable'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSJaxf'
     },
     {
       name: 'Longjing Dragon Well Tea',
@@ -1837,7 +1837,7 @@ async function main() {
       foodPairings: ['seafood', 'light dishes', 'dessert'],
       occasions: ['solo-meal', 'date'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSJa0t'
     },
     {
       name: 'Tie Guan Yin Oolong',
@@ -1849,7 +1849,7 @@ async function main() {
       foodPairings: ['meat', 'seafood', 'cheese'],
       occasions: ['solo-meal', 'date'],
       tastes: ['sweet', 'medium'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSJbob'
     },
     {
       name: 'Da Hong Pao Rock Tea',
@@ -1861,7 +1861,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'heavy dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['bitter', 'heavy'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSJbEZ'
     },
     {
       name: 'Lapsang Souchong',
@@ -1873,7 +1873,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'heavy dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['bitter', 'medium'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSJb3T'
     },
     {
       name: 'Silver Needle White Tea',
@@ -1885,7 +1885,7 @@ async function main() {
       foodPairings: ['light dishes', 'seafood', 'dessert'],
       occasions: ['solo-meal', 'date'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSJcoh'
     },
     {
       name: 'Mint Tea Moroccan',
@@ -1897,7 +1897,7 @@ async function main() {
       foodPairings: ['spicy', 'light dishes', 'dessert'],
       occasions: ['gathering', 'solo-meal'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSJcPC'
     },
     {
       name: 'Hibiscus Tea',
@@ -1909,19 +1909,19 @@ async function main() {
       foodPairings: ['dessert', 'light dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sour', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSI7X0'
     },
     {
       name: 'Lavender Tea',
       type: 'tea',
-      description: '라벤더 허브티',
+      description: 'ㅁ',
       tastingNotes: ['floral', 'soothing', 'light'],
       image: 'https://images.unsplash.com/photo-1597318281699-33b0c7d6c8b6?w=400&h=600&fit=crop',
       price: '₩8,000',
       foodPairings: ['dessert', 'light dishes'],
       occasions: ['solo-meal'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSJdfb'
     },
     {
       name: 'Peppermint Tea',
@@ -1933,7 +1933,7 @@ async function main() {
       foodPairings: ['dessert', 'light dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSJdub'
     },
     {
       name: 'Ginger Turmeric Tea',
@@ -1945,7 +1945,7 @@ async function main() {
       foodPairings: ['spicy', 'light dishes'],
       occasions: ['solo-meal'],
       tastes: ['bitter', 'medium'],
-      purchaseUrl:''
+      purchaseUrl: ''
     },
     {
       name: 'Rose Tea',
@@ -1957,7 +1957,7 @@ async function main() {
       foodPairings: ['dessert', 'light dishes'],
       occasions: ['solo-meal', 'date'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSJdKJ'
     },
     {
       name: 'Chrysanthemum Tea',
@@ -1969,7 +1969,7 @@ async function main() {
       foodPairings: ['light dishes', 'dessert'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSJdYT'
     },
     {
       name: 'Barley Tea Korean',
@@ -1981,7 +1981,7 @@ async function main() {
       foodPairings: ['all'],
       occasions: ['all'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSJeca'
     },
     {
       name: 'Corn Silk Tea',
@@ -1993,7 +1993,7 @@ async function main() {
       foodPairings: ['light dishes', 'dessert'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sweet', 'light'],
-      purchaseUrl:''
+      purchaseUrl: 'https://link.coupang.com/a/dSJeqj'
     },
   ];
 
