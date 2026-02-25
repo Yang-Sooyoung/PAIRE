@@ -81,8 +81,8 @@ export default function FavoritesPage() {
   const handleRemove = async (drinkId: string) => {
     setDialogConfig({
       type: 'confirm',
-      title: isKorean ? '즐겨찾기 제거' : 'Remove Favorite',
-      description: isKorean ? '즐겨찾기에서 제거하시겠어요?' : 'Remove from favorites?',
+      title: t('favorites.removeFavorite'),
+      description: t('favorites.removeConfirm'),
       onConfirm: async () => {
         setShowDialog(false);
         setRemovingId(drinkId);
@@ -92,8 +92,8 @@ export default function FavoritesPage() {
         } catch (error: any) {
           setDialogConfig({
             type: 'confirm',
-            title: isKorean ? '오류' : 'Error',
-            description: error.message || (isKorean ? '제거에 실패했습니다.' : 'Failed to remove.'),
+            title: t('favorites.error'),
+            description: error.message || t('favorites.failedToRemove'),
           });
           setShowDialog(true);
         } finally {
@@ -143,15 +143,13 @@ export default function FavoritesPage() {
               "text-2xl font-light text-foreground mb-3",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? 'PREMIUM 전용 기능' : 'PREMIUM Feature'}
+              {t('favorites.premiumOnly')}
             </h2>
             <p className={cn(
               "text-muted-foreground mb-8",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean
-                ? '즐겨찾기는 PREMIUM 멤버만 이용할 수 있습니다.'
-                : 'Favorites are available for PREMIUM members only.'}
+              {t('favorites.premiumDesc')}
             </p>
             <Button
               onClick={() => router.push('/subscription')}
@@ -160,7 +158,7 @@ export default function FavoritesPage() {
                 isKorean && "font-[var(--font-noto-kr)]"
               )}
             >
-              {isKorean ? 'PREMIUM 구독하기' : 'Subscribe to PREMIUM'}
+              {t('favorites.subscribeToPremium')}
             </Button>
           </motion.div>
         </div>
@@ -195,7 +193,7 @@ export default function FavoritesPage() {
             "text-2xl font-light text-foreground tracking-wide",
             isKorean && "font-[var(--font-noto-kr)] tracking-normal"
           )}>
-            {isKorean ? '즐겨찾기' : 'Favorites'}
+            {t('favorites.title')}
           </h1>
         </div>
       </div>
@@ -212,7 +210,7 @@ export default function FavoritesPage() {
               "text-muted-foreground",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? '아직 즐겨찾기한 음료가 없습니다.' : 'No favorites yet.'}
+              {t('favorites.noFavorites')}
             </p>
           </motion.div>
         ) : (

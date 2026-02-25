@@ -127,7 +127,8 @@ export class RecommendationService {
 
       // 데이터베이스에 저장
       if (userId) {
-        await this.prisma.recommendation.create({
+        console.log('Saving recommendation to database for user:', userId);
+        const saved = await this.prisma.recommendation.create({
           data: {
             userId,
             imageUrl,
@@ -137,12 +138,15 @@ export class RecommendationService {
             fairyMessage: aiResult.fairyMessage,
           },
         });
+        console.log('Recommendation saved successfully:', saved.id);
+      } else {
+        console.log('No userId provided, skipping database save');
       }
 
       return { recommendation };
     } catch (error) {
       console.error('AI recommendation failed, falling back to rule-based:', error);
-      // AI 실패 시 기존 룰 기반 시스템 사용
+      // AI 실패 시 기존 룰 기반 시스템으로 계속 진행
     }
 
     // 폴백: 기존 룰 기반 추천 엔진
@@ -171,7 +175,8 @@ export class RecommendationService {
 
     // 데이터베이스에 저장
     if (userId) {
-      await this.prisma.recommendation.create({
+      console.log('Saving fallback recommendation to database for user:', userId);
+      const saved = await this.prisma.recommendation.create({
         data: {
           userId,
           imageUrl,
@@ -181,6 +186,9 @@ export class RecommendationService {
           fairyMessage,
         },
       });
+      console.log('Fallback recommendation saved successfully:', saved.id);
+    } else {
+      console.log('No userId provided for fallback, skipping database save');
     }
 
     return { recommendation };

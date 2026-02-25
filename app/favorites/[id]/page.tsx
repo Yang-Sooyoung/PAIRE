@@ -31,7 +31,7 @@ export default function FavoriteDetailPage() {
   const params = useParams();
   const id = params.id as string;
   const { user } = useUserStore();
-  const { language } = useI18n();
+  const { language, t } = useI18n();
   const isKorean = language === 'ko';
   
   const [drink, setDrink] = useState<DrinkDetail | null>(null);
@@ -50,7 +50,7 @@ export default function FavoriteDetailPage() {
         setDrink(response.drink);
       } catch (error) {
         console.error('Failed to fetch drink detail:', error);
-        toast.error(isKorean ? '상세 정보를 불러올 수 없습니다.' : 'Failed to load details.');
+        toast.error(t('favorites.failedToLoad'));
         router.back();
       } finally {
         setLoading(false);
@@ -64,10 +64,10 @@ export default function FavoriteDetailPage() {
     setRemoving(true);
     try {
       await removeFavorite(id);
-      toast.success(isKorean ? '즐겨찾기에서 제거했습니다.' : 'Removed from favorites.');
+      toast.success(t('favorites.removed'));
       router.back();
     } catch (error: any) {
-      toast.error(error.message || (isKorean ? '오류가 발생했습니다.' : 'An error occurred.'));
+      toast.error(error.message || t('favorites.failedToRemove'));
     } finally {
       setRemoving(false);
     }
@@ -124,7 +124,7 @@ export default function FavoriteDetailPage() {
               "text-2xl font-light text-foreground tracking-wide",
               isKorean && "font-[var(--font-noto-kr)] tracking-normal"
             )}>
-              {isKorean ? '음료 상세' : 'Drink Details'}
+              {t('favorites.drinkDetails')}
             </h1>
           </div>
           <button
@@ -186,7 +186,7 @@ export default function FavoriteDetailPage() {
                 "text-lg font-semibold text-foreground mb-3",
                 isKorean && "font-[var(--font-noto-kr)]"
               )}>
-                {isKorean ? '테이스팅 노트' : 'Tasting Notes'}
+                {t('favorites.tastingNotes')}
               </h3>
               <div className="flex flex-wrap gap-2">
                 {drink.tastingNotes.map((note, i) => (
@@ -208,7 +208,7 @@ export default function FavoriteDetailPage() {
                 "text-lg font-semibold text-foreground mb-3",
                 isKorean && "font-[var(--font-noto-kr)]"
               )}>
-                {isKorean ? '상세 정보' : 'Details'}
+                {t('favorites.details')}
               </h3>
               
               <div className="space-y-3">
@@ -218,7 +218,7 @@ export default function FavoriteDetailPage() {
                       "text-muted-foreground",
                       isKorean && "font-[var(--font-noto-kr)]"
                     )}>
-                      {isKorean ? '알코올 도수' : 'Alcohol'}
+                      {t('favorites.alcohol')}
                     </span>
                     <span className="text-foreground font-medium">
                       {drink.alcohol}
@@ -232,7 +232,7 @@ export default function FavoriteDetailPage() {
                       "text-muted-foreground",
                       isKorean && "font-[var(--font-noto-kr)]"
                     )}>
-                      {isKorean ? '원산지' : 'Origin'}
+                      {t('favorites.origin')}
                     </span>
                     <span className="text-foreground font-medium">
                       {drink.origin}
@@ -246,7 +246,7 @@ export default function FavoriteDetailPage() {
                       "text-muted-foreground",
                       isKorean && "font-[var(--font-noto-kr)]"
                     )}>
-                      {isKorean ? '적정 온도' : 'Serving Temp'}
+                      {t('favorites.servingTemp')}
                     </span>
                     <span className="text-foreground font-medium">
                       {drink.servingTemp}
@@ -264,7 +264,7 @@ export default function FavoriteDetailPage() {
                 "text-lg font-semibold text-foreground mb-3",
                 isKorean && "font-[var(--font-noto-kr)]"
               )}>
-                {isKorean ? '추천 페어링' : 'Recommended Pairing'}
+                {t('favorites.recommendedPairing')}
               </h3>
               <div className="flex flex-wrap gap-2">
                 {drink.pairing.map((food, i) => (
@@ -295,7 +295,7 @@ export default function FavoriteDetailPage() {
               ) : (
                 <Heart className="w-4 h-4 mr-2 fill-gold" />
               )}
-              {isKorean ? '즐겨찾기 제거' : 'Remove Favorite'}
+              {t('favorites.removeFavorite')}
             </Button>
             
             <Button
@@ -305,7 +305,7 @@ export default function FavoriteDetailPage() {
               )}
             >
               <ShoppingCart className="w-4 h-4 mr-2" />
-              {isKorean ? '구매하기' : 'Purchase'}
+              {t('favorites.purchase')}
             </Button>
           </div>
         </motion.div>
