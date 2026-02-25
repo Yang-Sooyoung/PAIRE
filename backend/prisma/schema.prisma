@@ -68,6 +68,7 @@ model Subscription {
 }
 
 enum BillingInterval {
+  WEEKLY
   MONTHLY
   ANNUALLY
 }

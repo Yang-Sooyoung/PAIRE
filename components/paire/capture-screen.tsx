@@ -206,11 +206,11 @@ export function CaptureScreen({ onCapture, onBack }: CaptureScreenProps) {
       </div>
 
       {/* Camera/Preview Area */}
-      <div className="flex-1 flex flex-col items-center justify-center px-6">
+      <div className="flex-1 flex flex-col items-center justify-center px-6 py-4">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="relative w-full max-w-sm aspect-square rounded-2xl overflow-hidden border-2 border-dashed border-gold/30 bg-secondary/50"
+          className="relative w-full max-w-md aspect-[3/4] rounded-2xl overflow-hidden border-2 border-dashed border-gold/30 bg-black"
         >
           {/* 실시간 카메라 */}
           {isCameraActive && !preview && (
@@ -219,7 +219,8 @@ export function CaptureScreen({ onCapture, onBack }: CaptureScreenProps) {
               autoPlay
               playsInline
               muted
-              className="w-full h-full object-cover"
+              className="absolute inset-0 w-full h-full object-cover"
+              style={{ transform: facingMode === 'user' ? 'scaleX(-1)' : 'none' }}
             />
           )}
 
@@ -228,13 +229,13 @@ export function CaptureScreen({ onCapture, onBack }: CaptureScreenProps) {
             <img
               src={preview}
               alt="Food preview"
-              className="w-full h-full object-cover"
+              className="absolute inset-0 w-full h-full object-cover"
             />
           )}
 
           {/* 초기 상태 */}
           {!isCameraActive && !preview && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-secondary/50">
               <div className="w-20 h-20 rounded-full bg-gold/10 flex items-center justify-center mb-4">
                 <Camera className="w-10 h-10 text-gold" />
               </div>
@@ -253,11 +254,15 @@ export function CaptureScreen({ onCapture, onBack }: CaptureScreenProps) {
             </div>
           )}
 
-          {/* Corner guides */}
-          <div className="absolute top-4 left-4 w-8 h-8 border-l-2 border-t-2 border-gold/50 rounded-tl-lg" />
-          <div className="absolute top-4 right-4 w-8 h-8 border-r-2 border-t-2 border-gold/50 rounded-tr-lg" />
-          <div className="absolute bottom-4 left-4 w-8 h-8 border-l-2 border-b-2 border-gold/50 rounded-bl-lg" />
-          <div className="absolute bottom-4 right-4 w-8 h-8 border-r-2 border-b-2 border-gold/50 rounded-br-lg" />
+          {/* Corner guides - 카메라 활성화 시에만 표시 */}
+          {isCameraActive && !preview && (
+            <>
+              <div className="absolute top-4 left-4 w-8 h-8 border-l-2 border-t-2 border-gold rounded-tl-lg" />
+              <div className="absolute top-4 right-4 w-8 h-8 border-r-2 border-t-2 border-gold rounded-tr-lg" />
+              <div className="absolute bottom-4 left-4 w-8 h-8 border-l-2 border-b-2 border-gold rounded-bl-lg" />
+              <div className="absolute bottom-4 right-4 w-8 h-8 border-r-2 border-b-2 border-gold rounded-br-lg" />
+            </>
+          )}
         </motion.div>
 
         <p className={cn(
@@ -312,23 +317,37 @@ export function CaptureScreen({ onCapture, onBack }: CaptureScreenProps) {
               onClick={capturePhoto}
               disabled={isCompressing}
               className={cn(
-                "w-full h-14 bg-gold hover:bg-gold-light text-background font-semibold text-lg",
-                isKorean && "font-[var(--font-noto-kr)] text-base"
+                "w-full h-16 bg-gold hover:bg-gold-light text-background font-bold text-xl rounded-full shadow-lg shadow-gold/30",
+                isKorean && "font-[var(--font-noto-kr)] text-lg"
               )}
             >
-              <Camera className="w-5 h-5 mr-3" />
-              {isCompressing ? (isKorean ? '처리 중...' : 'Processing...') : (isKorean ? '사진 촬영' : 'Take Photo')}
+              <Camera className="w-6 h-6 mr-3" />
+              {isCompressing ? (isKorean ? '처리 중...' : 'Processing...') : (isKorean ? '📸 사진 촬영' : '📸 Take Photo')}
             </Button>
-            <Button
-              variant="outline"
-              onClick={stopCamera}
-              className={cn(
-                "w-full h-12 border-gold/40 text-gold hover:bg-gold/10",
-                isKorean && "font-[var(--font-noto-kr)]"
-              )}
-            >
-              {isKorean ? '카메라 끄기' : 'Close Camera'}
-            </Button>
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isCompressing}
+                className={cn(
+                  "flex-1 h-12 border-gold/40 text-gold hover:bg-gold/10",
+                  isKorean && "font-[var(--font-noto-kr)]"
+                )}
+              >
+                <ImagePlus className="w-5 h-5 mr-2" />
+                {isKorean ? '갤러리' : 'Gallery'}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={stopCamera}
+                className={cn(
+                  "flex-1 h-12 border-gold/40 text-gold hover:bg-gold/10",
+                  isKorean && "font-[var(--font-noto-kr)]"
+                )}
+              >
+                {isKorean ? '카메라 끄기' : 'Close'}
+              </Button>
+            </div>
           </div>
         ) : (
           <div className="flex flex-col gap-3">
