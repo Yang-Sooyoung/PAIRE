@@ -3,6 +3,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { VisionService } from '@/vision/vision.service';
 import { StorageService } from '@/storage/storage.service';
 import { GeminiService } from '@/ai/gemini.service';
+import { StickerService } from '@/sticker/sticker.service';
 import {
   normalizeMenuItems,
   findPairingRules,
@@ -21,6 +22,7 @@ export class RecommendationService {
     private visionService: VisionService,
     private storageService: StorageService,
     private geminiService: GeminiService,
+    private stickerService: StickerService,
   ) { }
 
   async createRecommendation(userId: string | null, dto: any) {
@@ -150,6 +152,17 @@ export class RecommendationService {
           },
         });
         console.log('Recommendation saved successfully:', saved.id);
+        
+        // 스티커 조건 체크 및 자동 해제
+        try {
+          const stickerResult = await this.stickerService.checkAndUnlockStickers(userId);
+          if (stickerResult.unlockedStickers.length > 0) {
+            console.log('Unlocked stickers:', stickerResult.unlockedStickers);
+          }
+        } catch (error) {
+          console.error('Failed to check stickers:', error);
+          // 스티커 체크 실패해도 추천은 계속 진행
+        }
       } else {
         console.log('No userId provided, skipping database save');
       }

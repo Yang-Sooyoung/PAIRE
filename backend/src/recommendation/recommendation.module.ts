@@ -5,9 +5,10 @@ import { PrismaModule } from '@/prisma/prisma.module';
 import { VisionModule } from '@/vision/vision.module';
 import { StorageModule } from '@/storage/storage.module';
 import { AiModule } from '@/ai/ai.module';
+import { StickerModule } from '@/sticker/sticker.module';
 
 @Module({
-  imports: [PrismaModule, VisionModule, StorageModule, AiModule],
+  imports: [PrismaModule, VisionModule, StorageModule, AiModule, StickerModule],
   controllers: [RecommendationController],
   providers: [RecommendationService],
 })
