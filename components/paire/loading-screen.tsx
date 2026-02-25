@@ -75,7 +75,7 @@ export function LoadingScreen({ imageUrl, onComplete }: LoadingScreenProps) {
       </div>
 
       <div className="relative z-10 flex flex-col items-center text-center">
-        {/* Fairy silhouette animation */}
+        {/* Fairy silhouette animation - 검은색 배경 추가 */}
         <motion.div
           animate={{
             y: [0, -10, 0],
@@ -100,12 +100,14 @@ export function LoadingScreen({ imageUrl, onComplete }: LoadingScreenProps) {
             }}
             className="absolute inset-0 bg-gold/30 rounded-full blur-3xl w-48 h-48 -translate-x-1/4 -translate-y-1/4"
           />
-          
-          <img
-            src="/images/pairy_main.png"
-            alt="PAIRÉ Fairy"
-            className="w-36 h-auto relative z-10 opacity-80"
-          />
+
+          <div className="bg-black rounded-2xl p-4 relative z-10">
+            <img
+              src="/images/pairy_main.png"
+              alt="PAIRÉ Fairy"
+              className="w-36 h-auto opacity-80"
+            />
+          </div>
         </motion.div>
 
         {/* Loading messages */}

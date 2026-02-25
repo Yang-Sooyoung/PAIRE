@@ -19,7 +19,7 @@ interface DrinkDetailScreenProps {
     description: string
     descriptionKey?: string
     tastingNotes: string[]
-    image: string
+    image: string | null
     price: string
     purchaseUrl?: string
     foodPairings?: string[]
@@ -63,12 +63,8 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
   useEffect(() => {
     const checkFavoriteStatus = async () => {
       if (user && user.membership === 'PREMIUM') {
-        // 최신 토큰 가져오기
-        const currentToken = useUserStore.getState().token
-        if (!currentToken) return
-
         try {
-          const res = await checkFavorite(drink.id, currentToken)
+          const res = await checkFavorite(drink.id)
           setIsWishlisted(res.isFavorite)
         } catch (err) {
           console.error('즐겨찾기 확인 실패:', err)
@@ -122,10 +118,10 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
     setIsLoadingFavorite(true)
     try {
       if (isWishlisted) {
-        await removeFavorite(drink.id, currentToken)
+        await removeFavorite(drink.id)
         setIsWishlisted(false)
       } else {
-        await addFavorite(drink.id, currentToken)
+        await addFavorite(drink.id)
         setIsWishlisted(true)
       }
     } catch (error: any) {

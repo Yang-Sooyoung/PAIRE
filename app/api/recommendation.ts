@@ -6,6 +6,7 @@ export interface CreateRecommendationPayload {
   imageUrl?: string;
   occasion: string;
   tastes: string[];
+  priceRange?: string;
 }
 
 export interface Drink {
@@ -14,8 +15,12 @@ export interface Drink {
   type: string;
   description: string;
   tastingNotes: string[];
-  image: string;
+  image: string | null;
   price: string;
+  purchaseUrl?: string;
+  aiReason?: string;
+  aiScore?: number;
+  pairingNotes?: string;
 }
 
 export interface RecommendationResponse {

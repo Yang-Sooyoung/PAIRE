@@ -29,9 +29,12 @@ interface Drink {
   type: string
   description: string
   tastingNotes: string[]
-  image: string
+  image: string | null
   price: string
   purchaseUrl?: string
+  aiReason?: string
+  aiScore?: number
+  pairingNotes?: string
 }
 
 export default function PairePage() {
@@ -39,7 +42,7 @@ export default function PairePage() {
   const { user } = useUserStore()
   const [screen, setScreen] = useState<Screen>("home")
   const [capturedImage, setCapturedImage] = useState<string>("")
-  const [preferences, setPreferences] = useState<{ occasion: string; tastes: string[] }>({
+  const [preferences, setPreferences] = useState<{ occasion: string; tastes: string[]; priceRange?: string }>({
     occasion: "",
     tastes: [],
   })
@@ -81,7 +84,7 @@ export default function PairePage() {
     setScreen("preference") // 바로 취향 선택으로
   }
 
-  const handlePreferenceSubmit = async (prefs: { occasion: string; tastes: string[] }) => {
+  const handlePreferenceSubmit = async (prefs: { occasion: string; tastes: string[]; priceRange?: string }) => {
     setPreferences(prefs)
 
     // 비로그인 사용자 체크 - localStorage에서 사용 횟수 확인
@@ -104,7 +107,7 @@ export default function PairePage() {
       }
     }
 
-    setScreen("loading") // 로딩 화면 표시
+    // 로딩 상태만 설정하고 화면은 preference에 유지
     setIsLoadingRecommendation(true)
 
     try {
@@ -166,7 +169,6 @@ export default function PairePage() {
         })
       }
       setShowDialog(true)
-      setScreen("preference")
     } finally {
       setIsLoadingRecommendation(false)
     }
@@ -265,13 +267,6 @@ export default function PairePage() {
         <CaptureScreen
           onCapture={handleCapture}
           onBack={goHome}
-        />
-      )}
-
-      {screen === "loading" && (
-        <LoadingScreen
-          imageUrl={capturedImage}
-          onComplete={() => { }} // API 호출 완료 시 자동으로 화면 전환
         />
       )}
 

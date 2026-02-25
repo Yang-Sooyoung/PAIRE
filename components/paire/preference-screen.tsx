@@ -1,11 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { ArrowLeft, Heart, Users, Tent, Home, User, Wine, Leaf, Droplets, Sparkles, Coffee, GlassWater, Martini, DollarSign } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useI18n } from "@/lib/i18n/context"
 import { cn } from "@/lib/utils"
+import { LoadingFairy } from "./loading-fairy"
 
 interface PreferenceScreenProps {
   onSubmit: (preferences: { occasion: string; tastes: string[]; priceRange?: string }) => void
@@ -79,6 +80,11 @@ export function PreferenceScreen({ onSubmit, onBack, isLoading }: PreferenceScre
         priceRange: selectedPriceRange || undefined
       })
     }
+  }
+
+  // 로딩 중일 때 LoadingFairy 표시
+  if (isLoading) {
+    return <LoadingFairy isKorean={isKorean} />
   }
 
   return (

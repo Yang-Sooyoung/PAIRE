@@ -190,34 +190,57 @@ export class RecommendationService {
    * AI 추천 결과에 음료 상세 정보 추가
    */
   private async enrichDrinkData(recommendations: any[]): Promise<any[]> {
-    const drinkIds = recommendations.map(r => r.drinkId);
-    const drinks = await this.prisma.drink.findMany({
-      where: { id: { in: drinkIds } },
+    return recommendations.map(rec => {
+      // GPT가 생성한 음료 정보가 있으면 직접 사용
+      if (rec.description && rec.tastingNotes && rec.image) {
+        return {
+          id: rec.drinkId,
+          name: rec.drinkName,
+          nameEn: rec.drinkNameEn || rec.drinkName,
+          type: rec.drinkType,
+          description: rec.description,
+          tastingNotes: rec.tastingNotes || [],
+          image: rec.image,
+          price: rec.price,
+          purchaseUrl: `https://www.coupang.com/np/search?q=${encodeURIComponent(rec.drinkName)}`,
+          // AI 추천 정보
+          aiReason: rec.reason,
+          aiScore: rec.score,
+          pairingNotes: rec.pairingNotes,
+        };
+      }
+
+      // DB에서 음료 찾기 (기존 방식)
+      return this.findDrinkInDB(rec);
+    }).filter(Boolean);
+  }
+
+  /**
+   * DB에서 음료 찾기
+   */
+  private async findDrinkInDB(rec: any) {
+    const drink = await this.prisma.drink.findUnique({
+      where: { id: rec.drinkId },
     });
 
-    return recommendations.map(rec => {
-      const drink = drinks.find(d => d.id === rec.drinkId);
-      if (!drink) return null;
+    if (!drink) return null;
 
-      // 쿠팡 검색 링크 생성
-      const coupangSearchUrl = `https://www.coupang.com/np/search?q=${encodeURIComponent(drink.name)}`;
+    const coupangSearchUrl = `https://www.coupang.com/np/search?q=${encodeURIComponent(drink.name)}`;
 
-      return {
-        id: drink.id,
-        name: rec.drinkName || drink.name, // Gemini가 제공한 한글 이름 우선
-        nameEn: rec.drinkNameEn || drink.name, // 영어 이름
-        type: drink.type,
-        description: drink.description,
-        tastingNotes: drink.tastingNotes,
-        image: drink.image,
-        price: drink.price,
-        purchaseUrl: drink.purchaseUrl || coupangSearchUrl, // 쿠팡 링크
-        // AI 추천 정보 추가
-        aiReason: rec.reason,
-        aiScore: rec.score,
-        pairingNotes: rec.pairingNotes,
-      };
-    }).filter(Boolean);
+    return {
+      id: drink.id,
+      name: rec.drinkName || drink.name,
+      nameEn: rec.drinkNameEn || drink.name,
+      type: drink.type,
+      description: drink.description,
+      tastingNotes: drink.tastingNotes,
+      image: drink.image,
+      price: drink.price,
+      purchaseUrl: drink.purchaseUrl || coupangSearchUrl,
+      aiReason: rec.reason,
+      aiScore: rec.score,
+      pairingNotes: rec.pairingNotes,
+    };
   }
 
   /**

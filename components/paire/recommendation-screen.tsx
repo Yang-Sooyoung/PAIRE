@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { useI18n } from "@/lib/i18n/context"
 import { cn } from "@/lib/utils"
 import { shareViaWebAPI, copyToClipboard, generateShareText } from "@/lib/share"
+import { LoadingFairy } from "./loading-fairy"
 
 interface RecommendationScreenProps {
   imageUrl: string
@@ -156,123 +157,8 @@ export function RecommendationScreen({
   // 실제 데이터가 없으면 빈 배열 사용
   const displayDrinks = drinks && drinks.length > 0 ? drinks : []
   
-  // 페어리 메시지 번역 (백엔드에서 한글로 오는 경우 영어로 변환)
-  const translateFairyMessage = (message: string) => {
-    if (!message) return ""
-    
-    // 이미 영어인 경우 그대로 반환
-    if (!isKorean && /^[a-zA-Z\s.,!?'-]+$/.test(message)) {
-      return message
-    }
-    
-    // 한글 메시지를 영어로 번역하는 매핑
-    const messageTranslations: Record<string, string> = {
-      "이 음식과 완벽하게 어울리는 음료를 찾았어요!": "I found the perfect drink to pair with your dish!",
-      "오늘의 분위기에 딱 맞는 추천이에요.": "This is the perfect recommendation for today's mood.",
-      "당신의 취향을 고려해서 골랐어요.": "I chose this considering your preferences.",
-      "특별한 순간을 더 특별하게 만들어줄 거예요.": "This will make your special moment even more special.",
-      "이 조합은 정말 환상적이에요!": "This combination is absolutely fantastic!",
-    }
-    
-    // 정확히 일치하는 번역이 있으면 사용
-    if (!isKorean && messageTranslations[message]) {
-      return messageTranslations[message]
-    }
-    
-    // 기본 메시지
-    if (!isKorean) {
-      return "I found the perfect drink to pair with your dish!"
-    }
-    
-    return message
-  }
-  
   if (displayDrinks.length === 0) {
-    return (
-      <div className="min-h-screen bg-background relative overflow-hidden flex items-center justify-center p-4">
-        {/* 배경 효과 */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gold/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-gold/3 rounded-full blur-3xl" />
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          className="text-center relative z-10"
-        >
-          {/* 로고 */}
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="mb-8"
-          >
-            <h1 className="text-4xl font-light text-foreground tracking-widest mb-2">PAIRÉ</h1>
-            <div className="h-px w-24 bg-gold/30 mx-auto" />
-          </motion.div>
-
-          {/* Fairy 이미지 */}
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.2, type: "spring" }}
-            className="mb-6"
-          >
-            <img
-              src={fairyImage}
-              alt="PAIRÉ Fairy"
-              className="w-24 h-24 rounded-full object-cover border-2 border-gold/30 mx-auto"
-            />
-          </motion.div>
-
-          {/* 로딩 메시지 */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-          >
-            <p className={cn(
-              "text-foreground text-xl mb-2",
-              isKorean && "font-[var(--font-noto-kr)]"
-            )}>
-              {isKorean ? '추천을 생성하는 중입니다...' : 'Creating recommendations...'}
-            </p>
-            <p className={cn(
-              "text-muted-foreground",
-              isKorean && "font-[var(--font-noto-kr)]"
-            )}>
-              {isKorean ? '잠시만 기다려주세요.' : 'Please wait a moment.'}
-            </p>
-          </motion.div>
-
-          {/* 로딩 애니메이션 */}
-          <motion.div
-            className="flex justify-center gap-2 mt-6"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
-          >
-            {[0, 1, 2].map((i) => (
-              <motion.div
-                key={i}
-                className="w-2 h-2 rounded-full bg-gold"
-                animate={{
-                  scale: [1, 1.5, 1],
-                  opacity: [0.3, 1, 0.3],
-                }}
-                transition={{
-                  duration: 1.5,
-                  repeat: Infinity,
-                  delay: i * 0.2,
-                }}
-              />
-            ))}
-          </motion.div>
-        </motion.div>
-      </div>
-    )
+    return <LoadingFairy isKorean={isKorean} />
   }
 
   const currentDrink = displayDrinks[currentIndex]
@@ -372,7 +258,7 @@ export function RecommendationScreen({
         animate={{ opacity: 1, y: 0 }}
         className="px-6 mb-6 flex items-start gap-3"
       >
-        <div className="bg-black rounded-full p-1 flex-shrink-0">
+        <div className="bg-black rounded-full p-2 flex-shrink-0">
           <img
             src={fairyImage}
             alt="PAIRÉ Fairy"

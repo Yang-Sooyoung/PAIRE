@@ -139,18 +139,20 @@ export function HomeScreen({
         transition={{ duration: 0.8 }}
         className="relative z-10 flex flex-col items-center text-center max-w-md"
       >
-        {/* Fairy mascot image */}
+        {/* Fairy mascot image - 검은색 배경 추가 */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, delay: 0.2 }}
           className="mb-8"
         >
-          <img
-            src="/images/pairy_main.png"
-            alt="PAIRÉ Fairy Sommelier"
-            className="w-72 h-auto drop-shadow-2xl"
-          />
+          <div className="bg-black rounded-3xl p-6 inline-block">
+            <img
+              src="/images/pairy_main.png"
+              alt="PAIRÉ Fairy Sommelier"
+              className="w-72 h-auto drop-shadow-2xl"
+            />
+          </div>
         </motion.div>
 
         {/* Tagline */}
