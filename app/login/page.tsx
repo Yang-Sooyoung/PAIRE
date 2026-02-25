@@ -34,6 +34,8 @@ export default function LoginPage() {
       setUser(res.user);
       setToken(res.accessToken);
       setRefreshToken(res.refreshToken);
+      
+      console.log('✅ Login successful, token saved:', res.accessToken.substring(0, 20) + '...');
 
       router.push('/user-info');
     } catch (err: any) {

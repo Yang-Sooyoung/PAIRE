@@ -12,10 +12,19 @@ export class RecommendationController {
   async createRecommendation(@Request() req: any, @Body() dto: any) {
     // 비로그인 사용자도 추천 가능 (일일 한도 체크는 서비스에서)
     const userId = req.user?.sub || null;
+    const authHeader = req.headers.authorization;
+    
     console.log('=== Recommendation Controller ===');
+    console.log('Authorization header:', authHeader ? authHeader.substring(0, 30) + '...' : 'NONE');
     console.log('req.user:', req.user);
     console.log('userId:', userId);
     console.log('dto:', dto);
+    
+    // 토큰이 있는데 user가 null이면 토큰 문제
+    if (authHeader && !req.user) {
+      console.log('⚠️ WARNING: Authorization header exists but user is null - token might be invalid or expired');
+    }
+    
     return this.recommendationService.createRecommendation(userId, dto);
   }
 

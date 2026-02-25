@@ -109,6 +109,8 @@ export const useUserStore = create<UserState>((set, get) => ({
         token: storedToken,
         refreshToken: storedRefreshToken,
       });
+      
+      console.log('🔑 Token loaded from localStorage:', storedToken ? storedToken.substring(0, 20) + '...' : 'NONE');
 
       // 토큰으로 사용자 정보 조회 (apiClient가 자동으로 토큰 추가 및 갱신 처리)
       try {
