@@ -23,7 +23,10 @@ export default function CreditSuccessPage() {
       const orderId = searchParams.get('orderId');
       const amount = searchParams.get('amount');
 
+      console.log('Credit success page - params:', { paymentKey, orderId, amount });
+
       if (!paymentKey || !orderId || !amount) {
+        console.error('Missing payment parameters');
         router.push('/subscription');
         return;
       }
@@ -31,11 +34,14 @@ export default function CreditSuccessPage() {
       try {
         const currentToken = useUserStore.getState().token;
         if (!currentToken) {
+          console.error('No token available');
           router.push('/login');
           return;
         }
 
         const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+        console.log('Confirming payment with API:', API_URL);
+
         const response = await fetch(`${API_URL}/credit/confirm`, {
           method: 'POST',
           headers: {
@@ -49,10 +55,15 @@ export default function CreditSuccessPage() {
           }),
         });
 
+        console.log('Confirm response status:', response.status);
+
         if (response.ok) {
           const data = await response.json();
+          console.log('Confirm response data:', data);
           setCredits(data.credits);
         } else {
+          const errorData = await response.text();
+          console.error('Confirm failed:', errorData);
           throw new Error('Payment confirmation failed');
         }
       } catch (error: any) {

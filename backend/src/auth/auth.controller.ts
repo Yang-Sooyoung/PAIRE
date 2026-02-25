@@ -53,18 +53,24 @@ export class AuthController {
   @Get('kakao')
   @UseGuards(AuthGuard('kakao'))
   async kakaoAuth() {
+    console.log('Kakao auth initiated');
     // Guard redirects to Kakao
   }
 
   @Get('kakao/callback')
   @UseGuards(AuthGuard('kakao'))
   async kakaoAuthCallback(@Req() req: any, @Res() res: Response) {
+    console.log('Kakao callback received, user:', req.user);
+    
     const result = await this.authService.oauthLogin(req.user);
+    
+    console.log('Kakao login result:', result);
     
     // 프론트엔드로 리다이렉트 (토큰 포함)
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-    res.redirect(
-      `${frontendUrl}/auth/callback?accessToken=${result.accessToken}&refreshToken=${result.refreshToken}`
-    );
+    const redirectUrl = `${frontendUrl}/auth/callback?accessToken=${result.accessToken}&refreshToken=${result.refreshToken}`;
+    
+    console.log('Redirecting to:', redirectUrl);
+    res.redirect(redirectUrl);
   }
 }

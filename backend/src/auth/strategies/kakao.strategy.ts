@@ -11,6 +11,11 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
       clientSecret: process.env.KAKAO_CLIENT_SECRET || '',
       callbackURL: process.env.KAKAO_CALLBACK_URL || 'http://localhost:3001/api/auth/kakao/callback',
     });
+    
+    console.log('KakaoStrategy initialized with:', {
+      clientID: process.env.KAKAO_CLIENT_ID,
+      callbackURL: process.env.KAKAO_CALLBACK_URL,
+    });
   }
 
   async validate(
@@ -19,6 +24,8 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
     profile: any,
     done: any,
   ): Promise<any> {
+    console.log('Kakao validate called with profile:', profile);
+    
     const { id, username, _json } = profile;
     
     const user = await this.authService.validateOAuthUser({
@@ -29,6 +36,7 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
       profileImage: _json.properties?.profile_image,
     });
 
+    console.log('Kakao user validated:', user);
     done(null, user);
   }
 }
