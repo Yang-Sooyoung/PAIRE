@@ -86,18 +86,13 @@ apiClient.interceptors.response.use(
           return apiClient(originalRequest);
         } else {
           processQueue(new Error('Token refresh failed'), null);
-          // 로그인 페이지로 리다이렉트
-          if (typeof window !== 'undefined') {
-            window.location.href = '/login';
-          }
-          return Promise.reject(error);
+          // 토큰 갱신 실패 - 에러만 throw하고 리다이렉트는 하지 않음
+          console.error('Token refresh failed, user needs to login again');
+          return Promise.reject(new Error('Authentication required'));
         }
       } catch (refreshError) {
         processQueue(refreshError, null);
-        // 로그인 페이지로 리다이렉트
-        if (typeof window !== 'undefined') {
-          window.location.href = '/login';
-        }
+        console.error('Token refresh error:', refreshError);
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

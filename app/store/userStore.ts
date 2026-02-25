@@ -86,11 +86,7 @@ export const useUserStore = create<UserState>((set, get) => ({
       console.error('Token refresh failed:', error);
       set({ refreshing: false });
 
-      // 갱신 실패 시 로그아웃
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      set({ user: null, token: null, refreshToken: null });
-
+      // 갱신 실패 - 로그아웃하지 않고 null만 반환
       return null;
     }
   },
