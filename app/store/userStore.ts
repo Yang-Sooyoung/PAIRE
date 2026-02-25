@@ -43,9 +43,18 @@ export const useUserStore = create<UserState>((set, get) => ({
   refreshTokenIfNeeded: async () => {
     const state = get();
 
-    // 이미 갱신 중이면 대기
+    // 이미 갱신 중이면 완료될 때까지 대기
     if (state.refreshing) {
       console.log('Token refresh already in progress, waiting...');
+      // 최대 5초 대기
+      for (let i = 0; i < 50; i++) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        const currentState = get();
+        if (!currentState.refreshing) {
+          return currentState.token;
+        }
+      }
+      console.log('Token refresh timeout');
       return null;
     }
 
@@ -71,6 +80,7 @@ export const useUserStore = create<UserState>((set, get) => ({
         refreshing: false,
       });
 
+      console.log('Token refreshed successfully');
       return response.accessToken;
     } catch (error) {
       console.error('Token refresh failed:', error);
