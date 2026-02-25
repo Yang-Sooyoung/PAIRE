@@ -61,34 +61,21 @@ function CreditSuccessContent() {
         console.log('Confirming payment with API:', API_URL);
         console.log('Using token:', currentToken ? `${currentToken.substring(0, 20)}...` : 'null');
 
-        const response = await fetch(`${API_URL}/credit/confirm`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${currentToken}`,
-          },
-          body: JSON.stringify({
-            paymentKey,
-            orderId,
-            amount: parseInt(amount),
-          }),
+        // apiClient 사용 (토큰 없이도 작동)
+        const apiClient = (await import('@/app/api/client')).default;
+        
+        const response = await apiClient.post('/credit/confirm', {
+          paymentKey,
+          orderId,
+          amount: parseInt(amount),
         });
 
-        console.log('Confirm response status:', response.status);
+        console.log('Confirm response data:', response.data);
+        setCredits(response.data.credits);
 
-        if (response.ok) {
-          const data = await response.json();
-          console.log('Confirm response data:', data);
-          setCredits(data.credits);
-
-          // 사용자 정보 새로고침
-          const { initializeUser } = useUserStore.getState();
-          await initializeUser();
-        } else {
-          const errorData = await response.text();
-          console.error('Confirm failed:', errorData);
-          throw new Error('Payment confirmation failed');
-        }
+        // 사용자 정보 새로고침
+        const { initializeUser } = useUserStore.getState();
+        await initializeUser();
       } catch (error: any) {
         console.error('Payment confirmation error:', error);
         router.push('/credit/fail');

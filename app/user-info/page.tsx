@@ -31,39 +31,27 @@ export default function UserInfoPage() {
       if (!user) return;
 
       try {
-        const currentToken = useUserStore.getState().token;
-        if (!currentToken) return;
-
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+        const apiClient = (await import('@/app/api/client')).default;
 
         // 크레딧 잔액 조회
-        const creditResponse = await fetch(`${API_URL}/credit/balance`, {
-          headers: { Authorization: `Bearer ${currentToken}` },
-        });
-
-        if (creditResponse.ok) {
-          const creditData = await creditResponse.json();
-          setCredits(creditData.credits || 0);
-        }
+        const creditResponse = await apiClient.get('/credit/balance');
+        setCredits(creditResponse.data.credits || 0);
 
         // 오늘 사용한 추천 횟수 조회
-        const historyResponse = await fetch(`${API_URL}/recommendation/history?limit=100&offset=0`, {
-          headers: { Authorization: `Bearer ${currentToken}` },
+        const historyResponse = await apiClient.get('/recommendation/history', {
+          params: { limit: 100, offset: 0 },
         });
 
-        if (historyResponse.ok) {
-          const historyData = await historyResponse.json();
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
 
-          const todayCount = historyData.recommendations?.filter((rec: any) => {
-            const recDate = new Date(rec.createdAt);
-            recDate.setHours(0, 0, 0, 0);
-            return recDate.getTime() === today.getTime();
-          }).length || 0;
+        const todayCount = historyResponse.data.recommendations?.filter((rec: any) => {
+          const recDate = new Date(rec.createdAt);
+          recDate.setHours(0, 0, 0, 0);
+          return recDate.getTime() === today.getTime();
+        }).length || 0;
 
-          setDailyUsage(todayCount);
-        }
+        setDailyUsage(todayCount);
       } catch (error) {
         console.error('Failed to fetch user stats:', error);
       } finally {
