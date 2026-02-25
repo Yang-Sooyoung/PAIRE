@@ -1,12 +1,14 @@
 import { Controller, Post, Get, Body, UseGuards, Request, Query, Param } from '@nestjs/common';
 import { RecommendationService } from './recommendation.service';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { OptionalJwtAuthGuard } from '@/auth/guards/optional-jwt-auth.guard';
 
 @Controller('api/recommendation')
 export class RecommendationController {
   constructor(private recommendationService: RecommendationService) {}
 
   @Post('create')
+  @UseGuards(OptionalJwtAuthGuard)
   async createRecommendation(@Request() req: any, @Body() dto: any) {
     // 비로그인 사용자도 추천 가능 (일일 한도 체크는 서비스에서)
     const userId = req.user?.sub || null;
@@ -24,8 +26,9 @@ export class RecommendationController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(OptionalJwtAuthGuard)
   async getDetail(@Request() req: any, @Param('id') id: string) {
-    return this.recommendationService.getDetail(id, req.user.sub);
+    const userId = req.user?.sub || null;
+    return this.recommendationService.getDetail(id, userId);
   }
 }

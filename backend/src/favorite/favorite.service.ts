@@ -67,9 +67,36 @@ export class FavoriteService {
     const favorites = await this.prisma.favorite.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' },
+      include: {
+        drink: true, // 음료 상세 정보 포함
+      },
     });
 
-    return { favorites };
+    // 음료 상세 정보와 함께 반환
+    const favoritesWithDetails = favorites.map(fav => ({
+      id: fav.id,
+      drinkId: fav.drinkId,
+      drinkName: fav.drinkName,
+      drinkType: fav.drinkType,
+      drinkImage: fav.drinkImage,
+      createdAt: fav.createdAt,
+      // 음료 상세 정보
+      drink: fav.drink ? {
+        id: fav.drink.id,
+        name: fav.drink.name,
+        type: fav.drink.type,
+        description: fav.drink.description,
+        tastingNotes: fav.drink.tastingNotes,
+        image: fav.drink.image,
+        price: fav.drink.price,
+        purchaseUrl: fav.drink.purchaseUrl,
+        foodPairings: fav.drink.foodPairings,
+        occasions: fav.drink.occasions,
+        tastes: fav.drink.tastes,
+      } : null,
+    }));
+
+    return { favorites: favoritesWithDetails };
   }
 
   async isFavorite(userId: string, drinkId: string) {

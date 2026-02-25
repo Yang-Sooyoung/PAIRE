@@ -18,6 +18,19 @@ interface Favorite {
   drinkType: string;
   drinkImage: string | null;
   createdAt: string;
+  drink?: {
+    id: string;
+    name: string;
+    type: string;
+    description: string;
+    tastingNotes: string[];
+    image: string | null;
+    price: string;
+    purchaseUrl?: string;
+    foodPairings?: string[];
+    occasions?: string[];
+    tastes?: string[];
+  };
 }
 
 export default function FavoritesPage() {

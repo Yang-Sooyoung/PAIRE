@@ -116,7 +116,7 @@ export function RecommendationScreen({
 
     // 웹 공유 API 시도
     const shared = await shareViaWebAPI(shareData);
-    
+
     if (!shared) {
       // 웹 공유 API가 없으면 클립보드에 복사
       const copied = await copyToClipboard(`${shareText}\n\n${window.location.origin}`);
@@ -156,7 +156,7 @@ export function RecommendationScreen({
 
   // 실제 데이터가 없으면 빈 배열 사용
   const displayDrinks = drinks && drinks.length > 0 ? drinks : []
-  
+
   if (displayDrinks.length === 0) {
     return <LoadingFairy isKorean={isKorean} />
   }

@@ -1,10 +1,14 @@
 import { Controller, Post, Delete, Get, UseGuards, Request, Param, Query } from '@nestjs/common';
 import { FavoriteService } from './favorite.service';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { PrismaService } from '@/prisma/prisma.service';
 
 @Controller('api/favorite')
 export class FavoriteController {
-  constructor(private favoriteService: FavoriteService) {}
+  constructor(
+    private favoriteService: FavoriteService,
+    private prisma: PrismaService,
+  ) {}
 
   @Post(':drinkId')
   @UseGuards(JwtAuthGuard)
@@ -28,5 +32,23 @@ export class FavoriteController {
   @UseGuards(JwtAuthGuard)
   async isFavorite(@Request() req: any, @Param('drinkId') drinkId: string) {
     return this.favoriteService.isFavorite(req.user.sub, drinkId);
+  }
+}
+
+@Controller('api/drink')
+export class DrinkController {
+  constructor(private prisma: PrismaService) {}
+
+  @Get(':id')
+  async getDrinkDetail(@Param('id') id: string) {
+    const drink = await this.prisma.drink.findUnique({
+      where: { id },
+    });
+
+    if (!drink) {
+      return { drink: null };
+    }
+
+    return { drink };
   }
 }
