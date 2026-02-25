@@ -33,14 +33,23 @@ function CreditSuccessContent() {
 
       try {
         // localStorage에서 직접 토큰 가져오기
-        let currentToken = useUserStore.getState().token || localStorage.getItem('accessToken');
+        const storeToken = useUserStore.getState().token;
+        const localToken = localStorage.getItem('accessToken');
         
+        console.log('Token check:', {
+          storeToken: storeToken ? `${storeToken.substring(0, 20)}...` : 'null',
+          localToken: localToken ? `${localToken.substring(0, 20)}...` : 'null',
+          user: user ? user.email : 'null'
+        });
+        
+        let currentToken = storeToken || localToken;
+
         if (!currentToken) {
           console.error('No token available');
           // 토큰이 없으면 잠시 대기 후 재시도
           await new Promise(resolve => setTimeout(resolve, 1000));
           currentToken = useUserStore.getState().token || localStorage.getItem('accessToken');
-          
+
           if (!currentToken) {
             console.error('Still no token after retry');
             router.push('/login');
@@ -50,6 +59,7 @@ function CreditSuccessContent() {
 
         const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://paire-back.up.railway.app/api';
         console.log('Confirming payment with API:', API_URL);
+        console.log('Using token:', currentToken ? `${currentToken.substring(0, 20)}...` : 'null');
 
         const response = await fetch(`${API_URL}/credit/confirm`, {
           method: 'POST',
@@ -70,7 +80,7 @@ function CreditSuccessContent() {
           const data = await response.json();
           console.log('Confirm response data:', data);
           setCredits(data.credits);
-          
+
           // 사용자 정보 새로고침
           const { initializeUser } = useUserStore.getState();
           await initializeUser();
@@ -158,7 +168,7 @@ function CreditSuccessContent() {
             "text-muted-foreground mb-8",
             isKorean && "font-[var(--font-noto-kr)]"
           )}>
-            {isKorean 
+            {isKorean
               ? '이제 원하는 만큼 추천을 받아보세요!'
               : 'Now you can get recommendations as you need!'}
           </p>
