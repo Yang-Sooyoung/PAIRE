@@ -25,11 +25,23 @@ interface DrinkDetailScreenProps {
     foodPairings?: string[]
     occasions?: string[]
     tastes?: string[]
+    aiReason?: string
+    aiScore?: number
+    pairingNotes?: string
+  }
+  foodContext?: {
+    keywords: string[]
+    category: string
+  }
+  userPreferences?: {
+    occasion: string
+    tastes: string[]
+    priceRange?: string
   }
   onBack: () => void
 }
 
-export function DrinkDetailScreen({ drink, onBack }: DrinkDetailScreenProps) {
+export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack }: DrinkDetailScreenProps) {
   const { language, t } = useI18n()
   const isKorean = language === "ko"
   const { user } = useUserStore()
@@ -417,24 +429,104 @@ export function DrinkDetailScreen({ drink, onBack }: DrinkDetailScreenProps) {
           </div>
         </motion.div>
 
-        {/* Description */}
+        {/* Description / AI Pairing Notes */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
+          className="space-y-6"
         >
-          <h3 className={cn(
-            "text-gold-light text-lg font-medium mb-3",
-            isKorean && "font-[var(--font-noto-kr)] text-base"
-          )}>
-            {t("detail.fairyNote")}
-          </h3>
-          <p className={cn(
-            "text-muted-foreground leading-relaxed",
-            isKorean && "font-[var(--font-noto-kr)] text-sm leading-relaxed"
-          )}>
-            {translateFairyNote(drink.description)}
-          </p>
+          {/* AI 추천 이유 */}
+          {drink.aiReason && (
+            <div className="bg-gradient-to-br from-gold/10 to-gold/5 border border-gold/30 rounded-xl p-5">
+              <div className="flex items-start gap-3 mb-3">
+                <Sparkles className="w-5 h-5 text-gold flex-shrink-0 mt-1" />
+                <h3 className={cn(
+                  "text-gold text-lg font-medium",
+                  isKorean && "font-[var(--font-noto-kr)] text-base"
+                )}>
+                  {isKorean ? '페어리의 추천 이유' : "Fairy's Recommendation"}
+                </h3>
+              </div>
+              <p className={cn(
+                "text-foreground leading-relaxed mb-3",
+                isKorean && "font-[var(--font-noto-kr)] text-sm leading-relaxed"
+              )}>
+                {drink.aiReason}
+              </p>
+              {drink.aiScore && (
+                <div className="flex items-center gap-2 pt-3 border-t border-gold/20">
+                  <span className="text-gold text-sm">★</span>
+                  <span className="text-gold text-sm font-medium">
+                    {isKorean ? '추천 점수' : 'Match Score'}: {drink.aiScore}/100
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* 페어링 노트 */}
+          {drink.pairingNotes && (
+            <div>
+              <h3 className={cn(
+                "text-gold-light text-lg font-medium mb-3",
+                isKorean && "font-[var(--font-noto-kr)] text-base"
+              )}>
+                {isKorean ? '맛의 조화' : 'Flavor Harmony'}
+              </h3>
+              <p className={cn(
+                "text-muted-foreground leading-relaxed",
+                isKorean && "font-[var(--font-noto-kr)] text-sm leading-relaxed"
+              )}>
+                {drink.pairingNotes}
+              </p>
+            </div>
+          )}
+
+          {/* 기본 설명 */}
+          <div>
+            <h3 className={cn(
+              "text-gold-light text-lg font-medium mb-3",
+              isKorean && "font-[var(--font-noto-kr)] text-base"
+            )}>
+              {t("detail.fairyNote")}
+            </h3>
+            <p className={cn(
+              "text-muted-foreground leading-relaxed",
+              isKorean && "font-[var(--font-noto-kr)] text-sm leading-relaxed"
+            )}>
+              {translateFairyNote(drink.description)}
+            </p>
+          </div>
+
+          {/* 음식 & 선호도 컨텍스트 */}
+          {(foodContext || userPreferences) && (
+            <div className="bg-card border border-border rounded-xl p-4">
+              <h4 className={cn(
+                "text-foreground font-medium mb-3",
+                isKorean && "font-[var(--font-noto-kr)] text-sm"
+              )}>
+                {isKorean ? '이 추천은 다음을 고려했어요' : 'This recommendation considers'}
+              </h4>
+              <div className="space-y-2 text-sm text-muted-foreground">
+                {foodContext && (
+                  <div className={cn(isKorean && "font-[var(--font-noto-kr)] text-xs")}>
+                    • {isKorean ? '음식' : 'Food'}: {foodContext.keywords.join(', ')} ({foodContext.category})
+                  </div>
+                )}
+                {userPreferences?.occasion && (
+                  <div className={cn(isKorean && "font-[var(--font-noto-kr)] text-xs")}>
+                    • {isKorean ? '상황' : 'Occasion'}: {userPreferences.occasion}
+                  </div>
+                )}
+                {userPreferences?.tastes && userPreferences.tastes.length > 0 && (
+                  <div className={cn(isKorean && "font-[var(--font-noto-kr)] text-xs")}>
+                    • {isKorean ? '선호' : 'Preferences'}: {userPreferences.tastes.join(', ')}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </motion.div>
       </div>
 

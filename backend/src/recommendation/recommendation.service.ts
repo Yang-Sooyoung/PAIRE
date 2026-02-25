@@ -27,7 +27,7 @@ export class RecommendationService {
     // 권한 체크 (비로그인, FREE, CREDIT, PREMIUM)
     if (userId) {
       const user = await this.prisma.user.findUnique({ where: { id: userId } });
-      
+
       if (user?.membership === 'PREMIUM') {
         // PREMIUM: 무제한
       } else if (user && user.credits > 0) {

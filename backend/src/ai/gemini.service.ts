@@ -237,7 +237,7 @@ export class GeminiService {
   }
 
   /**
-   * 프롬프트 생성 (간결하게 최적화)
+   * 프롬프트 생성 (GPT가 음료 정보를 생성하도록)
    */
   private buildPrompt(
     foodAnalysis: FoodAnalysis,
@@ -246,11 +246,6 @@ export class GeminiService {
     tastes?: string[],
     priceRange?: string,
   ): string {
-    // 음료 목록을 간결하게 표현
-    const drinkList = drinks
-      .map((d, i) => `${i + 1}. ${d.id}|${d.name}|${d.type}|${d.price}|${d.tastingNotes.slice(0, 3).join(',')}`)
-      .join('\n');
-
     const occasionMap = {
       date: '데이트',
       solo: '혼자',
@@ -267,6 +262,55 @@ export class GeminiService {
       premium: '₩30,000-50,000',
       luxury: '₩50,000 이상',
     };
+
+    // 음료 DB가 비어있으면 GPT가 직접 생성
+    const hasExistingDrinks = drinks && drinks.length > 0;
+
+    if (!hasExistingDrinks) {
+      return `당신은 음료 페어링 전문가입니다. 다음 조건에 맞는 음료 3개를 추천하고 상세 정보를 생성하세요.
+
+음식: ${foodAnalysis.keywords.join(', ')} (${foodAnalysis.category})
+상황: ${occasion ? occasionMap[occasion] || occasion : '일반'}
+선호: ${tastes?.join(', ') || '없음'}
+${priceRange ? `예산: ${priceRangeMap[priceRange] || priceRange}` : ''}
+${tastes?.includes('non-alcoholic') ? '**중요: 논알콜 음료만 추천**' : ''}
+${tastes?.includes('alcoholic') ? '**중요: 알콜 음료만 추천**' : ''}
+
+각 음료마다 다음 정보를 생성하세요:
+- 실제 존재하는 음료 이름 (한글, 영어)
+- 음료 타입 (wine, whisky, cocktail, tea, coffee, juice 등)
+- 상세 설명
+- 테이스팅 노트 (3-5개)
+- 예상 가격
+- 이미지 URL (Unsplash 검색 URL 형식)
+- 추천 이유 (음식과의 페어링 근거 3-4문장)
+- 페어링 노트 (맛의 조화 설명 2-3문장)
+
+JSON 형식:
+{
+  "recommendations": [
+    {
+      "drinkId": "생성된 고유 ID (예: wine_001)",
+      "drinkName": "한글 이름",
+      "drinkNameEn": "영어 이름",
+      "drinkType": "타입",
+      "description": "음료 설명",
+      "tastingNotes": ["맛1", "맛2", "맛3"],
+      "price": "₩가격",
+      "image": "https://images.unsplash.com/photo-...",
+      "reason": "추천 이유 (3-4문장)",
+      "score": 95,
+      "pairingNotes": "페어링 설명 (2-3문장)"
+    }
+  ],
+  "fairyMessage": "페어리 메시지 (5-7문장, 음식 분석과 상황을 언급하며 따뜻하고 친근한 톤)"
+}`;
+    }
+
+    // 기존 음료가 있으면 기존 방식 사용
+    const drinkList = drinks
+      .map((d, i) => `${i + 1}. ${d.id}|${d.name}|${d.type}|${d.price}|${d.tastingNotes.slice(0, 3).join(',')}`)
+      .join('\n');
 
     return `음식: ${foodAnalysis.keywords.join(', ')} (${foodAnalysis.category})
 상황: ${occasion ? occasionMap[occasion] || occasion : '일반'}
@@ -286,12 +330,12 @@ ${drinkList}
       "drinkName": "한글이름",
       "drinkNameEn": "영어이름",
       "drinkType": "타입",
-      "reason": "추천이유 (2-3문장)",
+      "reason": "추천이유 (3-4문장)",
       "score": 95,
-      "pairingNotes": "페어링 설명 (1-2문장)"
+      "pairingNotes": "페어링 설명 (2-3문장)"
     }
   ],
-  "fairyMessage": "페어리 메시지 (3-4문장, 따뜻하고 친근한 톤)"
+  "fairyMessage": "페어리 메시지 (5-7문장, 따뜻하고 친근한 톤)"
 }`;
   }
 
@@ -303,8 +347,23 @@ ${drinkList}
       // JSON 파싱 (OpenAI는 이미 JSON 형식으로 반환)
       const parsed = JSON.parse(text.trim());
 
+      // recommendations에 음료 상세 정보가 포함되어 있는지 확인
+      const recommendations = (parsed.recommendations || []).map((rec: any) => ({
+        drinkId: rec.drinkId,
+        drinkName: rec.drinkName,
+        drinkNameEn: rec.drinkNameEn,
+        drinkType: rec.drinkType,
+        description: rec.description || '',
+        tastingNotes: rec.tastingNotes || [],
+        price: rec.price || '',
+        image: rec.image || '',
+        reason: rec.reason,
+        score: rec.score,
+        pairingNotes: rec.pairingNotes,
+      }));
+
       return {
-        recommendations: parsed.recommendations || [],
+        recommendations,
         fairyMessage: parsed.fairyMessage || '맛있는 페어링을 즐겨보세요!',
       };
     } catch (error) {
