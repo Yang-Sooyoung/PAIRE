@@ -98,40 +98,32 @@ export const useUserStore = create<UserState>((set, get) => ({
         return;
       }
 
-      // 토큰으로 사용자 정보 조회
+      // 토큰 설정
+      set({
+        token: storedToken,
+        refreshToken: storedRefreshToken,
+      });
+
+      // 토큰으로 사용자 정보 조회 (apiClient가 자동으로 토큰 추가 및 갱신 처리)
       try {
-        const userData = await getCurrentUser(storedToken);
+        const userData = await getCurrentUser();
         set({
           user: userData,
-          token: storedToken,
-          refreshToken: storedRefreshToken,
           initialized: true,
           loading: false,
         });
       } catch (error) {
-        // 토큰 만료 시 갱신 시도
-        if (storedRefreshToken) {
-          try {
-            const response = await refreshTokenAPI(storedRefreshToken);
-            localStorage.setItem('accessToken', response.accessToken);
-            localStorage.setItem('refreshToken', response.refreshToken);
-
-            set({
-              user: response.user,
-              token: response.accessToken,
-              refreshToken: response.refreshToken,
-              initialized: true,
-              loading: false,
-            });
-          } catch (refreshError) {
-            // 갱신 실패 시 로그아웃
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('refreshToken');
-            set({ initialized: true, loading: false });
-          }
-        } else {
-          set({ initialized: true, loading: false });
-        }
+        // apiClient가 자동으로 토큰 갱신을 시도하므로 여기서는 실패 시 로그아웃만
+        console.error('Failed to get user data:', error);
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        set({ 
+          user: null,
+          token: null,
+          refreshToken: null,
+          initialized: true, 
+          loading: false 
+        });
       }
     } catch (error) {
       console.error('Failed to initialize user:', error);
