@@ -124,7 +124,9 @@ export class GeminiService {
     const drinkList = drinks
       .map(
         (d, i) =>
-          `${i + 1}. ${d.name} (${d.type})
+          `${i + 1}. ID: ${d.id}
+   - 이름: ${d.name}
+   - 타입: ${d.type}
    - 설명: ${d.description}
    - 맛 특징: ${d.tastingNotes.join(', ')}
    - 어울리는 음식: ${d.foodPairings.join(', ')}
@@ -132,44 +134,71 @@ export class GeminiService {
       )
       .join('\n\n');
 
-    return `당신은 음료 페어링 전문가 "페어리"입니다. 사용자의 음식 사진을 분석한 결과를 바탕으로 최적의 음료를 추천해주세요.
+    const occasionMap = {
+      date: '데이트',
+      solo: '혼자만의 시간',
+      friends: '친구들과의 모임',
+      family: '가족 식사',
+      business: '비즈니스 미팅',
+      celebration: '축하 행사',
+      all: '일반적인 상황',
+    };
+
+    const tasteMap = {
+      sweet: '달콤한',
+      bitter: '쌉싸름한',
+      sour: '새콤한',
+      light: '가벼운',
+      medium: '중간',
+      heavy: '묵직한',
+    };
+
+    return `당신은 음료 페어링 전문가 "페어리(Pairé)"입니다. 마법 같은 페어링으로 특별한 순간을 만들어주는 요정입니다.
 
 **음식 분석 결과:**
-- 키워드: ${foodAnalysis.keywords.join(', ')}
-- 카테고리: ${foodAnalysis.category}
-- 요리 스타일: ${foodAnalysis.cuisine || '알 수 없음'}
-- 특징: ${foodAnalysis.characteristics.join(', ')}
+- 감지된 키워드: ${foodAnalysis.keywords.join(', ')}
+- 음식 카테고리: ${foodAnalysis.category}
+- 요리 스타일: ${foodAnalysis.cuisine || '일반'}
+- 음식 특징: ${foodAnalysis.characteristics.join(', ') || '일반적인 음식'}
 
-**상황:**
-${occasion ? `- 상황: ${occasion}` : '- 상황: 지정되지 않음'}
-${tastes && tastes.length > 0 ? `- 선호 맛: ${tastes.join(', ')}` : ''}
+**사용자 선택:**
+- 상황: ${occasion ? occasionMap[occasion] || occasion : '일반적인 상황'}
+- 선호하는 맛: ${tastes && tastes.length > 0 ? tastes.map(t => tasteMap[t] || t).join(', ') : '지정 안함'}
 
 **추천 가능한 음료 목록:**
 ${drinkList}
 
 **요청사항:**
-1. 위 음료 목록에서 이 음식과 가장 잘 어울리는 음료 3개를 추천해주세요.
-2. 각 음료마다 추천 이유를 상세히 설명해주세요 (음식의 맛, 질감, 조리법과 음료의 특성을 연결).
-3. 페어리 캐릭터로서 친근하고 전문적인 톤으로 전체 추천 메시지를 작성해주세요.
+1. 위 음료 목록에서 음식, 상황, 선호 맛을 고려하여 가장 잘 어울리는 음료 3개를 추천해주세요.
+2. 각 음료마다:
+   - 음식의 맛, 질감, 조리법과 음료의 특성이 어떻게 조화를 이루는지 구체적으로 설명
+   - 선택한 상황에 왜 적합한지 설명
+   - 선호 맛과 어떻게 연결되는지 설명
+3. 페어리 브랜드 감성으로 전체 추천 메시지를 작성:
+   - 친근하고 따뜻한 톤
+   - 마법 같은 페어링의 특별함 강조
+   - 5-7문장으로 충분히 길게 작성
+   - 음식과 음료의 조화, 상황의 특별함을 모두 언급
 
 **응답 형식 (JSON):**
 \`\`\`json
 {
   "recommendations": [
     {
-      "drinkId": "음료 ID (drinks 배열의 id 값)",
-      "drinkName": "음료 이름",
+      "drinkId": "음료 ID (위 목록의 ID 값 그대로)",
+      "drinkName": "음료 이름 (한글)",
+      "drinkNameEn": "음료 이름 (영어)",
       "drinkType": "음료 타입",
-      "reason": "추천 이유 (2-3문장, 음식과의 구체적인 페어링 근거)",
+      "reason": "이 음료를 추천하는 이유 (3-4문장, 음식과의 구체적인 페어링 근거 + 상황 적합성)",
       "score": 95,
-      "pairingNotes": "페어링 노트 (맛의 조화, 질감 매칭 등)"
+      "pairingNotes": "맛의 조화와 질감 매칭 설명 (2-3문장)"
     }
   ],
-  "fairyMessage": "페어리의 전체 추천 메시지 (친근하고 전문적인 톤, 3-4문장)"
+  "fairyMessage": "페어리의 추천 메시지 (5-7문장, 음식 분석 결과와 선택한 상황을 언급하며 마법 같은 페어링의 특별함을 전달하는 따뜻하고 친근한 톤)"
 }
 \`\`\`
 
-JSON만 응답해주세요.`;
+반드시 JSON 형식으로만 응답하고, 다른 텍스트는 포함하지 마세요.`;
   }
 
   /**

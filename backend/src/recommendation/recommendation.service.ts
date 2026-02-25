@@ -198,15 +198,19 @@ export class RecommendationService {
       const drink = drinks.find(d => d.id === rec.drinkId);
       if (!drink) return null;
 
+      // 쿠팡 검색 링크 생성
+      const coupangSearchUrl = `https://www.coupang.com/np/search?q=${encodeURIComponent(drink.name)}`;
+
       return {
         id: drink.id,
-        name: drink.name,
+        name: rec.drinkName || drink.name, // Gemini가 제공한 한글 이름 우선
+        nameEn: rec.drinkNameEn || drink.name, // 영어 이름
         type: drink.type,
         description: drink.description,
         tastingNotes: drink.tastingNotes,
         image: drink.image,
         price: drink.price,
-        purchaseUrl: drink.purchaseUrl,
+        purchaseUrl: drink.purchaseUrl || coupangSearchUrl, // 쿠팡 링크
         // AI 추천 정보 추가
         aiReason: rec.reason,
         aiScore: rec.score,
