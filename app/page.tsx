@@ -116,12 +116,16 @@ export default function PairePage() {
         ? capturedImage
         : undefined
 
+      // 현재 언어 가져오기
+      const currentLanguage = localStorage.getItem('paire-language') || 'en'
+
       // 백엔드 API 호출
       const response = await createRecommendation({
         imageUrl,
         occasion: prefs.occasion,
         tastes: prefs.tastes,
         priceRange: prefs.priceRange,
+        language: currentLanguage, // 언어 정보 추가
       })
 
       setRecommendedDrinks(response.recommendation.drinks)

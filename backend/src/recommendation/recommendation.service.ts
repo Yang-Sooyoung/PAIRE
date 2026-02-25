@@ -117,6 +117,7 @@ export class RecommendationService {
         dto.occasion,
         dto.tastes,
         dto.priceRange,
+        dto.language || 'en', // 언어 정보 전달
       );
 
       console.log('AI recommendation:', {

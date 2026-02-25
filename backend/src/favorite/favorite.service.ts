@@ -3,7 +3,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 
 @Injectable()
 export class FavoriteService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async addFavorite(userId: string, drinkId: string) {
     // PREMIUM 사용자만 가능

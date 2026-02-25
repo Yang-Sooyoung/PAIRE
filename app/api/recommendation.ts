@@ -7,6 +7,7 @@ export interface CreateRecommendationPayload {
   occasion: string;
   tastes: string[];
   priceRange?: string;
+  language?: string;
 }
 
 export interface Drink {

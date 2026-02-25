@@ -49,6 +49,7 @@ export class GeminiService {
     occasion?: string,
     tastes?: string[],
     priceRange?: string,
+    language?: string,
   ): Promise<RecommendationResult> {
     // 캐시 키 생성
     const cacheKey = this.generateCacheKey(foodAnalysis, occasion, tastes, priceRange);
@@ -76,6 +77,7 @@ export class GeminiService {
       occasion,
       tastes,
       priceRange,
+      language,
     );
 
     // 캐시 저장
@@ -96,6 +98,7 @@ export class GeminiService {
     occasion?: string,
     tastes?: string[],
     priceRange?: string,
+    language?: string,
   ): Promise<Omit<RecommendationResult, 'fromCache'>> {
     // 음료 필터링 및 제한 (최대 20개만 사용하여 토큰 절약)
     const filteredDrinks = this.filterDrinks(drinks, foodAnalysis, occasion, tastes, priceRange).slice(0, 20);
