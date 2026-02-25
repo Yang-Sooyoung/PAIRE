@@ -14,6 +14,13 @@ import { PaymentMethodCard } from '@/components/subscription/PaymentMethodCard';
 import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
+import { 
+  detectCountry, 
+  getRegionConfig, 
+  formatPrice, 
+  isMobileApp,
+  type CountryCode 
+} from '@/lib/region-detector';
 
 const CREDIT_PACKAGES = [
   {
@@ -53,6 +60,11 @@ export default function SubscriptionPage() {
   const isKorean = language === 'ko';
   const router = useRouter();
   
+  // 지역 감지
+  const [country, setCountry] = useState<CountryCode>('KR');
+  const [regionConfig, setRegionConfig] = useState(getRegionConfig('KR'));
+  const [isAppMode, setIsAppMode] = useState(false);
+  
   // URL 파라미터에서 탭 확인
   const [paymentType, setPaymentType] = useState<'subscription' | 'credit'>('subscription');
   const [methodRegistered, setMethodRegistered] = useState(false);
@@ -66,6 +78,18 @@ export default function SubscriptionPage() {
     description: ''
   });
   const selectedPlan = PLANS[selectedPlanIndex];
+
+  // 지역 및 앱 모드 감지
+  useEffect(() => {
+    const detectedCountry = detectCountry();
+    setCountry(detectedCountry);
+    setRegionConfig(getRegionConfig(detectedCountry));
+    setIsAppMode(isMobileApp());
+    
+    console.log('Detected country:', detectedCountry);
+    console.log('Payment provider:', getRegionConfig(detectedCountry).paymentProvider);
+    console.log('Is mobile app:', isMobileApp());
+  }, []);
 
   // URL 파라미터로 탭 설정
   useEffect(() => {
@@ -529,39 +553,69 @@ export default function SubscriptionPage() {
                 )}>
                   {t('subscription.paymentMethod')}
                 </h3>
-                {methodRegistered ? (
-                  <PaymentMethodCard
-                    billingKey={billingKey}
-                    token={token!}
-                    onRemoved={() => {
-                      setMethodRegistered(false);
-                      setBillingKey('');
-                    }}
-                  />
-                ) : (
-                  <Button
-                    onClick={handleRegisterBilling}
-                    disabled={loading}
-                    className={cn(
-                      "w-full bg-secondary hover:bg-secondary/80 text-foreground border border-border",
-                      isKorean && "font-[var(--font-noto-kr)]"
+                
+                {/* 한국: 토스페이먼츠 */}
+                {regionConfig.paymentProvider === 'toss' && (
+                  <>
+                    {methodRegistered ? (
+                      <PaymentMethodCard
+                        billingKey={billingKey}
+                        token={token!}
+                        onRemoved={() => {
+                          setMethodRegistered(false);
+                          setBillingKey('');
+                        }}
+                      />
+                    ) : (
+                      <Button
+                        onClick={handleRegisterBilling}
+                        disabled={loading}
+                        className={cn(
+                          "w-full bg-secondary hover:bg-secondary/80 text-foreground border border-border",
+                          isKorean && "font-[var(--font-noto-kr)]"
+                        )}
+                      >
+                        {loading ? t('subscription.registering') : t('subscription.registerPayment')}
+                      </Button>
                     )}
-                  >
-                    {loading ? t('subscription.registering') : t('subscription.registerPayment')}
-                  </Button>
+                  </>
+                )}
+                
+                {/* 해외: Stripe (준비 중) */}
+                {regionConfig.paymentProvider === 'stripe' && (
+                  <div className={cn(
+                    "p-4 bg-secondary/50 border border-border rounded-lg text-center",
+                    isKorean && "font-[var(--font-noto-kr)]"
+                  )}>
+                    <p className="text-muted-foreground mb-2">
+                      {isKorean 
+                        ? '해외 결제는 준비 중입니다' 
+                        : 'International payments coming soon'}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {isKorean
+                        ? 'Stripe를 통한 안전한 결제가 곧 제공됩니다'
+                        : 'Secure payments via Stripe will be available soon'}
+                    </p>
+                  </div>
                 )}
               </div>
 
               {/* 구독 버튼 */}
               <Button
                 onClick={handleSubscribe}
-                disabled={loading || !methodRegistered}
+                disabled={loading || !methodRegistered || regionConfig.paymentProvider === 'stripe'}
                 className={cn(
-                  "w-full bg-gold hover:bg-gold-light text-background py-3 text-lg font-semibold",
+                  "w-full bg-gold hover:bg-gold-light text-background py-3 text-lg font-semibold disabled:opacity-50",
                   isKorean && "font-[var(--font-noto-kr)]"
                 )}
               >
-                {loading ? t('subscription.processing') : `${t('subscription.planPrice')}₩${getPlanPrice(selectedPlan).toLocaleString()}`}
+                {loading 
+                  ? t('subscription.processing') 
+                  : regionConfig.paymentProvider === 'stripe'
+                  ? (isKorean ? '준비 중' : 'Coming Soon')
+                  : `${t('subscription.planPrice')}${regionConfig.currencySymbol}${getPlanPrice(selectedPlan).toLocaleString()}`
+                }
               </Button>
             </div>
           </motion.div>
