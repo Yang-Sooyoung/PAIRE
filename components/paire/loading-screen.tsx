@@ -102,7 +102,7 @@ export function LoadingScreen({ imageUrl, onComplete }: LoadingScreenProps) {
           />
           
           <img
-            src="/images/paire-fairy.png"
+            src="/images/pairy_main.png"
             alt="PAIRÉ Fairy"
             className="w-36 h-auto relative z-10 opacity-80"
           />

@@ -87,7 +87,7 @@ export function shareToKakao(data: {
       content: {
         title: data.title,
         description: data.description,
-        imageUrl: data.imageUrl || 'https://paire.app/images/paire-fairy.png',
+        imageUrl: data.imageUrl || 'https://paire.app/images/pairy_main.png',
         link: {
           mobileWebUrl: data.link,
           webUrl: data.link,

@@ -61,7 +61,7 @@ export function MenuInputScreen({ onSubmit, onBack }: MenuInputScreenProps) {
           className="flex justify-center mb-6"
         >
           <img
-            src="/images/paire-fairy.png"
+            src="/images/pairy_main.png"
             alt="PAIRÉ Fairy"
             className="w-24 h-auto opacity-80"
           />

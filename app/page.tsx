@@ -179,7 +179,7 @@ export default function PairePage() {
 
   const handleMenuSubmit = (menu: string) => {
     setMenuText(menu)
-    setCapturedImage("/images/paire-fairy.png")
+    setCapturedImage("/images/pairy_main.png")
     setScreen("preference")
   }
 

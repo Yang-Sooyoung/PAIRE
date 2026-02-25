@@ -129,12 +129,11 @@ export function RecommendationScreen({
   // 랜덤 fairy 이미지 선택 (새로고침할 때마다 변경)
   const fairyImage = useMemo(() => {
     const fairyImages = [
-      "/images/fairy_0_0.png",
-      "/images/fairy_0_1.png",
-      "/images/fairy_0_2.png",
-      "/images/fairy_1_0.png",
-      "/images/fairy_1_1.png",
-      "/images/fairy_1_2.png",
+      "/images/pairy1.png",
+      "/images/pairy2.png",
+      "/images/pairy3.png",
+      "/images/pairy4.png",
+      "/images/pairy5.png",
     ]
     return fairyImages[Math.floor(Math.random() * fairyImages.length)]
   }, [fairyMessage]) // fairyMessage가 바뀔 때마다 새 이미지

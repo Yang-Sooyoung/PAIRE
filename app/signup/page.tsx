@@ -110,7 +110,7 @@ export default function SignUpPage() {
           className="mb-8 flex justify-center"
         >
           <img
-            src="/images/paire-fairy.png"
+            src="/images/pairy_main.png"
             alt="PAIRÉ Fairy"
             className="w-48 h-auto opacity-80 drop-shadow-lg"
           />

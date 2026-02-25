@@ -147,7 +147,7 @@ export function HomeScreen({
           className="mb-8"
         >
           <img
-            src="/images/paire-fairy.png"
+            src="/images/pairy_main.png"
             alt="PAIRÉ Fairy Sommelier"
             className="w-72 h-auto drop-shadow-2xl"
           />
