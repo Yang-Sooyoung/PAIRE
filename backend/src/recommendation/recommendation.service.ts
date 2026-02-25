@@ -106,6 +106,7 @@ export class RecommendationService {
         foodAnalysis,
         dto.occasion,
         dto.tastes,
+        dto.priceRange,
       );
 
       console.log('AI recommendation:', {

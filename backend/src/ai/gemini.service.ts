@@ -48,9 +48,10 @@ export class GeminiService {
     foodAnalysis: FoodAnalysis,
     occasion?: string,
     tastes?: string[],
+    priceRange?: string,
   ): Promise<RecommendationResult> {
     // 캐시 키 생성
-    const cacheKey = this.generateCacheKey(foodAnalysis, occasion, tastes);
+    const cacheKey = this.generateCacheKey(foodAnalysis, occasion, tastes, priceRange);
 
     // 캐시 확인
     const cached = await this.getCachedRecommendation(cacheKey);
@@ -74,10 +75,11 @@ export class GeminiService {
       drinks,
       occasion,
       tastes,
+      priceRange,
     );
 
     // 캐시 저장
-    await this.saveToCache(cacheKey, foodAnalysis, occasion, tastes, result);
+    await this.saveToCache(cacheKey, foodAnalysis, occasion, tastes, priceRange, result);
 
     return {
       ...result,
@@ -93,11 +95,12 @@ export class GeminiService {
     drinks: any[],
     occasion?: string,
     tastes?: string[],
+    priceRange?: string,
   ): Promise<Omit<RecommendationResult, 'fromCache'>> {
     // 음료 필터링 및 제한 (최대 20개만 사용하여 토큰 절약)
-    const filteredDrinks = this.filterDrinks(drinks, foodAnalysis, occasion, tastes).slice(0, 20);
-    
-    const prompt = this.buildPrompt(foodAnalysis, filteredDrinks, occasion, tastes);
+    const filteredDrinks = this.filterDrinks(drinks, foodAnalysis, occasion, tastes, priceRange).slice(0, 20);
+
+    const prompt = this.buildPrompt(foodAnalysis, filteredDrinks, occasion, tastes, priceRange);
 
     try {
       const completion = await this.openai.chat.completions.create({
@@ -146,8 +149,8 @@ export class GeminiService {
 
         // 음식 페어링 매칭
         const foodPairings = drink.foodPairings || [];
-        if (foodPairings.some((pairing: string) => 
-          foodAnalysis.keywords.some(keyword => 
+        if (foodPairings.some((pairing: string) =>
+          foodAnalysis.keywords.some(keyword =>
             pairing.toLowerCase().includes(keyword.toLowerCase())
           )
         )) {
@@ -155,7 +158,7 @@ export class GeminiService {
         }
 
         // 카테고리 매칭
-        if (foodPairings.some((pairing: string) => 
+        if (foodPairings.some((pairing: string) =>
           pairing.toLowerCase().includes(foodAnalysis.category.toLowerCase())
         )) {
           score += 5;
@@ -164,7 +167,7 @@ export class GeminiService {
         // 맛 선호도 매칭
         if (tastes && tastes.length > 0) {
           const tastingNotes = drink.tastingNotes || [];
-          if (tastingNotes.some((note: string) => 
+          if (tastingNotes.some((note: string) =>
             tastes.some(taste => note.toLowerCase().includes(taste.toLowerCase()))
           )) {
             score += 3;
@@ -184,10 +187,11 @@ export class GeminiService {
     drinks: any[],
     occasion?: string,
     tastes?: string[],
+    priceRange?: string,
   ): string {
     // 음료 목록을 간결하게 표현
     const drinkList = drinks
-      .map((d, i) => `${i + 1}. ${d.id}|${d.name}|${d.type}|${d.tastingNotes.slice(0, 3).join(',')}`)
+      .map((d, i) => `${i + 1}. ${d.id}|${d.name}|${d.type}|${d.price}|${d.tastingNotes.slice(0, 3).join(',')}`)
       .join('\n');
 
     const occasionMap = {
@@ -200,11 +204,19 @@ export class GeminiService {
       all: '일반',
     };
 
+    const priceRangeMap = {
+      budget: '₩10,000 이하',
+      moderate: '₩10,000-30,000',
+      premium: '₩30,000-50,000',
+      luxury: '₩50,000 이상',
+    };
+
     return `음식: ${foodAnalysis.keywords.join(', ')} (${foodAnalysis.category})
 상황: ${occasion ? occasionMap[occasion] || occasion : '일반'}
 선호: ${tastes?.join(', ') || '없음'}
+${priceRange ? `예산: ${priceRangeMap[priceRange] || priceRange}` : ''}
 
-음료목록 (ID|이름|타입|맛):
+음료목록 (ID|이름|타입|가격|맛):
 ${drinkList}
 
 위 음료 중 3개 추천. JSON 형식:
@@ -272,12 +284,14 @@ ${drinkList}
     foodAnalysis: FoodAnalysis,
     occasion?: string,
     tastes?: string[],
+    priceRange?: string,
   ): string {
     const data = {
       keywords: foodAnalysis.keywords.sort(),
       category: foodAnalysis.category,
       occasion: occasion || '',
       tastes: (tastes || []).sort(),
+      priceRange: priceRange || '',
     };
 
     return crypto.createHash('sha256').update(JSON.stringify(data)).digest('hex');
@@ -313,6 +327,7 @@ ${drinkList}
     foodAnalysis: FoodAnalysis,
     occasion: string | undefined,
     tastes: string[] | undefined,
+    priceRange: string | undefined,
     result: Omit<RecommendationResult, 'fromCache'>,
   ) {
     try {

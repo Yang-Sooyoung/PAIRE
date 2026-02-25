@@ -2,13 +2,13 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { ArrowLeft, Heart, Users, Tent, Home, User, Wine, Leaf, Droplets, Sparkles, Coffee, GlassWater, Martini } from "lucide-react"
+import { ArrowLeft, Heart, Users, Tent, Home, User, Wine, Leaf, Droplets, Sparkles, Coffee, GlassWater, Martini, DollarSign } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useI18n } from "@/lib/i18n/context"
 import { cn } from "@/lib/utils"
 
 interface PreferenceScreenProps {
-  onSubmit: (preferences: { occasion: string; tastes: string[] }) => void
+  onSubmit: (preferences: { occasion: string; tastes: string[]; priceRange?: string }) => void
   onBack: () => void
   isLoading?: boolean
 }
@@ -36,6 +36,7 @@ export function PreferenceScreen({ onSubmit, onBack, isLoading }: PreferenceScre
   const isKorean = language === "ko"
   const [selectedOccasion, setSelectedOccasion] = useState<string | null>(null)
   const [selectedTastes, setSelectedTastes] = useState<string[]>([])
+  const [selectedPriceRange, setSelectedPriceRange] = useState<string | null>(null)
 
   const occasions = [
     { id: "date", label: t("preference.occasions.date"), icon: occasionIcons.date },
@@ -55,6 +56,13 @@ export function PreferenceScreen({ onSubmit, onBack, isLoading }: PreferenceScre
     { id: "coffee", label: t("preference.tastes.coffee"), icon: tasteIcons.coffee },
   ]
 
+  const priceRanges = [
+    { id: "budget", label: isKorean ? "₩10,000 이하" : "Under ₩10,000", range: [0, 10000] },
+    { id: "moderate", label: isKorean ? "₩10,000 - ₩30,000" : "₩10,000 - ₩30,000", range: [10000, 30000] },
+    { id: "premium", label: isKorean ? "₩30,000 - ₩50,000" : "₩30,000 - ₩50,000", range: [30000, 50000] },
+    { id: "luxury", label: isKorean ? "₩50,000 이상" : "Over ₩50,000", range: [50000, 999999] },
+  ]
+
   const toggleTaste = (tasteId: string) => {
     setSelectedTastes((prev) =>
       prev.includes(tasteId)
@@ -65,7 +73,11 @@ export function PreferenceScreen({ onSubmit, onBack, isLoading }: PreferenceScre
 
   const handleSubmit = () => {
     if (selectedOccasion) {
-      onSubmit({ occasion: selectedOccasion, tastes: selectedTastes })
+      onSubmit({ 
+        occasion: selectedOccasion, 
+        tastes: selectedTastes,
+        priceRange: selectedPriceRange || undefined
+      })
     }
   }
 
@@ -137,6 +149,7 @@ export function PreferenceScreen({ onSubmit, onBack, isLoading }: PreferenceScre
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
+          className="mb-8"
         >
           <h2 className={cn(
             "text-gold-light text-xl font-medium mb-4",
@@ -166,6 +179,49 @@ export function PreferenceScreen({ onSubmit, onBack, isLoading }: PreferenceScre
                     isKorean && "font-[var(--font-noto-kr)] text-xs"
                   )}>
                     {taste.label}
+                  </span>
+                </motion.button>
+              )
+            })}
+          </div>
+        </motion.div>
+
+        {/* Price Range */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <h2 className={cn(
+            "text-gold-light text-xl font-medium mb-4",
+            isKorean && "font-[var(--font-noto-kr)] text-lg"
+          )}>
+            {isKorean ? "가격 범위" : "Price Range"}
+            <span className="text-muted-foreground text-sm ml-2">
+              {isKorean ? "(선택사항)" : "(Optional)"}
+            </span>
+          </h2>
+          <div className="grid grid-cols-2 gap-3">
+            {priceRanges.map((price) => {
+              const isSelected = selectedPriceRange === price.id
+              return (
+                <motion.button
+                  key={price.id}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setSelectedPriceRange(isSelected ? null : price.id)}
+                  className={cn(
+                    "flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 transition-all duration-300",
+                    isSelected
+                      ? "border-gold bg-gold/10 text-gold"
+                      : "border-border bg-card text-muted-foreground hover:border-gold/50"
+                  )}
+                >
+                  <DollarSign className={cn("w-4 h-4", isSelected ? "text-gold" : "text-gold-dim")} />
+                  <span className={cn(
+                    "text-sm font-medium",
+                    isKorean && "font-[var(--font-noto-kr)] text-xs"
+                  )}>
+                    {price.label}
                   </span>
                 </motion.button>
               )
