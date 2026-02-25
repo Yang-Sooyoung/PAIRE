@@ -61,20 +61,18 @@ export function LoadingFairy({
           </motion.div>
         )}
 
-        {/* Fairy 이미지 - 검은색 배경 추가 */}
+        {/* Fairy 이미지 */}
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.2, type: "spring" }}
           className="mb-6"
         >
-          <div className="bg-black rounded-full p-4 inline-block shadow-xl">
-            <img
-              src={fairyImage}
-              alt="PAIRÉ Fairy"
-              className="w-24 h-24 rounded-full object-cover border-2 border-gold/30"
-            />
-          </div>
+          <img
+            src={fairyImage}
+            alt="PAIRÉ Fairy"
+            className="w-24 h-24 rounded-full object-cover mx-auto"
+          />
         </motion.div>
 
         {/* 로딩 메시지 */}
