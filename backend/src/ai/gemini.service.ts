@@ -92,13 +92,14 @@ export class GeminiService {
     occasion?: string,
     tastes?: string[],
   ): Promise<Omit<RecommendationResult, 'fromCache'>> {
-    const model = this.genAI.getGenerativeModel({ model: 'gemini-pro' });
+    // gemini-1.5-flash 무료 모델 사용
+    const model = this.genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
     const prompt = this.buildPrompt(foodAnalysis, drinks, occasion, tastes);
 
     try {
       const result = await model.generateContent(prompt);
-      const response = await result.response;
+      const response = result.response;
       const text = response.text();
 
       // JSON 파싱
