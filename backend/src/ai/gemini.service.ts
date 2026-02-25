@@ -92,8 +92,9 @@ export class GeminiService {
     occasion?: string,
     tastes?: string[],
   ): Promise<Omit<RecommendationResult, 'fromCache'>> {
-    // gemini-1.5-flash 무료 모델 사용
-    const model = this.genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    // gemini-pro 무료 모델 사용 (v1beta API에서 지원)
+    // 참고: gemini-pro는 무료 할당량 제공 (분당 60 요청, 일일 1,500 요청)
+    const model = this.genAI.getGenerativeModel({ model: 'gemini-pro' });
 
     const prompt = this.buildPrompt(foodAnalysis, drinks, occasion, tastes);
 
