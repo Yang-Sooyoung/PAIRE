@@ -41,35 +41,7 @@ export default function HistoryPage() {
 
     const fetchHistory = async () => {
       try {
-        // 최신 토큰 가져오기
-        let currentToken = useUserStore.getState().token;
-        if (!currentToken) {
-          router.push('/login');
-          return;
-        }
-
-        let response;
-
-        try {
-          response = await getRecommendationHistory(currentToken, 20, 0);
-        } catch (error: any) {
-          // 401 에러면 토큰 갱신 후 재시도
-          if (error?.message?.includes('401')) {
-            console.log('Token expired, refreshing...');
-            const newToken = await refreshTokenIfNeeded();
-
-            if (newToken) {
-              currentToken = newToken;
-              response = await getRecommendationHistory(currentToken, 20, 0);
-            } else {
-              router.push('/login');
-              return;
-            }
-          } else {
-            throw error;
-          }
-        }
-
+        const response = await getRecommendationHistory(20, 0);
         setHistory(response.recommendations || []);
       } catch (error) {
         console.error('Failed to fetch history:', error);
@@ -200,6 +172,7 @@ export default function HistoryPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
+                onClick={() => router.push(`/history/${item.id}`)}
                 className="bg-card border border-border rounded-xl p-4 hover:border-gold/30 transition cursor-pointer"
               >
                 <div className="flex gap-4">

@@ -48,8 +48,8 @@
 - [ ] 추천 상세 설명
 
 ### 🟡 3순위 (고급화)
-- [ ] 추천 히스토리
-- [ ] 즐겨찾기
+- [x] 추천 히스토리 (상세 보기 포함)
+- [x] 즐겨찾기 (상세 보기 포함)
 - [ ] 공유 기능
 - [ ] TTS (음성 안내)
 
@@ -127,6 +127,12 @@ app/
 │   │   └── done/page.tsx
 │   └── constants/
 │       └── subscriptionPlans.ts
+├── history/
+│   ├── page.tsx                # 추천 히스토리 목록
+│   └── [id]/page.tsx           # 추천 상세 보기
+├── favorites/
+│   ├── page.tsx                # 즐겨찾기 목록
+│   └── [id]/page.tsx           # 즐겨찾기 음료 상세
 ├── payment/
 │   ├── page.tsx                # 결제 페이지
 │   ├── success/page.tsx        # 결제 성공
@@ -201,6 +207,16 @@ NEXT_PUBLIC_API_URL=http://localhost:3000/api
 ### 추천
 - `POST /api/recommendation/create` - 추천 생성 (권한 체크 포함)
 - `GET /api/recommendation/history` - 추천 히스토리
+- `GET /api/recommendation/:id` - 추천 상세 조회
+
+### 즐겨찾기
+- `POST /api/favorite/:drinkId` - 즐겨찾기 추가
+- `DELETE /api/favorite/:drinkId` - 즐겨찾기 제거
+- `GET /api/favorite` - 즐겨찾기 목록
+- `GET /api/favorite/check/:drinkId` - 즐겨찾기 상태 확인
+
+### 음료
+- `GET /api/drink/:id` - 음료 상세 정보
 
 ### 구독
 - `GET /api/subscription/methods` - 등록된 결제 수단 조회

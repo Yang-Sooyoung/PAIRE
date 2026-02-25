@@ -113,18 +113,12 @@ export default function PairePage() {
         ? capturedImage
         : undefined
 
-      // 최신 토큰 가져오기
-      const currentToken = useUserStore.getState().token
-
       // 백엔드 API 호출
-      const response = await createRecommendation(
-        {
-          imageUrl,
-          occasion: prefs.occasion,
-          tastes: prefs.tastes,
-        },
-        currentToken || undefined
-      )
+      const response = await createRecommendation({
+        imageUrl,
+        occasion: prefs.occasion,
+        tastes: prefs.tastes,
+      })
 
       setRecommendedDrinks(response.recommendation.drinks)
       setFairyMessage(response.recommendation.fairyMessage)

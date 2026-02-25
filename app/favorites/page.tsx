@@ -53,35 +53,7 @@ export default function FavoritesPage() {
 
     const fetchFavorites = async () => {
       try {
-        // 최신 토큰 가져오기
-        let currentToken = useUserStore.getState().token;
-        if (!currentToken) {
-          router.push('/login');
-          return;
-        }
-
-        let response;
-
-        try {
-          response = await getFavorites(currentToken);
-        } catch (error: any) {
-          // 401 에러면 토큰 갱신 후 재시도
-          if (error?.message?.includes('401')) {
-            console.log('Token expired, refreshing...');
-            const newToken = await refreshTokenIfNeeded();
-
-            if (newToken) {
-              currentToken = newToken;
-              response = await getFavorites(currentToken);
-            } else {
-              router.push('/login');
-              return;
-            }
-          } else {
-            throw error;
-          }
-        }
-
+        const response = await getFavorites();
         setFavorites(response.favorites || []);
       } catch (error) {
         console.error('Failed to fetch favorites:', error);
@@ -94,10 +66,6 @@ export default function FavoritesPage() {
   }, [user, refreshTokenIfNeeded, router]);
 
   const handleRemove = async (drinkId: string) => {
-    // 최신 토큰 가져오기
-    const currentToken = useUserStore.getState().token;
-    if (!currentToken) return;
-
     setDialogConfig({
       type: 'confirm',
       title: isKorean ? '즐겨찾기 제거' : 'Remove Favorite',
@@ -106,7 +74,7 @@ export default function FavoritesPage() {
         setShowDialog(false);
         setRemovingId(drinkId);
         try {
-          await removeFavorite(drinkId, currentToken);
+          await removeFavorite(drinkId);
           setFavorites((prev) => prev.filter((fav) => fav.drinkId !== drinkId));
         } catch (error: any) {
           setDialogConfig({
@@ -244,7 +212,10 @@ export default function FavoritesPage() {
                 transition={{ delay: index * 0.1 }}
                 className="bg-card border border-border rounded-xl overflow-hidden hover:border-gold/30 transition"
               >
-                <div className="relative aspect-square">
+                <div 
+                  className="relative aspect-square cursor-pointer"
+                  onClick={() => router.push(`/favorites/${favorite.drinkId}`)}
+                >
                   {favorite.drinkImage ? (
                     <img
                       src={favorite.drinkImage}
@@ -257,9 +228,12 @@ export default function FavoritesPage() {
                     </div>
                   )}
                   <button
-                    onClick={() => handleRemove(favorite.drinkId)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRemove(favorite.drinkId);
+                    }}
                     disabled={removingId === favorite.drinkId}
-                    className="absolute top-2 right-2 p-2 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background transition"
+                    className="absolute top-2 right-2 p-2 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background transition z-10"
                   >
                     {removingId === favorite.drinkId ? (
                       <Loader2 className="w-4 h-4 text-gold animate-spin" />
@@ -268,7 +242,10 @@ export default function FavoritesPage() {
                     )}
                   </button>
                 </div>
-                <div className="p-3">
+                <div 
+                  className="p-3 cursor-pointer"
+                  onClick={() => router.push(`/favorites/${favorite.drinkId}`)}
+                >
                   <h3 className={cn(
                     "text-foreground font-medium mb-1 truncate",
                     isKorean && "font-[var(--font-noto-kr)] text-sm"

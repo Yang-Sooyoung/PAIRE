@@ -32,12 +32,9 @@ export interface RecommendationResponse {
  * 추천 생성
  */
 export async function createRecommendation(
-  payload: CreateRecommendationPayload,
-  token?: string
+  payload: CreateRecommendationPayload
 ): Promise<RecommendationResponse> {
-  const response = await apiClient.post('/recommendation/create', payload, {
-    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-  });
+  const response = await apiClient.post('/recommendation/create', payload);
   return response.data;
 }
 
@@ -45,13 +42,11 @@ export async function createRecommendation(
  * 추천 히스토리 조회
  */
 export async function getRecommendationHistory(
-  token?: string,
   limit: number = 10,
   offset: number = 0
 ) {
   const response = await apiClient.get('/recommendation/history', {
     params: { limit, offset },
-    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
   });
   return response.data;
 }
@@ -59,9 +54,7 @@ export async function getRecommendationHistory(
 /**
  * 추천 상세 조회
  */
-export async function getRecommendationDetail(id: string, token?: string) {
-  const response = await apiClient.get(`/recommendation/${id}`, {
-    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-  });
+export async function getRecommendationDetail(id: string) {
+  const response = await apiClient.get(`/recommendation/${id}`);
   return response.data;
 }
