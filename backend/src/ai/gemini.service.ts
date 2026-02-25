@@ -103,7 +103,7 @@ export class GeminiService {
     // 음료 필터링 및 제한 (최대 20개만 사용하여 토큰 절약)
     const filteredDrinks = this.filterDrinks(drinks, foodAnalysis, occasion, tastes, priceRange).slice(0, 20);
 
-    const prompt = this.buildPrompt(foodAnalysis, filteredDrinks, occasion, tastes, priceRange);
+    const prompt = this.buildPrompt(foodAnalysis, filteredDrinks, occasion, tastes, priceRange, language);
 
     try {
       const completion = await this.openai.chat.completions.create({
@@ -248,6 +248,7 @@ export class GeminiService {
     occasion?: string,
     tastes?: string[],
     priceRange?: string,
+    language?: string,
   ): string {
     const occasionMap = {
       date: '데이트',
@@ -268,9 +269,11 @@ export class GeminiService {
 
     // 음료 DB가 비어있으면 GPT가 직접 생성
     const hasExistingDrinks = drinks && drinks.length > 0;
+    const isKorean = language === 'ko';
 
     if (!hasExistingDrinks) {
-      return `당신은 음료 페어링 전문가입니다. 다음 조건에 맞는 음료 3개를 추천하고 상세 정보를 생성하세요.
+      if (isKorean) {
+        return `당신은 음료 페어링 전문가입니다. 다음 조건에 맞는 음료 3개를 추천하고 상세 정보를 생성하세요.
 
 음식: ${foodAnalysis.keywords.join(', ')} (${foodAnalysis.category})
 상황: ${occasion ? occasionMap[occasion] || occasion : '일반'}
@@ -279,15 +282,15 @@ ${priceRange ? `예산: ${priceRangeMap[priceRange] || priceRange}` : ''}
 ${tastes?.includes('non-alcoholic') ? '**중요: 논알콜 음료만 추천**' : ''}
 ${tastes?.includes('alcoholic') ? '**중요: 알콜 음료만 추천**' : ''}
 
-각 음료마다 다음 정보를 생성하세요:
+각 음료마다 다음 정보를 한글로 생성하세요:
 - 실제 존재하는 음료 이름 (한글, 영어)
 - 음료 타입 (wine, whisky, cocktail, tea, coffee, juice 등)
-- 상세 설명
-- 테이스팅 노트 (3-5개)
+- 상세 설명 (한글)
+- 테이스팅 노트 (3-5개, 한글)
 - 예상 가격
 - 이미지 URL (Unsplash 검색 URL 형식)
-- 추천 이유 (음식과의 페어링 근거 3-4문장)
-- 페어링 노트 (맛의 조화 설명 2-3문장)
+- 추천 이유 (음식과의 페어링 근거 3-4문장, 한글)
+- 페어링 노트 (맛의 조화 설명 2-3문장, 한글)
 
 JSON 형식:
 {
@@ -297,17 +300,57 @@ JSON 형식:
       "drinkName": "한글 이름",
       "drinkNameEn": "영어 이름",
       "drinkType": "타입",
-      "description": "음료 설명",
+      "description": "음료 설명 (한글)",
       "tastingNotes": ["맛1", "맛2", "맛3"],
       "price": "₩가격",
       "image": "https://images.unsplash.com/photo-...",
-      "reason": "추천 이유 (3-4문장)",
+      "reason": "추천 이유 (3-4문장, 한글)",
       "score": 95,
-      "pairingNotes": "페어링 설명 (2-3문장)"
+      "pairingNotes": "페어링 설명 (2-3문장, 한글)"
     }
   ],
-  "fairyMessage": "페어리 메시지 (5-7문장, 음식 분석과 상황을 언급하며 따뜻하고 친근한 톤)"
+  "fairyMessage": "페어리 메시지 (5-7문장, 음식 분석과 상황을 언급하며 따뜻하고 친근한 톤, 한글)"
 }`;
+      } else {
+        return `You are a drink pairing expert. Recommend 3 drinks that match the following conditions and generate detailed information.
+
+Food: ${foodAnalysis.keywords.join(', ')} (${foodAnalysis.category})
+Occasion: ${occasion || 'general'}
+Preferences: ${tastes?.join(', ') || 'none'}
+${priceRange ? `Budget: ${priceRange}` : ''}
+${tastes?.includes('non-alcoholic') ? '**IMPORTANT: Only non-alcoholic drinks**' : ''}
+${tastes?.includes('alcoholic') ? '**IMPORTANT: Only alcoholic drinks**' : ''}
+
+Generate the following information for each drink in English:
+- Real drink name (Korean, English)
+- Drink type (wine, whisky, cocktail, tea, coffee, juice, etc.)
+- Detailed description (English)
+- Tasting notes (3-5, English)
+- Estimated price
+- Image URL (Unsplash search URL format)
+- Recommendation reason (3-4 sentences about food pairing, English)
+- Pairing notes (2-3 sentences about flavor harmony, English)
+
+JSON format:
+{
+  "recommendations": [
+    {
+      "drinkId": "generated unique ID (e.g., wine_001)",
+      "drinkName": "Korean name",
+      "drinkNameEn": "English name",
+      "drinkType": "type",
+      "description": "drink description (English)",
+      "tastingNotes": ["taste1", "taste2", "taste3"],
+      "price": "₩price",
+      "image": "https://images.unsplash.com/photo-...",
+      "reason": "recommendation reason (3-4 sentences, English)",
+      "score": 95,
+      "pairingNotes": "pairing description (2-3 sentences, English)"
+    }
+  ],
+  "fairyMessage": "Fairy message (5-7 sentences, mentioning food analysis and occasion with warm and friendly tone, English)"
+}`;
+      }
     }
 
     // 기존 음료가 있으면 기존 방식 사용
@@ -315,7 +358,8 @@ JSON 형식:
       .map((d, i) => `${i + 1}. ${d.id}|${d.name}|${d.type}|${d.price}|${d.tastingNotes.slice(0, 3).join(',')}`)
       .join('\n');
 
-    return `음식: ${foodAnalysis.keywords.join(', ')} (${foodAnalysis.category})
+    if (isKorean) {
+      return `음식: ${foodAnalysis.keywords.join(', ')} (${foodAnalysis.category})
 상황: ${occasion ? occasionMap[occasion] || occasion : '일반'}
 선호: ${tastes?.join(', ') || '없음'}
 ${priceRange ? `예산: ${priceRangeMap[priceRange] || priceRange}` : ''}
@@ -325,7 +369,7 @@ ${tastes?.includes('alcoholic') ? '**중요: 알콜 음료만 추천**' : ''}
 음료목록 (ID|이름|타입|가격|맛):
 ${drinkList}
 
-위 음료 중 3개 추천. JSON 형식:
+위 음료 중 3개 추천. 모든 설명은 한글로 작성. JSON 형식:
 {
   "recommendations": [
     {
@@ -333,13 +377,40 @@ ${drinkList}
       "drinkName": "한글이름",
       "drinkNameEn": "영어이름",
       "drinkType": "타입",
-      "reason": "추천이유 (3-4문장)",
+      "reason": "추천이유 (3-4문장, 한글)",
       "score": 95,
-      "pairingNotes": "페어링 설명 (2-3문장)"
+      "pairingNotes": "페어링 설명 (2-3문장, 한글)"
     }
   ],
-  "fairyMessage": "페어리 메시지 (5-7문장, 따뜻하고 친근한 톤)"
+  "fairyMessage": "페어리 메시지 (5-7문장, 따뜻하고 친근한 톤, 한글)"
 }`;
+    } else {
+      return `Food: ${foodAnalysis.keywords.join(', ')} (${foodAnalysis.category})
+Occasion: ${occasion || 'general'}
+Preferences: ${tastes?.join(', ') || 'none'}
+${priceRange ? `Budget: ${priceRange}` : ''}
+${tastes?.includes('non-alcoholic') ? '**IMPORTANT: Only non-alcoholic drinks**' : ''}
+${tastes?.includes('alcoholic') ? '**IMPORTANT: Only alcoholic drinks**' : ''}
+
+Drink list (ID|Name|Type|Price|Taste):
+${drinkList}
+
+Recommend 3 drinks from the list above. All descriptions in English. JSON format:
+{
+  "recommendations": [
+    {
+      "drinkId": "ID",
+      "drinkName": "Korean name",
+      "drinkNameEn": "English name",
+      "drinkType": "type",
+      "reason": "recommendation reason (3-4 sentences, English)",
+      "score": 95,
+      "pairingNotes": "pairing description (2-3 sentences, English)"
+    }
+  ],
+  "fairyMessage": "Fairy message (5-7 sentences, warm and friendly tone, English)"
+}`;
+    }
   }
 
   /**
