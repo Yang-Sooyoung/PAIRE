@@ -66,7 +66,7 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
         // 최신 토큰 가져오기
         const currentToken = useUserStore.getState().token
         if (!currentToken) return
-        
+
         try {
           const res = await checkFavorite(drink.id, currentToken)
           setIsWishlisted(res.isFavorite)
@@ -75,7 +75,7 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
         }
       }
     }
-    
+
     checkFavoriteStatus()
   }, [drink.id, user])
 
@@ -144,13 +144,13 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
   const calculateFlavorProfile = () => {
     const type = drink.type.toLowerCase()
     const tastes = drink.tastes || []
-    
+
     // 기본값
     let sweetness = 50
     let acidity = 50
     let body = 50
     let tannin = 50
-    
+
     // 타입별 기본 프로필
     if (type.includes('red wine')) {
       sweetness = 20
@@ -188,7 +188,7 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
       body = 20
       tannin = 5
     }
-    
+
     // tastes 배열로 조정
     if (tastes.includes('sweet')) sweetness += 20
     if (tastes.includes('bitter')) {
@@ -199,7 +199,7 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
     if (tastes.includes('light')) body -= 20
     if (tastes.includes('medium')) body = 50
     if (tastes.includes('heavy')) body += 20
-    
+
     // 0-100 범위로 제한
     return {
       [t("detail.sweetness")]: Math.max(0, Math.min(100, sweetness)),
@@ -213,9 +213,9 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
   const getPerfectForItems = () => {
     const occasions = drink.occasions || []
     const foodPairings = drink.foodPairings || []
-    
+
     const items = []
-    
+
     // occasions 기반
     if (occasions.includes('date')) {
       items.push({ icon: 'sparkles', label: isKorean ? '데이트' : 'Date Night' })
@@ -229,7 +229,7 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
     if (occasions.includes('camping')) {
       items.push({ icon: 'sparkles', label: isKorean ? '캠핑' : 'Camping' })
     }
-    
+
     // foodPairings 기반 (occasions가 부족할 경우)
     if (items.length < 3 && foodPairings.includes('meat')) {
       items.push({ icon: 'droplet', label: isKorean ? '고기 요리' : 'Meat Dishes' })
@@ -240,7 +240,7 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
     if (items.length < 3 && foodPairings.includes('dessert')) {
       items.push({ icon: 'sparkles', label: isKorean ? '디저트' : 'Desserts' })
     }
-    
+
     // 기본값 (데이터가 없을 경우)
     if (items.length === 0) {
       items.push(
@@ -249,20 +249,20 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
         { icon: 'droplet', label: isKorean ? '특별한 순간' : 'Special Moments' }
       )
     }
-    
+
     return items.slice(0, 3) // 최대 3개
   }
 
   // 페어리 노트 번역
   const translateFairyNote = (description: string) => {
     if (!description) return ""
-    
+
     // 영어 모드이고 한글 텍스트인 경우
     if (!isKorean && /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(description)) {
       // 간단한 번역 매핑 (실제로는 백엔드에서 처리하는 것이 좋음)
       return "This drink pairs perfectly with your dish, creating a harmonious balance of flavors."
     }
-    
+
     return description
   }
 
@@ -289,7 +289,7 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
-        
+
         {/* Navigation */}
         <div className="absolute top-0 left-0 right-0 flex items-center justify-between p-4">
           <Button
