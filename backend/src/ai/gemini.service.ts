@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import OpenAI from 'openai';
 import { PrismaService } from '@/prisma/prisma.service';
 import * as crypto from 'crypto';
 
@@ -28,15 +28,16 @@ interface RecommendationResult {
 @Injectable()
 export class GeminiService {
   private readonly logger = new Logger(GeminiService.name);
-  private genAI: GoogleGenerativeAI;
+  private openai: OpenAI;
 
   constructor(private prisma: PrismaService) {
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
-      this.logger.warn('GEMINI_API_KEY not found in environment variables');
+      this.logger.warn('OPENAI_API_KEY not found in environment variables');
     } else {
-      // v1 API 사용 (v1beta 대신)
-      this.genAI = new GoogleGenerativeAI(apiKey);
+      this.openai = new OpenAI({
+        apiKey: apiKey,
+      });
     }
   }
 
@@ -85,7 +86,7 @@ export class GeminiService {
   }
 
   /**
-   * Gemini AI로 음료 추천 생성
+   * OpenAI로 음료 추천 생성
    */
   private async generateRecommendation(
     foodAnalysis: FoodAnalysis,
@@ -93,25 +94,33 @@ export class GeminiService {
     occasion?: string,
     tastes?: string[],
   ): Promise<Omit<RecommendationResult, 'fromCache'>> {
-    // gemini-1.5-flash 무료 모델 사용 (최신 SDK 버전)
-    // 참고: gemini-1.5-flash는 무료 할당량 제공 (분당 15 요청, 일일 1,500 요청)
-    const model = this.genAI.getGenerativeModel({ 
-      model: 'gemini-1.5-flash',
-    });
-
     const prompt = this.buildPrompt(foodAnalysis, drinks, occasion, tastes);
 
     try {
-      const result = await model.generateContent(prompt);
-      const response = result.response;
-      const text = response.text();
+      const completion = await this.openai.chat.completions.create({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'system',
+            content: '당신은 음료 페어링 전문가 "페어리(Pairé)"입니다. 마법 같은 페어링으로 특별한 순간을 만들어주는 요정입니다.',
+          },
+          {
+            role: 'user',
+            content: prompt,
+          },
+        ],
+        temperature: 0.7,
+        response_format: { type: 'json_object' },
+      });
+
+      const text = completion.choices[0]?.message?.content || '{}';
 
       // JSON 파싱
       const parsed = this.parseGeminiResponse(text);
 
       return parsed;
     } catch (error) {
-      this.logger.error('Gemini API error:', error);
+      this.logger.error('OpenAI API error:', error);
       // 폴백: 기본 추천
       return this.getFallbackRecommendation(drinks, foodAnalysis);
     }
@@ -186,7 +195,6 @@ ${drinkList}
    - 음식과 음료의 조화, 상황의 특별함을 모두 언급
 
 **응답 형식 (JSON):**
-\`\`\`json
 {
   "recommendations": [
     {
@@ -201,28 +209,24 @@ ${drinkList}
   ],
   "fairyMessage": "페어리의 추천 메시지 (5-7문장, 음식 분석 결과와 선택한 상황을 언급하며 마법 같은 페어링의 특별함을 전달하는 따뜻하고 친근한 톤)"
 }
-\`\`\`
 
-반드시 JSON 형식으로만 응답하고, 다른 텍스트는 포함하지 마세요.`;
+반드시 JSON 형식으로만 응답하세요.`;
   }
 
   /**
-   * Gemini 응답 파싱
+   * OpenAI 응답 파싱
    */
   private parseGeminiResponse(text: string): Omit<RecommendationResult, 'fromCache'> {
     try {
-      // JSON 코드 블록 제거
-      const jsonMatch = text.match(/```json\n([\s\S]*?)\n```/) || text.match(/```\n([\s\S]*?)\n```/);
-      const jsonText = jsonMatch ? jsonMatch[1] : text;
-
-      const parsed = JSON.parse(jsonText.trim());
+      // JSON 파싱 (OpenAI는 이미 JSON 형식으로 반환)
+      const parsed = JSON.parse(text.trim());
 
       return {
         recommendations: parsed.recommendations || [],
         fairyMessage: parsed.fairyMessage || '맛있는 페어링을 즐겨보세요!',
       };
     } catch (error) {
-      this.logger.error('Failed to parse Gemini response:', error);
+      this.logger.error('Failed to parse OpenAI response:', error);
       throw error;
     }
   }
