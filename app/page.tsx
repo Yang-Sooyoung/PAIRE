@@ -31,6 +31,7 @@ interface Drink {
   tastingNotes: string[]
   image: string
   price: string
+  purchaseUrl?: string
 }
 
 export default function PairePage() {

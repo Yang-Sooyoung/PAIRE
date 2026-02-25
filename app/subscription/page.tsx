@@ -54,8 +54,7 @@ export default function SubscriptionPage() {
   const [paymentType, setPaymentType] = useState<'subscription' | 'credit'>('subscription');
   const [methodRegistered, setMethodRegistered] = useState(false);
   const [billingKey, setBillingKey] = useState('');
-  const [selectedPlan] = useState<Plan>(PLANS[0]);
-  const [billingPeriod, setBillingPeriod] = useState<'weekly' | 'monthly' | 'yearly'>('monthly');
+  const [selectedPlanIndex, setSelectedPlanIndex] = useState<number>(1); // 기본값: 월간
   const [loading, setLoading] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
   const [dialogConfig, setDialogConfig] = useState<{ type: 'info' | 'success' | 'warning' | 'error' | 'confirm', title: string, description: string }>({
@@ -64,11 +63,10 @@ export default function SubscriptionPage() {
     description: ''
   });
   const router = useRouter();
+  const selectedPlan = PLANS[selectedPlanIndex];
 
   const getPlanPrice = (plan: Plan) => {
-    if (billingPeriod === 'weekly') return plan.priceWeekly || 0;
-    if (billingPeriod === 'yearly') return plan.priceYearly;
-    return plan.priceMonthly;
+    return plan.priceMonthly; // 각 플랜이 자신의 가격을 가지고 있음
   };
 
   useEffect(() => {
@@ -209,12 +207,11 @@ export default function SubscriptionPage() {
       setLoading(true);
       const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
       const priceNumber = Number(getPlanPrice(selectedPlan));
-      const interval = billingPeriod === 'weekly' ? 'WEEKLY' : billingPeriod === 'monthly' ? 'MONTHLY' : 'ANNUALLY';
 
       const payload = {
         planId: selectedPlan.id,
         membership: selectedPlan.membership,
-        interval,
+        interval: selectedPlan.interval,
         price: priceNumber,
         billingKey,
       };
@@ -244,12 +241,11 @@ export default function SubscriptionPage() {
           try {
             const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
             const priceNumber = Number(getPlanPrice(selectedPlan));
-            const interval = billingPeriod === 'weekly' ? 'WEEKLY' : billingPeriod === 'monthly' ? 'MONTHLY' : 'ANNUALLY';
 
             const payload = {
               planId: selectedPlan.id,
               membership: selectedPlan.membership,
-              interval,
+              interval: selectedPlan.interval,
               price: priceNumber,
               billingKey,
             };
@@ -413,64 +409,57 @@ export default function SubscriptionPage() {
             </div>
 
             <div className="bg-card border border-border rounded-xl p-8 mb-8 max-w-2xl mx-auto">
-              <div className="flex justify-between items-start mb-6">
-                <div>
-                  <h2 className={cn(
-                    "text-2xl font-light text-foreground mb-2",
-                    isKorean && "font-[var(--font-noto-kr)]"
-                  )}>
-                    {selectedPlan.title}
-                  </h2>
-                  <p className={cn(
-                    "text-muted-foreground",
-                    isKorean && "font-[var(--font-noto-kr)]"
-                  )}>
-                    {selectedPlan.description}
-                  </p>
-                </div>
+              {/* 플랜 선택 탭 */}
+              <div className="flex gap-3 mb-8">
+                {PLANS.map((plan, index) => (
+                  <button
+                    key={plan.id}
+                    onClick={() => setSelectedPlanIndex(index)}
+                    className={cn(
+                      "flex-1 py-3 px-4 rounded-lg transition",
+                      selectedPlanIndex === index
+                        ? 'bg-gold text-background'
+                        : 'bg-secondary text-foreground hover:bg-secondary/80',
+                      isKorean && "font-[var(--font-noto-kr)]"
+                    )}
+                  >
+                    <div className="font-semibold text-sm">{plan.interval === 'WEEKLY' ? (isKorean ? '주간' : 'Weekly') : plan.interval === 'MONTHLY' ? (isKorean ? '월간' : 'Monthly') : (isKorean ? '연간' : 'Yearly')}</div>
+                    <div className="text-sm">₩{plan.priceMonthly.toLocaleString()}</div>
+                    {plan.interval === 'ANNUALLY' && (
+                      <div className="text-xs opacity-80">{isKorean ? '33% 할인' : '33% OFF'}</div>
+                    )}
+                  </button>
+                ))}
               </div>
 
-              {/* 가격 선택 */}
-              <div className="flex gap-3 mb-8">
-                <button
-                  onClick={() => setBillingPeriod('weekly')}
-                  className={cn(
-                    "flex-1 py-3 px-4 rounded-lg transition",
-                    billingPeriod === 'weekly'
-                      ? 'bg-gold text-background'
-                      : 'bg-secondary text-foreground hover:bg-secondary/80',
-                    isKorean && "font-[var(--font-noto-kr)]"
-                  )}
-                >
-                  <div className="font-semibold">{isKorean ? '주간' : 'Weekly'}</div>
-                  <div className="text-sm">₩{(selectedPlan.priceWeekly || 0).toLocaleString()}</div>
-                </button>
-                <button
-                  onClick={() => setBillingPeriod('monthly')}
-                  className={cn(
-                    "flex-1 py-3 px-4 rounded-lg transition",
-                    billingPeriod === 'monthly'
-                      ? 'bg-gold text-background'
-                      : 'bg-secondary text-foreground hover:bg-secondary/80',
-                    isKorean && "font-[var(--font-noto-kr)]"
-                  )}
-                >
-                  <div className="font-semibold">{t('subscription.monthly')}</div>
-                  <div className="text-sm">₩{selectedPlan.priceMonthly.toLocaleString()}</div>
-                </button>
-                <button
-                  onClick={() => setBillingPeriod('yearly')}
-                  className={cn(
-                    "flex-1 py-3 px-4 rounded-lg transition",
-                    billingPeriod === 'yearly'
-                      ? 'bg-gold text-background'
-                      : 'bg-secondary text-foreground hover:bg-secondary/80',
-                    isKorean && "font-[var(--font-noto-kr)]"
-                  )}
-                >
-                  <div className="font-semibold">{t('subscription.yearly')}</div>
-                  <div className="text-sm">₩{selectedPlan.priceYearly.toLocaleString()}</div>
-                </button>
+              <div className="mb-6">
+                <h2 className={cn(
+                  "text-2xl font-light text-foreground mb-2",
+                  isKorean && "font-[var(--font-noto-kr)]"
+                )}>
+                  {selectedPlan.title}
+                </h2>
+                <p className={cn(
+                  "text-muted-foreground",
+                  isKorean && "font-[var(--font-noto-kr)]"
+                )}>
+                  {selectedPlan.description}
+                </p>
+              </div>
+
+              {/* 가격 표시 */}
+              <div className="text-center mb-8 p-6 bg-gold/5 rounded-xl border border-gold/20">
+                <div className="text-4xl font-bold text-gold mb-2">
+                  ₩{selectedPlan.priceMonthly.toLocaleString()}
+                </div>
+                <div className={cn(
+                  "text-sm text-muted-foreground",
+                  isKorean && "font-[var(--font-noto-kr)]"
+                )}>
+                  {selectedPlan.interval === 'WEEKLY' ? (isKorean ? '주 1회 결제' : 'Billed weekly') : 
+                   selectedPlan.interval === 'MONTHLY' ? (isKorean ? '월 1회 결제' : 'Billed monthly') : 
+                   (isKorean ? '연 1회 결제' : 'Billed annually')}
+                </div>
               </div>
 
               {/* 기능 목록 */}
@@ -554,7 +543,7 @@ export default function SubscriptionPage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               {CREDIT_PACKAGES.map((pkg, index) => (
                 <motion.div
                   key={pkg.id}
@@ -629,6 +618,16 @@ export default function SubscriptionPage() {
                   </Button>
                 </motion.div>
               ))}
+            </div>
+
+            {/* 크레딧 결제 안내 */}
+            <div className="max-w-2xl mx-auto">
+              <div className={cn(
+                "text-center text-sm text-muted-foreground mb-4",
+                isKorean && "font-[var(--font-noto-kr)]"
+              )}>
+                {isKorean ? '💳 크레딧은 일회성 결제로 즉시 충전됩니다' : '💳 Credits are charged immediately with one-time payment'}
+              </div>
             </div>
           </motion.div>
         )}

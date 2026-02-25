@@ -26,6 +26,7 @@ interface Drink {
   tastingNotes: string[]
   image: string | null
   price: string
+  purchaseUrl?: string
 }
 
 // 음료 타입 번역

@@ -18,6 +18,7 @@ async function main() {
       foodPairings: ['seafood', 'pasta', 'cheese', 'dessert'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:'https://link.coupang.com/a/dSHWC9'
     },
     {
       name: 'Moët & Chandon Brut',
@@ -29,6 +30,7 @@ async function main() {
       foodPairings: ['seafood', 'pasta', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:'https://link.coupang.com/a/dSHZaP'
     },
     {
       name: 'Veuve Clicquot Yellow Label',
@@ -40,6 +42,7 @@ async function main() {
       foodPairings: ['seafood', 'cheese', 'dessert'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:'https://link.coupang.com/a/dSH5ti'
     },
     {
       name: 'Prosecco Superiore DOCG',
@@ -51,6 +54,7 @@ async function main() {
       foodPairings: ['seafood', 'pasta', 'light dishes'],
       occasions: ['gathering', 'camping'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:'https://link.coupang.com/a/dSH50p'
     },
     {
       name: 'Cava Reserva',
@@ -62,6 +66,7 @@ async function main() {
       foodPairings: ['seafood', 'cheese', 'pasta'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:'https://link.coupang.com/a/dSH6lB'
     },
     {
       name: 'Champagne Rosé',
@@ -73,6 +78,7 @@ async function main() {
       foodPairings: ['seafood', 'dessert', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:'https://link.coupang.com/a/dSH6RW'
     },
     {
       name: 'Franciacorta Brut',
@@ -84,6 +90,7 @@ async function main() {
       foodPairings: ['seafood', 'pasta', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'medium'],
+      purchaseUrl:'https://link.coupang.com/a/dSH7Dp'
     },
     {
       name: 'Crémant de Bourgogne',
@@ -95,6 +102,7 @@ async function main() {
       foodPairings: ['seafood', 'cheese', 'light dishes'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:'https://link.coupang.com/a/dSH7Zw'
     },
     {
       name: 'Asti Spumante',
@@ -106,6 +114,7 @@ async function main() {
       foodPairings: ['dessert', 'cheese', 'light dishes'],
       occasions: ['gathering', 'date'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:'https://link.coupang.com/a/dSIbxU'
     },
     {
       name: 'Lambrusco Rosso',
@@ -117,6 +126,7 @@ async function main() {
       foodPairings: ['pasta', 'meat', 'cheese'],
       occasions: ['gathering', 'solo-meal'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:'https://link.coupang.com/a/dSIa8f'
     },
     {
       name: 'Sekt Riesling',
@@ -128,6 +138,7 @@ async function main() {
       foodPairings: ['seafood', 'cheese', 'light dishes'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:'https://link.coupang.com/a/dSIcdz'
     },
     {
       name: 'Blanc de Blancs Champagne',
@@ -139,6 +150,7 @@ async function main() {
       foodPairings: ['seafood', 'cheese', 'light dishes'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:'https://link.coupang.com/a/dSIcD9'
     },
     {
       name: 'English Sparkling Wine',
@@ -150,6 +162,7 @@ async function main() {
       foodPairings: ['seafood', 'cheese', 'dessert'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:'https://link.coupang.com/a/dSIc5i'
     },
     {
       name: 'Champagne Blanc de Noirs',
@@ -161,6 +174,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'pasta'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'medium'],
+      purchaseUrl:'https://link.coupang.com/a/dSIdmX'
     },
     {
       name: 'Crémant d\'Alsace',
@@ -172,6 +186,7 @@ async function main() {
       foodPairings: ['seafood', 'cheese', 'light dishes'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:'https://link.coupang.com/a/dSId1D'
     },
     // 레드 와인 (30개)
     {
@@ -184,6 +199,7 @@ async function main() {
       foodPairings: ['meat', 'steak', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['bitter', 'heavy'],
+      purchaseUrl:'https://link.coupang.com/a/dSIfox'
     },
     {
       name: 'Penfolds Grange',
@@ -195,6 +211,7 @@ async function main() {
       foodPairings: ['meat', 'steak', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['bitter', 'heavy'],
+      purchaseUrl:'https://link.coupang.com/a/dSIfK1'
     },
     {
       name: 'Barolo DOCG',
@@ -206,6 +223,7 @@ async function main() {
       foodPairings: ['meat', 'truffle', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['bitter', 'heavy'],
+      purchaseUrl:'https://link.coupang.com/a/dSIgcS'
     },
     {
       name: 'Brunello di Montalcino',
@@ -217,6 +235,7 @@ async function main() {
       foodPairings: ['meat', 'pasta', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['bitter', 'heavy'],
+      purchaseUrl:'https://link.coupang.com/a/dSIgKM'
     },
     {
       name: 'Amarone della Valpolicella',
@@ -228,6 +247,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'chocolate'],
       occasions: ['date', 'solo-drinking'],
       tastes: ['sweet', 'heavy'],
+      purchaseUrl:'https://link.coupang.com/a/dSIg8b'
     },
     {
       name: 'Châteauneuf-du-Pape',
@@ -239,6 +259,7 @@ async function main() {
       foodPairings: ['meat', 'stew', 'cheese'],
       occasions: ['gathering', 'solo-drinking'],
       tastes: ['bitter', 'heavy'],
+      purchaseUrl:'https://link.coupang.com/a/dSIhzS'
     },
     {
       name: 'Rioja Gran Reserva',
@@ -250,6 +271,7 @@ async function main() {
       foodPairings: ['meat', 'tapas', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['bitter', 'medium'],
+      purchaseUrl:'https://link.coupang.com/a/dSIhRy'
     },
     {
       name: 'Pinot Noir Burgundy',
@@ -261,6 +283,7 @@ async function main() {
       foodPairings: ['meat', 'fish', 'mushroom'],
       occasions: ['date', 'gathering'],
       tastes: ['bitter', 'medium'],
+      purchaseUrl:'https://link.coupang.com/a/dSIieG'
     },
     {
       name: 'Malbec Mendoza',
@@ -272,6 +295,7 @@ async function main() {
       foodPairings: ['meat', 'bbq', 'cheese'],
       occasions: ['gathering', 'camping'],
       tastes: ['sweet', 'heavy'],
+      purchaseUrl:'https://link.coupang.com/a/dSIiD0'
     },
     {
       name: 'Cabernet Sauvignon Napa',
@@ -283,6 +307,7 @@ async function main() {
       foodPairings: ['meat', 'steak', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['bitter', 'heavy'],
+      purchaseUrl:'https://link.coupang.com/a/dSIi8q'
     },
     {
       name: 'Syrah Côtes du Rhône',
@@ -294,6 +319,7 @@ async function main() {
       foodPairings: ['meat', 'stew', 'cheese'],
       occasions: ['gathering', 'solo-drinking'],
       tastes: ['bitter', 'heavy'],
+      purchaseUrl:'https://link.coupang.com/a/dSIjnf'
     },
     {
       name: 'Zinfandel California',
@@ -305,6 +331,7 @@ async function main() {
       foodPairings: ['meat', 'bbq', 'pizza'],
       occasions: ['gathering', 'camping'],
       tastes: ['sweet', 'medium'],
+      purchaseUrl:'https://link.coupang.com/a/dSIjNs'
     },
     {
       name: 'Merlot Bordeaux',
@@ -316,6 +343,7 @@ async function main() {
       foodPairings: ['meat', 'pasta', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'medium'],
+      purchaseUrl:'https://link.coupang.com/a/dSIj9v'
     },
     {
       name: 'Sangiovese Chianti Classico',
@@ -327,6 +355,7 @@ async function main() {
       foodPairings: ['pasta', 'pizza', 'cheese'],
       occasions: ['gathering', 'solo-meal'],
       tastes: ['bitter', 'medium'],
+      purchaseUrl:'https://link.coupang.com/a/dSIkoS'
     },
     {
       name: 'Tempranillo Ribera del Duero',
@@ -338,6 +367,7 @@ async function main() {
       foodPairings: ['meat', 'tapas', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['bitter', 'medium'],
+      purchaseUrl:'https://link.coupang.com/a/dSIkCD'
     },
     {
       name: 'Grenache GSM Blend',
@@ -349,6 +379,7 @@ async function main() {
       foodPairings: ['meat', 'bbq', 'cheese'],
       occasions: ['gathering', 'camping'],
       tastes: ['sweet', 'medium'],
+      purchaseUrl:'https://link.coupang.com/a/dSIkU2'
     },
     {
       name: 'Nebbiolo Barbaresco',
@@ -360,6 +391,7 @@ async function main() {
       foodPairings: ['meat', 'truffle', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['bitter', 'heavy'],
+      purchaseUrl:'https://link.coupang.com/a/dSIlbQ'
     },
     {
       name: 'Carmenere Chile',
@@ -371,6 +403,7 @@ async function main() {
       foodPairings: ['meat', 'pasta', 'cheese'],
       occasions: ['gathering', 'solo-meal'],
       tastes: ['sweet', 'medium'],
+      purchaseUrl:'https://link.coupang.com/a/dSIlpa'
     },
     {
       name: 'Shiraz Australia',
@@ -382,6 +415,7 @@ async function main() {
       foodPairings: ['meat', 'bbq', 'cheese'],
       occasions: ['gathering', 'camping'],
       tastes: ['bitter', 'heavy'],
+      purchaseUrl:'https://link.coupang.com/a/dSImee'
     },
     {
       name: 'Primitivo Puglia',
@@ -393,6 +427,7 @@ async function main() {
       foodPairings: ['meat', 'pasta', 'cheese'],
       occasions: ['gathering', 'solo-meal'],
       tastes: ['sweet', 'heavy'],
+      purchaseUrl:'https://link.coupang.com/a/dSImDb'
     },
     {
       name: 'Petite Sirah California',
@@ -404,6 +439,7 @@ async function main() {
       foodPairings: ['meat', 'steak', 'cheese'],
       occasions: ['gathering', 'solo-drinking'],
       tastes: ['bitter', 'heavy'],
+      purchaseUrl:'https://link.coupang.com/a/dSImWa'
     },
     {
       name: 'Montepulciano d\'Abruzzo',
@@ -415,6 +451,7 @@ async function main() {
       foodPairings: ['pasta', 'pizza', 'cheese'],
       occasions: ['gathering', 'solo-meal'],
       tastes: ['sweet', 'medium'],
+      purchaseUrl:'https://link.coupang.com/a/dSInju'
     },
     {
       name: 'Pinotage South Africa',
@@ -426,6 +463,7 @@ async function main() {
       foodPairings: ['meat', 'bbq', 'cheese'],
       occasions: ['gathering', 'camping'],
       tastes: ['bitter', 'medium'],
+      purchaseUrl:'https://link.coupang.com/a/dSInQR'
     },
     {
       name: 'Côtes du Rhône Villages',
@@ -437,6 +475,7 @@ async function main() {
       foodPairings: ['meat', 'stew', 'cheese'],
       occasions: ['gathering', 'solo-meal'],
       tastes: ['bitter', 'medium'],
+      purchaseUrl:'https://link.coupang.com/a/dSIrO9'
     },
     {
       name: 'Valpolicella Ripasso',
@@ -448,6 +487,7 @@ async function main() {
       foodPairings: ['meat', 'pasta', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'medium'],
+      purchaseUrl:'https://link.coupang.com/a/dSIsbR'
     },
     {
       name: 'Priorat DOCa',
@@ -459,6 +499,7 @@ async function main() {
       foodPairings: ['meat', 'steak', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['bitter', 'heavy'],
+      purchaseUrl:'https://link.coupang.com/a/dSIsvy'
     },
     {
       name: 'Douro Red Portugal',
@@ -470,6 +511,7 @@ async function main() {
       foodPairings: ['meat', 'stew', 'cheese'],
       occasions: ['gathering', 'solo-drinking'],
       tastes: ['bitter', 'heavy'],
+      purchaseUrl:'https://link.coupang.com/a/dSIs48'
     },
     {
       name: 'Nero d\'Avola Sicily',
@@ -481,6 +523,7 @@ async function main() {
       foodPairings: ['pasta', 'pizza', 'cheese'],
       occasions: ['gathering', 'solo-meal'],
       tastes: ['sweet', 'medium'],
+      purchaseUrl:'https://link.coupang.com/a/dSItu5'
     },
     {
       name: 'Aglianico Taurasi',
@@ -492,6 +535,7 @@ async function main() {
       foodPairings: ['meat', 'stew', 'cheese'],
       occasions: ['gathering', 'solo-drinking'],
       tastes: ['bitter', 'heavy'],
+      purchaseUrl:'https://link.coupang.com/a/dSItQk'
     },
     {
       name: 'Touriga Nacional Portugal',
@@ -503,6 +547,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'chocolate'],
       occasions: ['date', 'solo-drinking'],
       tastes: ['bitter', 'heavy'],
+      purchaseUrl:'https://link.coupang.com/a/dSIumM'
     },
     // 화이트 와인 (25개)
     {
@@ -515,6 +560,7 @@ async function main() {
       foodPairings: ['seafood', 'oyster', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['sour', 'light'],
+      purchaseUrl:'https://link.coupang.com/a/dSIuJp'
     },
     {
       name: 'Sancerre',
@@ -526,6 +572,7 @@ async function main() {
       foodPairings: ['seafood', 'salad', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['sour', 'light'],
+      purchaseUrl:'https://link.coupang.com/a/dSIu3b'
     },
     {
       name: 'Pouilly-Fuissé',
@@ -537,6 +584,7 @@ async function main() {
       foodPairings: ['seafood', 'chicken', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'medium'],
+      purchaseUrl:'https://link.coupang.com/a/dSIvna'
     },
     {
       name: 'Riesling Mosel',
@@ -548,6 +596,7 @@ async function main() {
       foodPairings: ['seafood', 'spicy', 'dessert'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:'https://link.coupang.com/a/dSIvTK'
     },
     {
       name: 'Albariño Rías Baixas',
@@ -559,6 +608,7 @@ async function main() {
       foodPairings: ['seafood', 'salad', 'light dishes'],
       occasions: ['gathering', 'camping'],
       tastes: ['sour', 'light'],
+      purchaseUrl:'https://link.coupang.com/a/dSIwes'
     },
     {
       name: 'Grüner Veltliner',
@@ -570,6 +620,7 @@ async function main() {
       foodPairings: ['seafood', 'vegetable', 'cheese'],
       occasions: ['gathering', 'solo-meal'],
       tastes: ['sour', 'light'],
+      purchaseUrl:'https://link.coupang.com/a/dSIwBs'
     },
     {
       name: 'Viognier Condrieu',
@@ -581,6 +632,7 @@ async function main() {
       foodPairings: ['seafood', 'chicken', 'spicy'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'medium'],
+      purchaseUrl:'https://link.coupang.com/a/dSIwSt'
     },
     {
       name: 'Gewürztraminer Alsace',
@@ -592,6 +644,7 @@ async function main() {
       foodPairings: ['spicy', 'cheese', 'dessert'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'medium'],
+      purchaseUrl:'https://link.coupang.com/a/dSIw8h'
     },
     {
       name: 'Pinot Grigio Alto Adige',
@@ -603,6 +656,7 @@ async function main() {
       foodPairings: ['seafood', 'salad', 'light dishes'],
       occasions: ['gathering', 'camping'],
       tastes: ['sour', 'light'],
+      purchaseUrl:'https://link.coupang.com/a/dSIxmX'
     },
     {
       name: 'Vermentino Sardinia',
@@ -614,6 +668,7 @@ async function main() {
       foodPairings: ['seafood', 'salad', 'light dishes'],
       occasions: ['gathering', 'camping'],
       tastes: ['sour', 'light'],
+      purchaseUrl:'https://link.coupang.com/a/dSIxEy'
     },
     {
       name: 'Chenin Blanc Loire',
@@ -625,6 +680,7 @@ async function main() {
       foodPairings: ['seafood', 'chicken', 'cheese'],
       occasions: ['gathering', 'solo-meal'],
       tastes: ['sweet', 'medium'],
+      purchaseUrl:'https://link.coupang.com/a/dSIxW0'
     },
     {
       name: 'Soave Classico',
@@ -636,6 +692,7 @@ async function main() {
       foodPairings: ['seafood', 'pasta', 'light dishes'],
       occasions: ['gathering', 'solo-meal'],
       tastes: ['sour', 'light'],
+      purchaseUrl:'https://link.coupang.com/a/dSIyd5'
     },
     {
       name: 'Muscadet Sèvre et Maine',
@@ -647,6 +704,7 @@ async function main() {
       foodPairings: ['seafood', 'oyster', 'light dishes'],
       occasions: ['gathering', 'camping'],
       tastes: ['sour', 'light'],
+      purchaseUrl:'https://link.coupang.com/a/dSIyv6'
     },
     {
       name: 'Fiano di Avellino',
@@ -658,6 +716,7 @@ async function main() {
       foodPairings: ['seafood', 'pasta', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'medium'],
+      purchaseUrl:'https://link.coupang.com/a/dSIyS7'
     },
     {
       name: 'Greco di Tufo',
@@ -669,6 +728,7 @@ async function main() {
       foodPairings: ['seafood', 'chicken', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['sour', 'medium'],
+      purchaseUrl:'https://link.coupang.com/a/dSIy8u'
     },
     {
       name: 'Verdejo Rueda',
@@ -680,6 +740,7 @@ async function main() {
       foodPairings: ['seafood', 'salad', 'tapas'],
       occasions: ['gathering', 'camping'],
       tastes: ['sour', 'light'],
+      purchaseUrl:'https://link.coupang.com/a/dSIznB'
     },
     {
       name: 'Torrontés Argentina',
@@ -691,6 +752,7 @@ async function main() {
       foodPairings: ['seafood', 'spicy', 'light dishes'],
       occasions: ['gathering', 'camping'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:'https://link.coupang.com/a/dSIzET'
     },
     {
       name: 'Assyrtiko Santorini',
@@ -702,6 +764,7 @@ async function main() {
       foodPairings: ['seafood', 'salad', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['sour', 'light'],
+      purchaseUrl:'https://link.coupang.com/a/dSICzS'
     },
     {
       name: 'Vinho Verde',
@@ -713,6 +776,7 @@ async function main() {
       foodPairings: ['seafood', 'salad', 'light dishes'],
       occasions: ['gathering', 'camping'],
       tastes: ['sour', 'light'],
+      purchaseUrl:'https://link.coupang.com/a/dSICSc'
     },
     {
       name: 'Chardonnay Napa Valley',
@@ -724,6 +788,7 @@ async function main() {
       foodPairings: ['seafood', 'chicken', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'medium'],
+      purchaseUrl:'https://link.coupang.com/a/dSIC9d'
     },
     {
       name: 'Sauvignon Blanc Marlborough',
@@ -735,6 +800,7 @@ async function main() {
       foodPairings: ['seafood', 'salad', 'cheese'],
       occasions: ['gathering', 'camping'],
       tastes: ['sour', 'light'],
+      purchaseUrl:'https://link.coupang.com/a/dSIDvP'
     },
     {
       name: 'Semillon Hunter Valley',
@@ -746,6 +812,7 @@ async function main() {
       foodPairings: ['seafood', 'chicken', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'medium'],
+      purchaseUrl:'https://link.coupang.com/a/dSIDQi'
     },
     {
       name: 'Pinot Blanc Alsace',
@@ -757,6 +824,7 @@ async function main() {
       foodPairings: ['seafood', 'chicken', 'light dishes'],
       occasions: ['gathering', 'solo-meal'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:'https://link.coupang.com/a/dSID9N'
     },
     {
       name: 'Gavi di Gavi',
@@ -768,6 +836,7 @@ async function main() {
       foodPairings: ['seafood', 'salad', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['sour', 'light'],
+      purchaseUrl:'https://link.coupang.com/a/dSIEtz'
     },
     {
       name: 'Meursault',
@@ -779,6 +848,7 @@ async function main() {
       foodPairings: ['seafood', 'chicken', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'medium'],
+      purchaseUrl:'https://link.coupang.com/a/dSIEOU'
     },
     // 위스키 (20개)
     {
@@ -791,6 +861,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'chocolate'],
       occasions: ['solo-drinking', 'gathering'],
       tastes: ['bitter', 'heavy'],
+      purchaseUrl:'https://link.coupang.com/a/dSIE5a'
     },
     {
       name: 'Glenfiddich 15 Year',
@@ -802,6 +873,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'nuts'],
       occasions: ['solo-drinking', 'gathering'],
       tastes: ['bitter', 'medium'],
+      purchaseUrl:'https://link.coupang.com/a/dSIFHd'
     },
     {
       name: 'Lagavulin 16 Year',
@@ -813,6 +885,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'seafood'],
       occasions: ['solo-drinking', 'gathering'],
       tastes: ['bitter', 'heavy'],
+      purchaseUrl:''
     },
     {
       name: 'Yamazaki 12 Year',
@@ -824,6 +897,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'chocolate'],
       occasions: ['solo-drinking', 'date'],
       tastes: ['sweet', 'medium'],
+      purchaseUrl:''
     },
     {
       name: 'Hibiki Harmony',
@@ -835,6 +909,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'dessert'],
       occasions: ['solo-drinking', 'gathering'],
       tastes: ['sweet', 'medium'],
+      purchaseUrl:''
     },
     {
       name: 'Johnnie Walker Blue Label',
@@ -846,6 +921,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'chocolate'],
       occasions: ['solo-drinking', 'gathering'],
       tastes: ['bitter', 'heavy'],
+      purchaseUrl:''
     },
     {
       name: 'Talisker 10 Year',
@@ -857,6 +933,7 @@ async function main() {
       foodPairings: ['meat', 'seafood', 'cheese'],
       occasions: ['solo-drinking', 'gathering'],
       tastes: ['bitter', 'heavy'],
+      purchaseUrl:''
     },
     {
       name: 'Highland Park 12 Year',
@@ -868,6 +945,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'nuts'],
       occasions: ['solo-drinking', 'gathering'],
       tastes: ['bitter', 'medium'],
+      purchaseUrl:''
     },
     {
       name: 'Ardbeg 10 Year',
@@ -879,6 +957,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'seafood'],
       occasions: ['solo-drinking', 'gathering'],
       tastes: ['bitter', 'heavy'],
+      purchaseUrl:''
     },
     {
       name: 'Glenmorangie 18 Year',
@@ -890,6 +969,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'dessert'],
       occasions: ['solo-drinking', 'date'],
       tastes: ['sweet', 'medium'],
+      purchaseUrl:''
     },
     {
       name: 'Maker\'s Mark',
@@ -901,6 +981,7 @@ async function main() {
       foodPairings: ['meat', 'bbq', 'dessert'],
       occasions: ['gathering', 'solo-drinking'],
       tastes: ['sweet', 'medium'],
+      purchaseUrl:''
     },
     {
       name: 'Woodford Reserve',
@@ -912,6 +993,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'chocolate'],
       occasions: ['solo-drinking', 'gathering'],
       tastes: ['sweet', 'medium'],
+      purchaseUrl:''
     },
     {
       name: 'Buffalo Trace',
@@ -923,6 +1005,7 @@ async function main() {
       foodPairings: ['meat', 'bbq', 'cheese'],
       occasions: ['gathering', 'camping'],
       tastes: ['sweet', 'medium'],
+      purchaseUrl:''
     },
     {
       name: 'Jack Daniel\'s Single Barrel',
@@ -934,6 +1017,7 @@ async function main() {
       foodPairings: ['meat', 'bbq', 'cheese'],
       occasions: ['gathering', 'solo-drinking'],
       tastes: ['sweet', 'medium'],
+      purchaseUrl:''
     },
     {
       name: 'Crown Royal Reserve',
@@ -945,6 +1029,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'dessert'],
       occasions: ['gathering', 'solo-drinking'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Jameson Black Barrel',
@@ -956,6 +1041,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'dessert'],
       occasions: ['gathering', 'solo-drinking'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Redbreast 12 Year',
@@ -967,6 +1053,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'nuts'],
       occasions: ['solo-drinking', 'gathering'],
       tastes: ['sweet', 'medium'],
+      purchaseUrl:''
     },
     {
       name: 'Nikka From The Barrel',
@@ -978,6 +1065,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'chocolate'],
       occasions: ['solo-drinking', 'gathering'],
       tastes: ['bitter', 'heavy'],
+      purchaseUrl:''
     },
     {
       name: 'Balvenie 14 Year Caribbean Cask',
@@ -989,6 +1077,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'dessert'],
       occasions: ['solo-drinking', 'date'],
       tastes: ['sweet', 'medium'],
+      purchaseUrl:''
     },
     {
       name: 'Oban 14 Year',
@@ -1000,6 +1089,7 @@ async function main() {
       foodPairings: ['meat', 'seafood', 'cheese'],
       occasions: ['solo-drinking', 'gathering'],
       tastes: ['bitter', 'medium'],
+      purchaseUrl:''
     },
     // 칵테일 (15개)
     {
@@ -1012,6 +1102,7 @@ async function main() {
       foodPairings: ['seafood', 'light dishes', 'spicy'],
       occasions: ['date', 'gathering', 'camping'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Margarita',
@@ -1023,6 +1114,7 @@ async function main() {
       foodPairings: ['spicy', 'seafood', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['sour', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Old Fashioned',
@@ -1034,6 +1126,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'chocolate'],
       occasions: ['solo-drinking', 'gathering'],
       tastes: ['bitter', 'medium'],
+      purchaseUrl:''
     },
     {
       name: 'Negroni',
@@ -1045,6 +1138,7 @@ async function main() {
       foodPairings: ['cheese', 'meat', 'nuts'],
       occasions: ['gathering', 'solo-drinking'],
       tastes: ['bitter', 'medium'],
+      purchaseUrl:''
     },
     {
       name: 'Espresso Martini',
@@ -1056,6 +1150,7 @@ async function main() {
       foodPairings: ['dessert', 'chocolate', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['bitter', 'medium'],
+      purchaseUrl:''
     },
     {
       name: 'Aperol Spritz',
@@ -1067,6 +1162,7 @@ async function main() {
       foodPairings: ['light dishes', 'cheese', 'seafood'],
       occasions: ['gathering', 'camping'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Manhattan',
@@ -1078,6 +1174,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'chocolate'],
       occasions: ['solo-drinking', 'gathering'],
       tastes: ['bitter', 'medium'],
+      purchaseUrl:''
     },
     {
       name: 'Cosmopolitan',
@@ -1089,6 +1186,7 @@ async function main() {
       foodPairings: ['light dishes', 'seafood', 'dessert'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Whiskey Sour',
@@ -1100,6 +1198,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'light dishes'],
       occasions: ['gathering', 'solo-drinking'],
       tastes: ['sour', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Daiquiri',
@@ -1111,6 +1210,7 @@ async function main() {
       foodPairings: ['seafood', 'light dishes', 'dessert'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Gin & Tonic',
@@ -1122,6 +1222,7 @@ async function main() {
       foodPairings: ['seafood', 'light dishes', 'cheese'],
       occasions: ['gathering', 'camping'],
       tastes: ['bitter', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Moscow Mule',
@@ -1133,6 +1234,7 @@ async function main() {
       foodPairings: ['spicy', 'seafood', 'light dishes'],
       occasions: ['gathering', 'camping'],
       tastes: ['sour', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Piña Colada',
@@ -1144,6 +1246,7 @@ async function main() {
       foodPairings: ['dessert', 'seafood', 'light dishes'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'medium'],
+      purchaseUrl:''
     },
     {
       name: 'Bloody Mary',
@@ -1155,6 +1258,7 @@ async function main() {
       foodPairings: ['brunch', 'seafood', 'spicy'],
       occasions: ['gathering', 'solo-meal'],
       tastes: ['sour', 'medium'],
+      purchaseUrl:''
     },
     {
       name: 'Mai Tai',
@@ -1166,6 +1270,7 @@ async function main() {
       foodPairings: ['seafood', 'spicy', 'dessert'],
       occasions: ['date', 'gathering'],
       tastes: ['sweet', 'medium'],
+      purchaseUrl:''
     },
     // 차 (10개)
     {
@@ -1178,6 +1283,7 @@ async function main() {
       foodPairings: ['meat', 'fish', 'cheese', 'dessert'],
       occasions: ['date', 'gathering', 'solo-meal'],
       tastes: ['bitter', 'medium'],
+      purchaseUrl:''
     },
     {
       name: 'Matcha Green Tea',
@@ -1189,6 +1295,7 @@ async function main() {
       foodPairings: ['dessert', 'light dishes', 'vegetable'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['bitter', 'medium'],
+      purchaseUrl:''
     },
     {
       name: 'Earl Grey',
@@ -1200,6 +1307,7 @@ async function main() {
       foodPairings: ['dessert', 'cheese', 'light dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['bitter', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Jasmine Tea',
@@ -1211,6 +1319,7 @@ async function main() {
       foodPairings: ['seafood', 'light dishes', 'dessert'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Pu-erh Tea Aged',
@@ -1222,6 +1331,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'heavy dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['bitter', 'heavy'],
+      purchaseUrl:''
     },
     {
       name: 'Darjeeling First Flush',
@@ -1233,6 +1343,7 @@ async function main() {
       foodPairings: ['light dishes', 'dessert', 'cheese'],
       occasions: ['solo-meal', 'date'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Sencha Green Tea',
@@ -1244,6 +1355,7 @@ async function main() {
       foodPairings: ['seafood', 'vegetable', 'light dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['bitter', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Chamomile Tea',
@@ -1255,6 +1367,7 @@ async function main() {
       foodPairings: ['dessert', 'light dishes'],
       occasions: ['solo-meal'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Rooibos Tea',
@@ -1266,6 +1379,7 @@ async function main() {
       foodPairings: ['dessert', 'light dishes', 'cheese'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'White Peony Tea',
@@ -1277,6 +1391,7 @@ async function main() {
       foodPairings: ['light dishes', 'dessert', 'seafood'],
       occasions: ['solo-meal', 'date'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
     // 비알콜 (10개)
     {
@@ -1289,6 +1404,7 @@ async function main() {
       foodPairings: ['all'],
       occasions: ['all'],
       tastes: ['light'],
+      purchaseUrl:''
     },
     {
       name: 'Fever-Tree Ginger Beer',
@@ -1300,6 +1416,7 @@ async function main() {
       foodPairings: ['spicy', 'meat', 'seafood'],
       occasions: ['gathering', 'solo-meal'],
       tastes: ['sour', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Kombucha Original',
@@ -1311,6 +1428,7 @@ async function main() {
       foodPairings: ['light dishes', 'vegetable', 'seafood'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sour', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Cold Pressed Green Juice',
@@ -1322,6 +1440,7 @@ async function main() {
       foodPairings: ['light dishes', 'salad'],
       occasions: ['solo-meal'],
       tastes: ['sour', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Fresh Orange Juice',
@@ -1333,6 +1452,7 @@ async function main() {
       foodPairings: ['dessert', 'light dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Elderflower Cordial',
@@ -1344,6 +1464,7 @@ async function main() {
       foodPairings: ['light dishes', 'dessert', 'cheese'],
       occasions: ['gathering', 'date'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Virgin Mojito',
@@ -1355,6 +1476,7 @@ async function main() {
       foodPairings: ['seafood', 'light dishes', 'spicy'],
       occasions: ['gathering', 'camping'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Seedlip Garden Non-Alcoholic Spirit',
@@ -1366,6 +1488,7 @@ async function main() {
       foodPairings: ['light dishes', 'seafood', 'cheese'],
       occasions: ['date', 'gathering'],
       tastes: ['bitter', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Coconut Water',
@@ -1377,6 +1500,7 @@ async function main() {
       foodPairings: ['light dishes', 'seafood'],
       occasions: ['solo-meal', 'camping'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Artisan Lemonade',
@@ -1388,6 +1512,7 @@ async function main() {
       foodPairings: ['light dishes', 'dessert', 'spicy'],
       occasions: ['gathering', 'camping'],
       tastes: ['sour', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Perrier Sparkling Water',
@@ -1399,6 +1524,7 @@ async function main() {
       foodPairings: ['all'],
       occasions: ['all'],
       tastes: ['light'],
+      purchaseUrl:''
     },
     {
       name: 'Tonic Water Premium',
@@ -1410,6 +1536,7 @@ async function main() {
       foodPairings: ['light dishes', 'seafood'],
       occasions: ['gathering', 'solo-meal'],
       tastes: ['bitter', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Ginger Ale Premium',
@@ -1421,6 +1548,7 @@ async function main() {
       foodPairings: ['spicy', 'meat', 'seafood'],
       occasions: ['gathering', 'solo-meal'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Cranberry Juice',
@@ -1432,6 +1560,7 @@ async function main() {
       foodPairings: ['light dishes', 'dessert'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sour', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Apple Cider Non-Alcoholic',
@@ -1443,6 +1572,7 @@ async function main() {
       foodPairings: ['dessert', 'light dishes', 'cheese'],
       occasions: ['gathering', 'camping'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Pomegranate Juice',
@@ -1454,6 +1584,7 @@ async function main() {
       foodPairings: ['dessert', 'light dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Aloe Vera Drink',
@@ -1465,6 +1596,7 @@ async function main() {
       foodPairings: ['light dishes', 'dessert'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Sparkling Apple Juice',
@@ -1476,6 +1608,7 @@ async function main() {
       foodPairings: ['dessert', 'light dishes', 'cheese'],
       occasions: ['gathering', 'camping'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Peach Iced Tea',
@@ -1487,6 +1620,7 @@ async function main() {
       foodPairings: ['light dishes', 'dessert'],
       occasions: ['gathering', 'camping'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Lemon Iced Tea',
@@ -1498,6 +1632,7 @@ async function main() {
       foodPairings: ['light dishes', 'seafood'],
       occasions: ['gathering', 'camping'],
       tastes: ['sour', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Mango Lassi',
@@ -1509,6 +1644,7 @@ async function main() {
       foodPairings: ['spicy', 'dessert', 'light dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sweet', 'medium'],
+      purchaseUrl:''
     },
     {
       name: 'Watermelon Juice',
@@ -1520,6 +1656,7 @@ async function main() {
       foodPairings: ['light dishes', 'dessert'],
       occasions: ['gathering', 'camping'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Pineapple Juice',
@@ -1531,6 +1668,7 @@ async function main() {
       foodPairings: ['seafood', 'spicy', 'dessert'],
       occasions: ['gathering', 'camping'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Grapefruit Juice',
@@ -1542,6 +1680,7 @@ async function main() {
       foodPairings: ['light dishes', 'seafood'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['bitter', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Strawberry Smoothie',
@@ -1553,6 +1692,7 @@ async function main() {
       foodPairings: ['dessert', 'light dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sweet', 'medium'],
+      purchaseUrl:''
     },
     {
       name: 'Green Smoothie',
@@ -1564,6 +1704,7 @@ async function main() {
       foodPairings: ['light dishes', 'salad'],
       occasions: ['solo-meal'],
       tastes: ['bitter', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Berry Mix Smoothie',
@@ -1575,6 +1716,7 @@ async function main() {
       foodPairings: ['dessert', 'light dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sweet', 'medium'],
+      purchaseUrl:''
     },
     {
       name: 'Iced Americano',
@@ -1586,6 +1728,7 @@ async function main() {
       foodPairings: ['dessert', 'light dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['bitter', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Iced Latte',
@@ -1597,6 +1740,7 @@ async function main() {
       foodPairings: ['dessert', 'light dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Cold Brew Coffee',
@@ -1608,6 +1752,7 @@ async function main() {
       foodPairings: ['dessert', 'chocolate'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['bitter', 'medium'],
+      purchaseUrl:''
     },
     // 차 추가 (20개 더)
     {
@@ -1620,6 +1765,7 @@ async function main() {
       foodPairings: ['dessert', 'cheese', 'meat'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['bitter', 'medium'],
+      purchaseUrl:''
     },
     {
       name: 'Ceylon Tea',
@@ -1631,6 +1777,7 @@ async function main() {
       foodPairings: ['dessert', 'light dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['bitter', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'English Breakfast Tea',
@@ -1642,6 +1789,7 @@ async function main() {
       foodPairings: ['dessert', 'cheese', 'light dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['bitter', 'medium'],
+      purchaseUrl:''
     },
     {
       name: 'Gyokuro Green Tea',
@@ -1653,6 +1801,7 @@ async function main() {
       foodPairings: ['seafood', 'light dishes', 'dessert'],
       occasions: ['solo-meal', 'date'],
       tastes: ['sweet', 'medium'],
+      purchaseUrl:''
     },
     {
       name: 'Hojicha Roasted Tea',
@@ -1664,6 +1813,7 @@ async function main() {
       foodPairings: ['dessert', 'light dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Genmaicha Brown Rice Tea',
@@ -1675,6 +1825,7 @@ async function main() {
       foodPairings: ['light dishes', 'seafood', 'vegetable'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Longjing Dragon Well Tea',
@@ -1686,6 +1837,7 @@ async function main() {
       foodPairings: ['seafood', 'light dishes', 'dessert'],
       occasions: ['solo-meal', 'date'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Tie Guan Yin Oolong',
@@ -1697,6 +1849,7 @@ async function main() {
       foodPairings: ['meat', 'seafood', 'cheese'],
       occasions: ['solo-meal', 'date'],
       tastes: ['sweet', 'medium'],
+      purchaseUrl:''
     },
     {
       name: 'Da Hong Pao Rock Tea',
@@ -1708,6 +1861,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'heavy dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['bitter', 'heavy'],
+      purchaseUrl:''
     },
     {
       name: 'Lapsang Souchong',
@@ -1719,6 +1873,7 @@ async function main() {
       foodPairings: ['meat', 'cheese', 'heavy dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['bitter', 'medium'],
+      purchaseUrl:''
     },
     {
       name: 'Silver Needle White Tea',
@@ -1730,6 +1885,7 @@ async function main() {
       foodPairings: ['light dishes', 'seafood', 'dessert'],
       occasions: ['solo-meal', 'date'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Mint Tea Moroccan',
@@ -1741,6 +1897,7 @@ async function main() {
       foodPairings: ['spicy', 'light dishes', 'dessert'],
       occasions: ['gathering', 'solo-meal'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Hibiscus Tea',
@@ -1752,6 +1909,7 @@ async function main() {
       foodPairings: ['dessert', 'light dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sour', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Lavender Tea',
@@ -1763,6 +1921,7 @@ async function main() {
       foodPairings: ['dessert', 'light dishes'],
       occasions: ['solo-meal'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Peppermint Tea',
@@ -1774,6 +1933,7 @@ async function main() {
       foodPairings: ['dessert', 'light dishes'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Ginger Turmeric Tea',
@@ -1785,6 +1945,7 @@ async function main() {
       foodPairings: ['spicy', 'light dishes'],
       occasions: ['solo-meal'],
       tastes: ['bitter', 'medium'],
+      purchaseUrl:''
     },
     {
       name: 'Rose Tea',
@@ -1796,6 +1957,7 @@ async function main() {
       foodPairings: ['dessert', 'light dishes'],
       occasions: ['solo-meal', 'date'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Chrysanthemum Tea',
@@ -1807,6 +1969,7 @@ async function main() {
       foodPairings: ['light dishes', 'dessert'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Barley Tea Korean',
@@ -1818,6 +1981,7 @@ async function main() {
       foodPairings: ['all'],
       occasions: ['all'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
     {
       name: 'Corn Silk Tea',
@@ -1829,6 +1993,7 @@ async function main() {
       foodPairings: ['light dishes', 'dessert'],
       occasions: ['solo-meal', 'gathering'],
       tastes: ['sweet', 'light'],
+      purchaseUrl:''
     },
   ];
 

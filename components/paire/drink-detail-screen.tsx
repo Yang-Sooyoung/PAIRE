@@ -21,6 +21,7 @@ interface DrinkDetailScreenProps {
     tastingNotes: string[]
     image: string
     price: string
+    purchaseUrl?: string
     foodPairings?: string[]
     occasions?: string[]
     tastes?: string[]
@@ -257,9 +258,13 @@ export function DrinkDetailScreen({ drink, onBack }: DrinkDetailScreenProps) {
   const perfectForItems = getPerfectForItems()
 
   const handlePurchase = () => {
-    // 네이버 쇼핑 검색으로 이동
-    const searchQuery = encodeURIComponent(drink.name)
-    window.open(`https://search.shopping.naver.com/search/all?query=${searchQuery}`, '_blank')
+    // 쿠팡 구매 링크가 있으면 해당 링크로, 없으면 검색으로 이동
+    if (drink.purchaseUrl) {
+      window.open(drink.purchaseUrl, '_blank')
+    } else {
+      const searchQuery = encodeURIComponent(drink.name)
+      window.open(`https://www.coupang.com/np/search?q=${searchQuery}`, '_blank')
+    }
   }
 
   return (

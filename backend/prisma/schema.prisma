@@ -142,6 +142,7 @@ model Drink {
   tastingNotes String[] // fruity, elegant, light, etc.
   image     String?
   price     String
+  purchaseUrl String? // 쿠팡 구매 링크
   
   // Pairing info
   foodPairings String[] // seafood, meat, pasta, cheese, etc.
