@@ -32,11 +32,20 @@ function CreditSuccessContent() {
       }
 
       try {
-        const currentToken = useUserStore.getState().token;
+        // localStorage에서 직접 토큰 가져오기
+        let currentToken = useUserStore.getState().token || localStorage.getItem('accessToken');
+        
         if (!currentToken) {
           console.error('No token available');
-          router.push('/login');
-          return;
+          // 토큰이 없으면 잠시 대기 후 재시도
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          currentToken = useUserStore.getState().token || localStorage.getItem('accessToken');
+          
+          if (!currentToken) {
+            console.error('Still no token after retry');
+            router.push('/login');
+            return;
+          }
         }
 
         const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
@@ -61,6 +70,10 @@ function CreditSuccessContent() {
           const data = await response.json();
           console.log('Confirm response data:', data);
           setCredits(data.credits);
+          
+          // 사용자 정보 새로고침
+          const { initializeUser } = useUserStore.getState();
+          await initializeUser();
         } else {
           const errorData = await response.text();
           console.error('Confirm failed:', errorData);

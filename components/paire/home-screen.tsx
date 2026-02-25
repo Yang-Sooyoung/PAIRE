@@ -1,7 +1,8 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
-import { Camera, BookOpen } from "lucide-react"
+import { Camera, BookOpen, Coins } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useI18n } from "@/lib/i18n/context"
 import { LanguageToggle } from "./language-toggle"
@@ -24,6 +25,32 @@ export function HomeScreen({
 }: HomeScreenProps) {
   const { language, t } = useI18n()
   const isKorean = language === "ko"
+  const [credits, setCredits] = useState(0)
+
+  useEffect(() => {
+    const fetchCredits = async () => {
+      if (!user) return
+
+      try {
+        const token = localStorage.getItem('accessToken')
+        if (!token) return
+
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api'
+        const response = await fetch(`${API_URL}/credit/balance`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+
+        if (response.ok) {
+          const data = await response.json()
+          setCredits(data.credits || 0)
+        }
+      } catch (error) {
+        console.error('Failed to fetch credits:', error)
+      }
+    }
+
+    fetchCredits()
+  }, [user])
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 relative overflow-hidden">
@@ -31,6 +58,26 @@ export function HomeScreen({
       <div className="absolute top-6 right-6 z-20">
         <LanguageToggle />
       </div>
+
+      {/* Credits Display - Top Center (로그인 사용자만) */}
+      {user && credits > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="absolute top-6 left-1/2 -translate-x-1/2 z-20"
+        >
+          <div className="flex items-center gap-2 px-4 py-2 bg-gold/10 border border-gold/30 rounded-full backdrop-blur-sm">
+            <Coins className="w-4 h-4 text-gold" />
+            <span className="text-gold font-semibold">{credits}</span>
+            <span className={cn(
+              "text-gold-dim text-sm",
+              isKorean && "font-[var(--font-noto-kr)]"
+            )}>
+              {isKorean ? '크레딧' : 'Credits'}
+            </span>
+          </div>
+        </motion.div>
+      )}
 
       {/* Login/Signup buttons - Top Left (비로그인 사용자만) */}
       {!user && (
