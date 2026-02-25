@@ -27,6 +27,9 @@ interface Drink {
   image: string | null
   price: string
   purchaseUrl?: string
+  aiReason?: string
+  aiScore?: number
+  pairingNotes?: string
 }
 
 // 음료 타입 번역
@@ -420,6 +423,30 @@ export function RecommendationScreen({
                 {currentDrink.name}
               </h2>
 
+              {/* AI 추천 이유 */}
+              {currentDrink.aiReason && (
+                <div className="mb-3 p-3 bg-gold/5 rounded-lg border border-gold/20">
+                  <p className={cn(
+                    "text-sm text-foreground leading-relaxed",
+                    isKorean && "font-[var(--font-noto-kr)] text-xs"
+                  )}>
+                    {currentDrink.aiReason}
+                  </p>
+                </div>
+              )}
+
+              {/* Pairing Notes */}
+              {currentDrink.pairingNotes && (
+                <div className="mb-3">
+                  <p className={cn(
+                    "text-xs text-muted-foreground leading-relaxed",
+                    isKorean && "font-[var(--font-noto-kr)]"
+                  )}>
+                    {currentDrink.pairingNotes}
+                  </p>
+                </div>
+              )}
+
               {/* Tasting Notes */}
               <div className="flex flex-wrap gap-2 mb-4">
                 {currentDrink.tastingNotes.map((note) => (
@@ -435,7 +462,15 @@ export function RecommendationScreen({
                 ))}
               </div>
 
-              <p className="text-gold text-2xl font-bold">{currentDrink.price}</p>
+              <div className="flex items-center justify-between">
+                <p className="text-gold text-2xl font-bold">{currentDrink.price}</p>
+                {currentDrink.aiScore && (
+                  <div className="flex items-center gap-1">
+                    <span className="text-gold text-sm">★</span>
+                    <span className="text-gold text-sm font-medium">{currentDrink.aiScore}</span>
+                  </div>
+                )}
+              </div>
             </div>
           </motion.div>
         </AnimatePresence>
