@@ -1,10 +1,10 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUserStore } from '@/app/store/userStore';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { Crown, Zap, ArrowRight, Sparkles } from 'lucide-react';
+import { Crown, Zap, ArrowRight, Sparkles, Coins } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils';
 
@@ -13,6 +13,9 @@ export default function UserInfoPage() {
   const { user, loading, initialized, setLoading, initializeUser } = useUserStore();
   const { language, t } = useI18n();
   const isKorean = language === 'ko';
+  const [credits, setCredits] = useState(0);
+  const [dailyUsage, setDailyUsage] = useState(0);
+  const [loadingStats, setLoadingStats] = useState(true);
 
   useEffect(() => {
     if (!initialized) {
@@ -22,6 +25,56 @@ export default function UserInfoPage() {
       });
     }
   }, [initialized, setLoading, initializeUser]);
+
+  useEffect(() => {
+    const fetchUserStats = async () => {
+      if (!user) return;
+
+      try {
+        const currentToken = useUserStore.getState().token;
+        if (!currentToken) return;
+
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+
+        // 크레딧 잔액 조회
+        const creditResponse = await fetch(`${API_URL}/credit/balance`, {
+          headers: { Authorization: `Bearer ${currentToken}` },
+        });
+
+        if (creditResponse.ok) {
+          const creditData = await creditResponse.json();
+          setCredits(creditData.credits || 0);
+        }
+
+        // 오늘 사용한 추천 횟수 조회
+        const historyResponse = await fetch(`${API_URL}/recommendation/history?limit=100`, {
+          headers: { Authorization: `Bearer ${currentToken}` },
+        });
+
+        if (historyResponse.ok) {
+          const historyData = await historyResponse.json();
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+
+          const todayCount = historyData.recommendations?.filter((rec: any) => {
+            const recDate = new Date(rec.createdAt);
+            recDate.setHours(0, 0, 0, 0);
+            return recDate.getTime() === today.getTime();
+          }).length || 0;
+
+          setDailyUsage(todayCount);
+        }
+      } catch (error) {
+        console.error('Failed to fetch user stats:', error);
+      } finally {
+        setLoadingStats(false);
+      }
+    };
+
+    if (user) {
+      fetchUserStats();
+    }
+  }, [user]);
 
   if (loading || !initialized) {
     return (
@@ -138,6 +191,101 @@ export default function UserInfoPage() {
               >
                 {t('userInfo.upgrade')} <ArrowRight className="w-4 h-4" />
               </Button>
+            )}
+          </div>
+
+          {/* 이용 현황 */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* 크레딧 잔액 */}
+            <div className="p-6 bg-gradient-to-br from-gold/10 to-gold/5 border border-gold/30 rounded-xl">
+              <div className="flex items-center gap-3 mb-2">
+                <Coins className="w-5 h-5 text-gold" />
+                <p className={cn(
+                  "text-xs text-gold uppercase tracking-widest font-light",
+                  isKorean && "font-[var(--font-noto-kr)] normal-case tracking-normal"
+                )}>
+                  {isKorean ? '보유 크레딧' : 'Credits'}
+                </p>
+              </div>
+              <div className="flex items-baseline gap-2">
+                <p className="text-3xl font-light text-gold">
+                  {loadingStats ? '...' : credits}
+                </p>
+                <p className={cn(
+                  "text-sm text-muted-foreground",
+                  isKorean && "font-[var(--font-noto-kr)]"
+                )}>
+                  {isKorean ? '회' : 'uses'}
+                </p>
+              </div>
+              <Button
+                onClick={() => router.push('/subscription')}
+                variant="ghost"
+                className={cn(
+                  "mt-3 text-xs text-gold hover:text-gold-light hover:bg-gold/10 p-0 h-auto",
+                  isKorean && "font-[var(--font-noto-kr)]"
+                )}
+              >
+                {isKorean ? '충전하기 →' : 'Buy Credits →'}
+              </Button>
+            </div>
+
+            {/* 오늘 무료 이용 */}
+            {!isPremium && (
+              <div className="p-6 bg-secondary border border-border rounded-xl">
+                <div className="flex items-center gap-3 mb-2">
+                  <Sparkles className="w-5 h-5 text-gold-dim" />
+                  <p className={cn(
+                    "text-xs text-muted-foreground uppercase tracking-widest font-light",
+                    isKorean && "font-[var(--font-noto-kr)] normal-case tracking-normal"
+                  )}>
+                    {isKorean ? '오늘 무료 이용' : 'Today Free'}
+                  </p>
+                </div>
+                <div className="flex items-baseline gap-2">
+                  <p className="text-3xl font-light text-foreground">
+                    {loadingStats ? '...' : `${dailyUsage}/1`}
+                  </p>
+                </div>
+                <p className={cn(
+                  "mt-2 text-xs text-muted-foreground",
+                  isKorean && "font-[var(--font-noto-kr)]"
+                )}>
+                  {isKorean ? '매일 자정 초기화' : 'Resets daily'}
+                </p>
+              </div>
+            )}
+
+            {/* PREMIUM 무제한 */}
+            {isPremium && (
+              <div className="p-6 bg-gradient-to-br from-gold/10 to-gold/5 border border-gold/30 rounded-xl">
+                <div className="flex items-center gap-3 mb-2">
+                  <Crown className="w-5 h-5 text-gold" />
+                  <p className={cn(
+                    "text-xs text-gold uppercase tracking-widest font-light",
+                    isKorean && "font-[var(--font-noto-kr)] normal-case tracking-normal"
+                  )}>
+                    {isKorean ? '오늘 이용' : 'Today Usage'}
+                  </p>
+                </div>
+                <div className="flex items-baseline gap-2">
+                  <p className="text-3xl font-light text-gold">
+                    {loadingStats ? '...' : dailyUsage}
+                  </p>
+                  <p className={cn(
+                    "text-sm text-gold-dim",
+                    isKorean && "font-[var(--font-noto-kr)]"
+                  )}>
+                    / ∞
+                  </p>
+                </div>
+                <p className={cn(
+                  "mt-2 text-xs text-gold-dim",
+                  isKorean && "font-[var(--font-noto-kr)]"
+                )}>
+                  {isKorean ? '무제한 이용 가능' : 'Unlimited'}
+                </p>
+              </div>
             )}
           </div>
 
