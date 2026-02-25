@@ -60,6 +60,13 @@ export default function SubscriptionStatusPage() {
 
         if (response.data?.subscription) {
           setSubscription(response.data.subscription);
+          
+          // 구독이 CANCELLED 상태면 구독 페이지로 리다이렉트
+          if (response.data.subscription.status === 'CANCELLED') {
+            setTimeout(() => {
+              router.push('/subscription');
+            }, 100);
+          }
         }
       } catch (error: any) {
         if (error?.response?.status === 401) {
@@ -70,6 +77,13 @@ export default function SubscriptionStatusPage() {
             });
             if (response.data?.subscription) {
               setSubscription(response.data.subscription);
+              
+              // 구독이 CANCELLED 상태면 구독 페이지로 리다이렉트
+              if (response.data.subscription.status === 'CANCELLED') {
+                setTimeout(() => {
+                  router.push('/subscription');
+                }, 100);
+              }
             }
           } else {
             router.push('/login');
@@ -102,14 +116,29 @@ export default function SubscriptionStatusPage() {
 
       console.log('Cancel subscription response:', response.data);
       
-      setShowSuccessDialog(true);
-
       // 구독 정보 다시 가져오기
       await fetchSubscriptionStatus();
+      
+      // 사용자 정보 업데이트 (멤버십은 유지되지만 구독 상태는 CANCELLED)
+      if (user) {
+        // 사용자 정보 새로고침
+        try {
+          const userResponse = await axios.get(`${API_URL}/auth/me`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (userResponse.data) {
+            setUser(userResponse.data);
+          }
+        } catch (error) {
+          console.error('Failed to refresh user info:', error);
+        }
+      }
+      
+      setShowSuccessDialog(true);
 
-      // 2초 후 홈으로 이동
+      // 2초 후 구독 페이지로 이동
       setTimeout(() => {
-        router.push('/user-info');
+        router.push('/subscription');
       }, 2000);
     } catch (error: any) {
       console.error('Failed to cancel subscription:', error);

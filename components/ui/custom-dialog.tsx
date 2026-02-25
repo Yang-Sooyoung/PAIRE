@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, AlertCircle, CheckCircle, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useI18n } from '@/lib/i18n/context';
 
 interface CustomDialogProps {
   isOpen: boolean;
@@ -23,9 +24,16 @@ export function CustomDialog({
   title,
   description,
   type = 'info',
-  confirmText = '확인',
-  cancelText = '취소',
+  confirmText,
+  cancelText,
 }: CustomDialogProps) {
+  const { language } = useI18n();
+  const isKorean = language === 'ko';
+
+  // 기본 텍스트 설정 (props로 전달되지 않은 경우)
+  const defaultConfirmText = isKorean ? '확인' : 'OK';
+  const defaultCancelText = isKorean ? '취소' : 'Cancel';
+
   const icons = {
     info: <Info className="w-6 h-6 text-gold" />,
     success: <CheckCircle className="w-6 h-6 text-green-500" />,
@@ -101,26 +109,35 @@ export function CustomDialog({
                     <Button
                       onClick={onClose}
                       variant="outline"
-                      className="flex-1 border-border text-foreground hover:bg-secondary"
+                      className={cn(
+                        "flex-1 border-border text-foreground hover:bg-secondary",
+                        isKorean && "font-[var(--font-noto-kr)]"
+                      )}
                     >
-                      {cancelText}
+                      {cancelText || defaultCancelText}
                     </Button>
                     <Button
                       onClick={() => {
                         onConfirm?.();
                         onClose();
                       }}
-                      className="flex-1 bg-gold hover:bg-gold-light text-background"
+                      className={cn(
+                        "flex-1 bg-gold hover:bg-gold-light text-background",
+                        isKorean && "font-[var(--font-noto-kr)]"
+                      )}
                     >
-                      {confirmText}
+                      {confirmText || defaultConfirmText}
                     </Button>
                   </>
                 ) : (
                   <Button
                     onClick={onClose}
-                    className="w-full bg-gold hover:bg-gold-light text-background"
+                    className={cn(
+                      "w-full bg-gold hover:bg-gold-light text-background",
+                      isKorean && "font-[var(--font-noto-kr)]"
+                    )}
                   >
-                    {confirmText}
+                    {confirmText || defaultConfirmText}
                   </Button>
                 )}
               </div>
