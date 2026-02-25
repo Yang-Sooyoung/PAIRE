@@ -1,4 +1,4 @@
-import type { CapacitorConfig } from '@capacitor/cli';
+import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.paire.app',
@@ -9,14 +9,8 @@ const config: CapacitorConfig = {
     iosScheme: 'https',
   },
   plugins: {
-    SplashScreen: {
-      launchShowDuration: 2000,
-      backgroundColor: '#0a0a0a',
-      showSpinner: false,
-    },
-    StatusBar: {
-      style: 'dark',
-      backgroundColor: '#0a0a0a',
+    Browser: {
+      presentationStyle: 'popover',
     },
   },
 };

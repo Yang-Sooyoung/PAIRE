@@ -9,7 +9,7 @@ import { loadTossPayments } from '@tosspayments/sdk';
 import { Button } from '@/components/ui/button';
 import { CustomDialog } from '@/components/ui/custom-dialog';
 import { useRouter } from 'next/navigation';
-import { Check, ArrowLeft, Sparkles } from 'lucide-react';
+import { Check, ArrowLeft } from 'lucide-react';
 import { PaymentMethodCard } from '@/components/subscription/PaymentMethodCard';
 import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils';
@@ -17,7 +17,6 @@ import { motion } from 'framer-motion';
 import { 
   detectCountry, 
   getRegionConfig, 
-  formatPrice, 
   isMobileApp,
   type CountryCode 
 } from '@/lib/region-detector';
@@ -61,9 +60,7 @@ export default function SubscriptionPage() {
   const router = useRouter();
   
   // 지역 감지
-  const [country, setCountry] = useState<CountryCode>('KR');
   const [regionConfig, setRegionConfig] = useState(getRegionConfig('KR'));
-  const [isAppMode, setIsAppMode] = useState(false);
   
   // URL 파라미터에서 탭 확인
   const [paymentType, setPaymentType] = useState<'subscription' | 'credit'>('subscription');
@@ -82,9 +79,7 @@ export default function SubscriptionPage() {
   // 지역 및 앱 모드 감지
   useEffect(() => {
     const detectedCountry = detectCountry();
-    setCountry(detectedCountry);
     setRegionConfig(getRegionConfig(detectedCountry));
-    setIsAppMode(isMobileApp());
     
     console.log('Detected country:', detectedCountry);
     console.log('Payment provider:', getRegionConfig(detectedCountry).paymentProvider);
