@@ -168,6 +168,54 @@ export class TossService {
   }
 
   /**
+   * 자동 결제 (빌링키 사용)
+   */
+  async billingPayment(billingKey: string, amount: number, orderName: string) {
+    try {
+      const orderId = `billing_${Date.now()}`;
+      
+      const response = await fetch(`${this.baseUrl}/billing/${billingKey}`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Basic ${Buffer.from(`${this.secretKey}:`).toString('base64')}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          customerKey: billingKey,
+          amount,
+          orderId,
+          orderName,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = (await response.json()) as { message?: string };
+        console.error('자동 결제 실패:', error);
+        return {
+          success: false,
+          error: error.message || 'Unknown error',
+        };
+      }
+
+      const data = (await response.json()) as TossPaymentResponse;
+      return {
+        success: true,
+        paymentKey: data.paymentKey,
+        orderId: data.orderId,
+        amount: data.totalAmount,
+        status: data.status,
+        approvedAt: data.approvedAt,
+      };
+    } catch (error) {
+      console.error('Toss 자동 결제 오류:', error);
+      return {
+        success: false,
+        error: error.message || 'Unknown error',
+      };
+    }
+  }
+
+  /**
    * 웹훅 서명 검증
    */
   verifyWebhookSignature(signature: string, body: string): boolean {

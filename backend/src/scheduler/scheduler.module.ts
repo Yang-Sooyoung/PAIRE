@@ -1,13 +1,15 @@
 import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
-import { SchedulerService } from './scheduler.service';
-import { SubscriptionModule } from '@/subscription/subscription.module';
+import { SubscriptionScheduler } from './subscription.scheduler';
+import { PrismaModule } from '@/prisma/prisma.module';
+import { TossModule } from '@/toss/toss.module';
 
 @Module({
   imports: [
     ScheduleModule.forRoot(),
-    SubscriptionModule,
+    PrismaModule,
+    TossModule,
   ],
-  providers: [SchedulerService],
+  providers: [SubscriptionScheduler],
 })
 export class SchedulerModule {}
