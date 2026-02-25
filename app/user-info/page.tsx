@@ -219,7 +219,7 @@ export default function UserInfoPage() {
                 </p>
               </div>
               <Button
-                onClick={() => router.push('/subscription')}
+                onClick={() => router.push('/subscription?tab=credit')}
                 variant="ghost"
                 className={cn(
                   "mt-3 text-xs text-gold hover:text-gold-light hover:bg-gold/10 p-0 h-auto",

@@ -51,6 +51,9 @@ export default function SubscriptionPage() {
   const { user, token, setUser, refreshTokenIfNeeded } = useUserStore();
   const { language, t } = useI18n();
   const isKorean = language === 'ko';
+  const router = useRouter();
+  
+  // URL 파라미터에서 탭 확인
   const [paymentType, setPaymentType] = useState<'subscription' | 'credit'>('subscription');
   const [methodRegistered, setMethodRegistered] = useState(false);
   const [billingKey, setBillingKey] = useState('');
@@ -62,8 +65,16 @@ export default function SubscriptionPage() {
     title: '',
     description: ''
   });
-  const router = useRouter();
   const selectedPlan = PLANS[selectedPlanIndex];
+
+  // URL 파라미터로 탭 설정
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get('tab');
+    if (tab === 'credit') {
+      setPaymentType('credit');
+    }
+  }, []);
 
   const getPlanPrice = (plan: Plan) => {
     return plan.priceMonthly; // 각 플랜이 자신의 가격을 가지고 있음
