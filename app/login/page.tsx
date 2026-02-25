@@ -44,7 +44,7 @@ export default function LoginPage() {
   };
 
   const handleOAuthLogin = (provider: 'google' | 'kakao') => {
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
     window.location.href = `${API_URL}/auth/${provider}`;
   };
 
