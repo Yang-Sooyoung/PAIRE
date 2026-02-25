@@ -89,49 +89,31 @@ export default function SubscriptionStatusPage() {
     if (!token) return;
 
     setCancelling(true);
+    setShowCancelDialog(false);
+    
     try {
       const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
-      let currentToken = token;
+      
+      const response = await axios.post(
+        `${API_URL}/subscription/cancel`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-      try {
-        await axios.post(
-          `${API_URL}/subscription/cancel`,
-          {},
-          { headers: { Authorization: `Bearer ${currentToken}` } }
-        );
-      } catch (error: any) {
-        if (error?.response?.status === 401) {
-          const newToken = await refreshTokenIfNeeded();
-          if (newToken) {
-            await axios.post(
-              `${API_URL}/subscription/cancel`,
-              {},
-              { headers: { Authorization: `Bearer ${newToken}` } }
-            );
-          } else {
-            router.push('/login');
-            return;
-          }
-        } else {
-          throw error;
-        }
-      }
-
-      setShowCancelDialog(false);
+      console.log('Cancel subscription response:', response.data);
+      
       setShowSuccessDialog(true);
 
-      // 사용자 정보 업데이트
-      if (user) {
-        setUser({ ...user, membership: 'FREE' });
-      }
+      // 구독 정보 다시 가져오기
+      await fetchSubscriptionStatus();
 
       // 2초 후 홈으로 이동
       setTimeout(() => {
-        router.push('/');
+        router.push('/user-info');
       }, 2000);
     } catch (error: any) {
       console.error('Failed to cancel subscription:', error);
-      setErrorMessage(error.response?.data?.message || '구독 취소에 실패했습니다.');
+      setErrorMessage(error.response?.data?.message || (isKorean ? '구독 취소에 실패했습니다.' : 'Failed to cancel subscription.'));
       setShowErrorDialog(true);
     } finally {
       setCancelling(false);
@@ -230,7 +212,9 @@ export default function SubscriptionStatusPage() {
                 "text-gold text-sm",
                 isKorean && "font-[var(--font-noto-kr)]"
               )}>
-                {subscription.interval === 'MONTHLY' 
+                {subscription.interval === 'WEEKLY'
+                  ? (isKorean ? '주간 구독' : 'Weekly Subscription')
+                  : subscription.interval === 'MONTHLY' 
                   ? (isKorean ? '월간 구독' : 'Monthly Subscription')
                   : (isKorean ? '연간 구독' : 'Annual Subscription')}
               </p>

@@ -16,6 +16,8 @@ export default function UserInfoPage() {
   const [credits, setCredits] = useState(0);
   const [dailyUsage, setDailyUsage] = useState(0);
   const [loadingStats, setLoadingStats] = useState(true);
+  const [subscriptionExpiry, setSubscriptionExpiry] = useState<Date | null>(null);
+  const [subscriptionStatus, setSubscriptionStatus] = useState<'ACTIVE' | 'CANCELLED' | null>(null);
 
   useEffect(() => {
     if (!initialized) {
@@ -36,6 +38,20 @@ export default function UserInfoPage() {
         // 크레딧 잔액 조회
         const creditResponse = await apiClient.get('/credit/balance');
         setCredits(creditResponse.data.credits || 0);
+
+        // PREMIUM 사용자인 경우 구독 정보 조회
+        if (user.membership === 'PREMIUM') {
+          try {
+            const subscriptionResponse = await apiClient.get('/subscription/status');
+            if (subscriptionResponse.data?.subscription) {
+              const sub = subscriptionResponse.data.subscription;
+              setSubscriptionExpiry(new Date(sub.nextBillingDate));
+              setSubscriptionStatus(sub.status);
+            }
+          } catch (error) {
+            console.error('Failed to fetch subscription:', error);
+          }
+        }
 
         // 오늘 사용한 추천 횟수 조회
         const historyResponse = await apiClient.get('/recommendation/history', {
@@ -167,6 +183,19 @@ export default function UserInfoPage() {
                 <p className="text-2xl font-light text-foreground">
                   {isPremium ? 'PREMIUM' : 'FREE'}
                 </p>
+                {isPremium && subscriptionExpiry && subscriptionStatus === 'CANCELLED' && (
+                  <p className={cn(
+                    "text-xs text-gold-dim mt-1",
+                    isKorean && "font-[var(--font-noto-kr)]"
+                  )}>
+                    {isKorean ? '만료일: ' : 'Expires: '}
+                    {subscriptionExpiry.toLocaleDateString(isKorean ? 'ko-KR' : 'en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric',
+                    })}
+                  </p>
+                )}
               </div>
             </div>
             {!isPremium && (
