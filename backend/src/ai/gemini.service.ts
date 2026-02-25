@@ -94,7 +94,10 @@ export class GeminiService {
     occasion?: string,
     tastes?: string[],
   ): Promise<Omit<RecommendationResult, 'fromCache'>> {
-    const prompt = this.buildPrompt(foodAnalysis, drinks, occasion, tastes);
+    // 음료 필터링 및 제한 (최대 20개만 사용하여 토큰 절약)
+    const filteredDrinks = this.filterDrinks(drinks, foodAnalysis, occasion, tastes).slice(0, 20);
+    
+    const prompt = this.buildPrompt(foodAnalysis, filteredDrinks, occasion, tastes);
 
     try {
       const completion = await this.openai.chat.completions.create({
@@ -102,7 +105,7 @@ export class GeminiService {
         messages: [
           {
             role: 'system',
-            content: '당신은 음료 페어링 전문가 "페어리(Pairé)"입니다. 마법 같은 페어링으로 특별한 순간을 만들어주는 요정입니다.',
+            content: '음료 페어링 전문가로서 JSON 형식으로만 응답하세요.',
           },
           {
             role: 'user',
@@ -110,6 +113,7 @@ export class GeminiService {
           },
         ],
         temperature: 0.7,
+        max_tokens: 1500, // 응답 토큰 제한 (비용 절감)
         response_format: { type: 'json_object' },
       });
 
@@ -122,12 +126,58 @@ export class GeminiService {
     } catch (error) {
       this.logger.error('OpenAI API error:', error);
       // 폴백: 기본 추천
-      return this.getFallbackRecommendation(drinks, foodAnalysis);
+      return this.getFallbackRecommendation(filteredDrinks, foodAnalysis);
     }
   }
 
   /**
-   * Gemini 프롬프트 생성
+   * 음료 필터링 (관련성 높은 음료만 선택)
+   */
+  private filterDrinks(
+    drinks: any[],
+    foodAnalysis: FoodAnalysis,
+    occasion?: string,
+    tastes?: string[],
+  ): any[] {
+    // 음식 카테고리와 키워드를 기반으로 점수 계산
+    return drinks
+      .map((drink) => {
+        let score = 0;
+
+        // 음식 페어링 매칭
+        const foodPairings = drink.foodPairings || [];
+        if (foodPairings.some((pairing: string) => 
+          foodAnalysis.keywords.some(keyword => 
+            pairing.toLowerCase().includes(keyword.toLowerCase())
+          )
+        )) {
+          score += 10;
+        }
+
+        // 카테고리 매칭
+        if (foodPairings.some((pairing: string) => 
+          pairing.toLowerCase().includes(foodAnalysis.category.toLowerCase())
+        )) {
+          score += 5;
+        }
+
+        // 맛 선호도 매칭
+        if (tastes && tastes.length > 0) {
+          const tastingNotes = drink.tastingNotes || [];
+          if (tastingNotes.some((note: string) => 
+            tastes.some(taste => note.toLowerCase().includes(taste.toLowerCase()))
+          )) {
+            score += 3;
+          }
+        }
+
+        return { ...drink, matchScore: score };
+      })
+      .sort((a, b) => b.matchScore - a.matchScore);
+  }
+
+  /**
+   * 프롬프트 생성 (간결하게 최적화)
    */
   private buildPrompt(
     foodAnalysis: FoodAnalysis,
@@ -135,82 +185,43 @@ export class GeminiService {
     occasion?: string,
     tastes?: string[],
   ): string {
+    // 음료 목록을 간결하게 표현
     const drinkList = drinks
-      .map(
-        (d, i) =>
-          `${i + 1}. ID: ${d.id}
-   - 이름: ${d.name}
-   - 타입: ${d.type}
-   - 설명: ${d.description}
-   - 맛 특징: ${d.tastingNotes.join(', ')}
-   - 어울리는 음식: ${d.foodPairings.join(', ')}
-   - 가격: ${d.price}`,
-      )
-      .join('\n\n');
+      .map((d, i) => `${i + 1}. ${d.id}|${d.name}|${d.type}|${d.tastingNotes.slice(0, 3).join(',')}`)
+      .join('\n');
 
     const occasionMap = {
       date: '데이트',
-      solo: '혼자만의 시간',
-      friends: '친구들과의 모임',
-      family: '가족 식사',
-      business: '비즈니스 미팅',
-      celebration: '축하 행사',
-      all: '일반적인 상황',
+      solo: '혼자',
+      friends: '친구모임',
+      family: '가족',
+      business: '비즈니스',
+      celebration: '축하',
+      all: '일반',
     };
 
-    const tasteMap = {
-      sweet: '달콤한',
-      bitter: '쌉싸름한',
-      sour: '새콤한',
-      light: '가벼운',
-      medium: '중간',
-      heavy: '묵직한',
-    };
+    return `음식: ${foodAnalysis.keywords.join(', ')} (${foodAnalysis.category})
+상황: ${occasion ? occasionMap[occasion] || occasion : '일반'}
+선호: ${tastes?.join(', ') || '없음'}
 
-    return `당신은 음료 페어링 전문가 "페어리(Pairé)"입니다. 마법 같은 페어링으로 특별한 순간을 만들어주는 요정입니다.
-
-**음식 분석 결과:**
-- 감지된 키워드: ${foodAnalysis.keywords.join(', ')}
-- 음식 카테고리: ${foodAnalysis.category}
-- 요리 스타일: ${foodAnalysis.cuisine || '일반'}
-- 음식 특징: ${foodAnalysis.characteristics.join(', ') || '일반적인 음식'}
-
-**사용자 선택:**
-- 상황: ${occasion ? occasionMap[occasion] || occasion : '일반적인 상황'}
-- 선호하는 맛: ${tastes && tastes.length > 0 ? tastes.map(t => tasteMap[t] || t).join(', ') : '지정 안함'}
-
-**추천 가능한 음료 목록:**
+음료목록 (ID|이름|타입|맛):
 ${drinkList}
 
-**요청사항:**
-1. 위 음료 목록에서 음식, 상황, 선호 맛을 고려하여 가장 잘 어울리는 음료 3개를 추천해주세요.
-2. 각 음료마다:
-   - 음식의 맛, 질감, 조리법과 음료의 특성이 어떻게 조화를 이루는지 구체적으로 설명
-   - 선택한 상황에 왜 적합한지 설명
-   - 선호 맛과 어떻게 연결되는지 설명
-3. 페어리 브랜드 감성으로 전체 추천 메시지를 작성:
-   - 친근하고 따뜻한 톤
-   - 마법 같은 페어링의 특별함 강조
-   - 5-7문장으로 충분히 길게 작성
-   - 음식과 음료의 조화, 상황의 특별함을 모두 언급
-
-**응답 형식 (JSON):**
+위 음료 중 3개 추천. JSON 형식:
 {
   "recommendations": [
     {
-      "drinkId": "음료 ID (위 목록의 ID 값 그대로)",
-      "drinkName": "음료 이름 (한글)",
-      "drinkNameEn": "음료 이름 (영어)",
-      "drinkType": "음료 타입",
-      "reason": "이 음료를 추천하는 이유 (3-4문장, 음식과의 구체적인 페어링 근거 + 상황 적합성)",
+      "drinkId": "ID",
+      "drinkName": "한글이름",
+      "drinkNameEn": "영어이름",
+      "drinkType": "타입",
+      "reason": "추천이유 (2-3문장)",
       "score": 95,
-      "pairingNotes": "맛의 조화와 질감 매칭 설명 (2-3문장)"
+      "pairingNotes": "페어링 설명 (1-2문장)"
     }
   ],
-  "fairyMessage": "페어리의 추천 메시지 (5-7문장, 음식 분석 결과와 선택한 상황을 언급하며 마법 같은 페어링의 특별함을 전달하는 따뜻하고 친근한 톤)"
-}
-
-반드시 JSON 형식으로만 응답하세요.`;
+  "fairyMessage": "페어리 메시지 (3-4문장, 따뜻하고 친근한 톤)"
+}`;
   }
 
   /**
