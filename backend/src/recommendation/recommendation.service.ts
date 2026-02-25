@@ -57,8 +57,7 @@ export class RecommendationService {
     // 이미지 처리
     let imageUrl = dto.imageUrl;
     let detectedFoods: string[] = [];
-    let pairingReason = '';
-    let useAiRecommendation = false;
+    let foodAnalysis: any = null;
 
     if (imageUrl) {
       // base64 이미지면 Supabase에 업로드
@@ -77,63 +76,79 @@ export class RecommendationService {
       if (!imageUrl.startsWith('data:image')) {
         try {
           // Vision으로 상세 분석
-          const foodAnalysis = await this.visionService.analyzeFoodImage(imageUrl);
+          foodAnalysis = await this.visionService.analyzeFoodImage(imageUrl);
           console.log('Food analysis:', foodAnalysis);
-          
           detectedFoods = foodAnalysis.keywords;
-          useAiRecommendation = true;
-
-          // Gemini AI로 추천 생성
-          const aiResult = await this.geminiService.recommendDrinks(
-            foodAnalysis,
-            dto.occasion,
-            dto.tastes,
-          );
-
-          console.log('AI recommendation:', {
-            fromCache: aiResult.fromCache,
-            recommendations: aiResult.recommendations.length,
-          });
-
-          // AI 추천 결과를 사용
-          const recommendedDrinks = await this.enrichDrinkData(aiResult.recommendations);
-
-          const recommendation = {
-            id: `rec_${Date.now()}`,
-            drinks: recommendedDrinks,
-            detectedFoods,
-            fairyMessage: aiResult.fairyMessage,
-            createdAt: new Date(),
-          };
-
-          // 데이터베이스에 저장
-          if (userId) {
-            await this.prisma.recommendation.create({
-              data: {
-                userId,
-                imageUrl,
-                occasion: dto.occasion,
-                tastes: dto.tastes,
-                drinks: recommendedDrinks,
-                fairyMessage: aiResult.fairyMessage,
-              },
-            });
-          }
-
-          return { recommendation };
         } catch (error) {
-          console.error('AI recommendation failed, falling back to rule-based:', error);
+          console.error('Vision API 오류:', error);
           detectedFoods = ['음식'];
-          useAiRecommendation = false;
         }
       } else {
         detectedFoods = ['음식'];
       }
     } else {
-      detectedFoods = ['음식'];
+      // 이미지 없이도 AI 추천 사용 (상황과 취향 기반)
+      detectedFoods = ['일반 음식'];
     }
 
-    // 추천 엔진: 음식 + 상황 + 취향 → 음료
+    // Gemini AI로 추천 생성 (이미지 유무와 관계없이)
+    try {
+      // 음식 분석 정보가 없으면 기본값 생성
+      if (!foodAnalysis) {
+        foodAnalysis = {
+          keywords: detectedFoods,
+          category: 'general',
+          characteristics: [],
+        };
+      }
+
+      const aiResult = await this.geminiService.recommendDrinks(
+        foodAnalysis,
+        dto.occasion,
+        dto.tastes,
+      );
+
+      console.log('AI recommendation:', {
+        fromCache: aiResult.fromCache,
+        recommendations: aiResult.recommendations.length,
+      });
+
+      // AI 추천 결과를 사용
+      const recommendedDrinks = await this.enrichDrinkData(aiResult.recommendations);
+
+      const recommendation = {
+        id: `rec_${Date.now()}`,
+        drinks: recommendedDrinks,
+        detectedFoods,
+        fairyMessage: aiResult.fairyMessage,
+        createdAt: new Date(),
+      };
+
+      // 데이터베이스에 저장
+      if (userId) {
+        await this.prisma.recommendation.create({
+          data: {
+            userId,
+            imageUrl,
+            occasion: dto.occasion,
+            tastes: dto.tastes,
+            drinks: recommendedDrinks,
+            fairyMessage: aiResult.fairyMessage,
+          },
+        });
+      }
+
+      return { recommendation };
+    } catch (error) {
+      console.error('AI recommendation failed, falling back to rule-based:', error);
+      // AI 실패 시 기존 룰 기반 시스템 사용
+    }
+
+    // 폴백: 기존 룰 기반 추천 엔진
+      detectedFoods = ['음식'];
+    }
+    // 폴백: 기존 룰 기반 추천 엔진
+    console.log('Using rule-based recommendation engine');
     const recommendedDrinks = await this.recommendDrinks(
       detectedFoods,
       dto.occasion,
@@ -145,7 +160,7 @@ export class RecommendationService {
       dto.occasion,
       dto.tastes,
       detectedFoods,
-      pairingReason
+      ''
     );
 
     const recommendation = {
@@ -161,7 +176,7 @@ export class RecommendationService {
       await this.prisma.recommendation.create({
         data: {
           userId,
-          imageUrl, // 업로드된 URL 또는 원본 URL
+          imageUrl,
           occasion: dto.occasion,
           tastes: dto.tastes,
           drinks: recommendedDrinks,
