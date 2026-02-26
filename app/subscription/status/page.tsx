@@ -40,6 +40,7 @@ export default function SubscriptionStatusPage() {
       return;
     }
 
+    // PREMIUM 사용자만 접근 가능 (CANCELLED 포함)
     if (user.membership !== 'PREMIUM') {
       router.push('/subscription');
       return;
@@ -224,21 +225,43 @@ export default function SubscriptionStatusPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-br from-gold/10 to-gold/5 border border-gold/20 rounded-xl p-8 mb-8"
+          className={cn(
+            "border rounded-xl p-8 mb-8",
+            subscription.status === 'CANCELLED'
+              ? "bg-gradient-to-br from-orange-500/10 to-orange-500/5 border-orange-500/30"
+              : "bg-gradient-to-br from-gold/10 to-gold/5 border-gold/20"
+          )}
         >
           <div className="flex items-center gap-4 mb-6">
-            <div className="w-16 h-16 bg-gold/20 rounded-full flex items-center justify-center">
-              <Crown className="w-8 h-8 text-gold" />
+            <div className={cn(
+              "w-16 h-16 rounded-full flex items-center justify-center",
+              subscription.status === 'CANCELLED' ? "bg-orange-500/20" : "bg-gold/20"
+            )}>
+              <Crown className={cn(
+                "w-8 h-8",
+                subscription.status === 'CANCELLED' ? "text-orange-500" : "text-gold"
+              )} />
             </div>
             <div>
-              <h2 className={cn(
-                "text-2xl font-light text-foreground mb-1",
-                isKorean && "font-[var(--font-noto-kr)]"
-              )}>
-                PREMIUM
-              </h2>
+              <div className="flex items-center gap-2">
+                <h2 className={cn(
+                  "text-2xl font-light text-foreground",
+                  isKorean && "font-[var(--font-noto-kr)]"
+                )}>
+                  PREMIUM
+                </h2>
+                {subscription.status === 'CANCELLED' && (
+                  <span className={cn(
+                    "text-xs px-2 py-1 rounded-full bg-orange-500/20 text-orange-500",
+                    isKorean && "font-[var(--font-noto-kr)]"
+                  )}>
+                    {isKorean ? '해지 예정' : 'Cancelled'}
+                  </span>
+                )}
+              </div>
               <p className={cn(
-                "text-gold text-sm",
+                "text-sm mt-1",
+                subscription.status === 'CANCELLED' ? "text-orange-500" : "text-gold",
                 isKorean && "font-[var(--font-noto-kr)]"
               )}>
                 {subscription.interval === 'WEEKLY'
@@ -250,16 +273,35 @@ export default function SubscriptionStatusPage() {
             </div>
           </div>
 
+          {/* 해지 안내 메시지 */}
+          {subscription.status === 'CANCELLED' && (
+            <div className="mb-4 p-4 bg-orange-500/10 border border-orange-500/20 rounded-lg">
+              <p className={cn(
+                "text-sm text-foreground",
+                isKorean && "font-[var(--font-noto-kr)]"
+              )}>
+                {isKorean
+                  ? `구독이 해지되었습니다. ${formattedDate}까지 PREMIUM 혜택을 계속 이용하실 수 있습니다.`
+                  : `Your subscription has been cancelled. You can continue using PREMIUM benefits until ${formattedDate}.`}
+              </p>
+            </div>
+          )}
+
           <div className="space-y-4">
-            {/* 다음 결제일 */}
+            {/* 만료일/다음 결제일 */}
             <div className="flex items-center justify-between p-4 bg-background/50 rounded-lg">
               <div className="flex items-center gap-3">
-                <Calendar className="w-5 h-5 text-gold" />
+                <Calendar className={cn(
+                  "w-5 h-5",
+                  subscription.status === 'CANCELLED' ? "text-orange-500" : "text-gold"
+                )} />
                 <span className={cn(
                   "text-muted-foreground",
                   isKorean && "font-[var(--font-noto-kr)]"
                 )}>
-                  {isKorean ? '다음 결제일' : 'Next Billing Date'}
+                  {subscription.status === 'CANCELLED'
+                    ? (isKorean ? '만료일' : 'Expires On')
+                    : (isKorean ? '다음 결제일' : 'Next Billing Date')}
                 </span>
               </div>
               <span className={cn(
@@ -273,12 +315,15 @@ export default function SubscriptionStatusPage() {
             {/* 결제 금액 */}
             <div className="flex items-center justify-between p-4 bg-background/50 rounded-lg">
               <div className="flex items-center gap-3">
-                <CreditCard className="w-5 h-5 text-gold" />
+                <CreditCard className={cn(
+                  "w-5 h-5",
+                  subscription.status === 'CANCELLED' ? "text-orange-500" : "text-gold"
+                )} />
                 <span className={cn(
                   "text-muted-foreground",
                   isKorean && "font-[var(--font-noto-kr)]"
                 )}>
-                  {isKorean ? '결제 금액' : 'Amount'}
+                  {isKorean ? '플랜 금액' : 'Plan Amount'}
                 </span>
               </div>
               <span className="text-foreground font-medium">
@@ -287,20 +332,22 @@ export default function SubscriptionStatusPage() {
             </div>
 
             {/* 결제 수단 */}
-            <div className="flex items-center justify-between p-4 bg-background/50 rounded-lg">
-              <div className="flex items-center gap-3">
-                <CreditCard className="w-5 h-5 text-gold" />
-                <span className={cn(
-                  "text-muted-foreground",
-                  isKorean && "font-[var(--font-noto-kr)]"
-                )}>
-                  {isKorean ? '결제 수단' : 'Payment Method'}
+            {subscription.status !== 'CANCELLED' && (
+              <div className="flex items-center justify-between p-4 bg-background/50 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <CreditCard className="w-5 h-5 text-gold" />
+                  <span className={cn(
+                    "text-muted-foreground",
+                    isKorean && "font-[var(--font-noto-kr)]"
+                  )}>
+                    {isKorean ? '결제 수단' : 'Payment Method'}
+                  </span>
+                </div>
+                <span className="text-foreground font-medium">
+                  {subscription.paymentMethod}
                 </span>
               </div>
-              <span className="text-foreground font-medium">
-                {subscription.paymentMethod}
-              </span>
-            </div>
+            )}
           </div>
         </motion.div>
 
@@ -337,22 +384,59 @@ export default function SubscriptionStatusPage() {
           </ul>
         </motion.div>
 
-        {/* 구독 취소 버튼 */}
+        {/* 구독 취소/재활성화 버튼 */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
+          className="flex gap-3"
         >
-          <Button
-            onClick={() => setShowCancelDialog(true)}
-            variant="outline"
-            className={cn(
-              "w-full border-destructive/30 text-destructive hover:bg-destructive/10",
-              isKorean && "font-[var(--font-noto-kr)]"
-            )}
-          >
-            {isKorean ? '구독 취소' : 'Cancel Subscription'}
-          </Button>
+          {subscription.status === 'CANCELLED' ? (
+            <>
+              <Button
+                onClick={() => router.push('/subscription')}
+                className={cn(
+                  "flex-1 h-14 bg-gold hover:bg-gold-light text-background font-semibold",
+                  isKorean && "font-[var(--font-noto-kr)]"
+                )}
+              >
+                {isKorean ? '다시 구독하기' : 'Resubscribe'}
+              </Button>
+              <Button
+                onClick={() => router.push('/subscription?tab=credit')}
+                variant="outline"
+                className={cn(
+                  "flex-1 h-14 border-gold/40 text-gold hover:bg-gold/10",
+                  isKorean && "font-[var(--font-noto-kr)]"
+                )}
+              >
+                {isKorean ? '크레딧 충전' : 'Buy Credits'}
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                onClick={() => router.push('/subscription')}
+                variant="outline"
+                className={cn(
+                  "flex-1 h-14 border-gold/40 text-gold hover:bg-gold/10",
+                  isKorean && "font-[var(--font-noto-kr)]"
+                )}
+              >
+                {isKorean ? '플랜 변경' : 'Change Plan'}
+              </Button>
+              <Button
+                onClick={() => setShowCancelDialog(true)}
+                variant="outline"
+                className={cn(
+                  "flex-1 h-14 border-destructive/30 text-destructive hover:bg-destructive/10",
+                  isKorean && "font-[var(--font-noto-kr)]"
+                )}
+              >
+                {isKorean ? '구독 취소' : 'Cancel Subscription'}
+              </Button>
+            </>
+          )}
         </motion.div>
       </div>
 

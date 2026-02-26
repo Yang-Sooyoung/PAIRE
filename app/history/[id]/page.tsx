@@ -56,17 +56,21 @@ export default function HistoryDetailPage() {
                 const response = await getRecommendationDetail(id);
                 setDetail(response.recommendation);
 
-                // 각 음료의 즐겨찾기 상태 확인
-                const statusMap: Record<string, boolean> = {};
-                for (const drink of response.recommendation.drinks) {
-                    try {
-                        const favResponse = await checkFavorite(drink.id);
-                        statusMap[drink.id] = favResponse.isFavorite;
-                    } catch (error) {
-                        statusMap[drink.id] = false;
+                // drinks가 배열인지 확인
+                const drinks = response.recommendation?.drinks;
+                if (drinks && Array.isArray(drinks)) {
+                    // 각 음료의 즐겨찾기 상태 확인
+                    const statusMap: Record<string, boolean> = {};
+                    for (const drink of drinks) {
+                        try {
+                            const favResponse = await checkFavorite(drink.id);
+                            statusMap[drink.id] = favResponse.isFavorite;
+                        } catch (error) {
+                            statusMap[drink.id] = false;
+                        }
                     }
+                    setFavoriteStatus(statusMap);
                 }
-                setFavoriteStatus(statusMap);
             } catch (error) {
                 console.error('Failed to fetch detail:', error);
                 toast.error(isKorean ? '상세 정보를 불러올 수 없습니다.' : 'Failed to load details.');
@@ -243,90 +247,98 @@ export default function HistoryDetailPage() {
                         {isKorean ? '추천 음료' : 'Recommended Drinks'}
                     </h3>
 
-                    {detail.drinks.map((drink, index) => (
-                        <motion.div
-                            key={drink.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.2 + index * 0.1 }}
-                            className="bg-card border border-border rounded-xl overflow-hidden hover:border-gold/30 transition"
-                        >
-                            <div className="flex gap-4 p-4">
-                                <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-secondary">
-                                    {drink.image ? (
-                                        <img
-                                            src={drink.image}
-                                            alt={drink.name}
-                                            className="w-full h-full object-cover"
-                                        />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center text-gold/30">
-                                            🍷
-                                        </div>
-                                    )}
-                                </div>
-
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-start justify-between gap-2 mb-2">
-                                        <div className="flex-1 min-w-0">
-                                            <h4 className={cn(
-                                                "text-lg font-semibold text-foreground mb-1",
-                                                isKorean && "font-[var(--font-noto-kr)]"
-                                            )}>
-                                                {drink.name}
-                                            </h4>
-                                            <p className="text-sm text-muted-foreground mb-1">
-                                                {drink.type}
-                                            </p>
-                                            {drink.price && (
-                                                <p className="text-sm font-medium text-gold">
-                                                    {drink.price}
-                                                </p>
-                                            )}
-                                        </div>
-                                        <button
-                                            onClick={() => handleToggleFavorite(drink.id)}
-                                            disabled={togglingFavorite === drink.id}
-                                            className="flex-shrink-0 p-2 rounded-full hover:bg-secondary transition"
-                                        >
-                                            {togglingFavorite === drink.id ? (
-                                                <Loader2 className="w-5 h-5 text-gold animate-spin" />
-                                            ) : (
-                                                <Heart
-                                                    className={cn(
-                                                        "w-5 h-5 transition",
-                                                        favoriteStatus[drink.id]
-                                                            ? "fill-gold text-gold"
-                                                            : "text-muted-foreground"
-                                                    )}
-                                                />
-                                            )}
-                                        </button>
+                    {detail.drinks && detail.drinks.length > 0 ? (
+                        detail.drinks.map((drink, index) => (
+                            <motion.div
+                                key={drink.id}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.2 + index * 0.1 }}
+                                className="bg-card border border-border rounded-xl overflow-hidden hover:border-gold/30 transition"
+                            >
+                                <div className="flex gap-4 p-4">
+                                    <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-secondary">
+                                        {drink.image ? (
+                                            <img
+                                                src={drink.image}
+                                                alt={drink.name}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center text-gold/30">
+                                                🍷
+                                            </div>
+                                        )}
                                     </div>
 
-                                    <p className={cn(
-                                        "text-sm text-muted-foreground mb-2 line-clamp-2",
-                                        isKorean && "font-[var(--font-noto-kr)]"
-                                    )}>
-                                        {drink.description}
-                                    </p>
-
-                                    {drink.tastingNotes.length > 0 && (
-                                        <div className="flex flex-wrap gap-1">
-                                            {drink.tastingNotes.map((note, i) => (
-                                                <span
-                                                    key={i}
-                                                    className="text-xs px-2 py-0.5 rounded-full bg-gold/10 text-gold"
-                                                >
-                                                    {note}
-                                                </span>
-                                            ))}
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-start justify-between gap-2 mb-2">
+                                            <div className="flex-1 min-w-0">
+                                                <h4 className={cn(
+                                                    "text-lg font-semibold text-foreground mb-1",
+                                                    isKorean && "font-[var(--font-noto-kr)]"
+                                                )}>
+                                                    {drink.name}
+                                                </h4>
+                                                <p className="text-sm text-muted-foreground mb-1">
+                                                    {drink.type}
+                                                </p>
+                                                {drink.price && (
+                                                    <p className="text-sm font-medium text-gold">
+                                                        {drink.price}
+                                                    </p>
+                                                )}
+                                            </div>
+                                            <button
+                                                onClick={() => handleToggleFavorite(drink.id)}
+                                                disabled={togglingFavorite === drink.id}
+                                                className="flex-shrink-0 p-2 rounded-full hover:bg-secondary transition"
+                                            >
+                                                {togglingFavorite === drink.id ? (
+                                                    <Loader2 className="w-5 h-5 text-gold animate-spin" />
+                                                ) : (
+                                                    <Heart
+                                                        className={cn(
+                                                            "w-5 h-5 transition",
+                                                            favoriteStatus[drink.id]
+                                                                ? "fill-gold text-gold"
+                                                                : "text-muted-foreground"
+                                                        )}
+                                                    />
+                                                )}
+                                            </button>
                                         </div>
-                                    )}
+
+                                        <p className={cn(
+                                            "text-sm text-muted-foreground mb-2 line-clamp-2",
+                                            isKorean && "font-[var(--font-noto-kr)]"
+                                        )}>
+                                            {drink.description}
+                                        </p>
+
+                                        {drink.tastingNotes && drink.tastingNotes.length > 0 && (
+                                            <div className="flex flex-wrap gap-1">
+                                                {drink.tastingNotes.map((note, i) => (
+                                                    <span
+                                                        key={i}
+                                                        className="text-xs px-2 py-0.5 rounded-full bg-gold/10 text-gold"
+                                                    >
+                                                        {note}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                        </motion.div>
-                    ))}
+                            </motion.div>
+                        ))
+                    ) : (
+                        <div className="text-center py-8 text-muted-foreground">
+                            <p className={cn(isKorean && "font-[var(--font-noto-kr)]")}>
+                                {isKorean ? '추천 음료가 없습니다.' : 'No drinks recommended.'}
+                            </p>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
