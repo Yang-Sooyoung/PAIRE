@@ -129,9 +129,10 @@ export default function StickersPage() {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      const unlockedIds = new Set(response.data.stickers.map((s: any) => s.stickerId));
+      // 백엔드는 { stickers: [{ id, unlockedAt }] } 형식으로 반환
+      const unlockedIds = new Set(response.data.stickers.map((s: any) => s.id));
       const unlockedMap = new Map(
-        response.data.stickers.map((s: any) => [s.stickerId, s.unlockedAt])
+        response.data.stickers.map((s: any) => [s.id, s.unlockedAt])
       );
 
       const allStickers = STICKERS.map((sticker) => ({

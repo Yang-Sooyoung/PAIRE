@@ -12,6 +12,11 @@ export class StickerController {
     return this.stickerService.getUserStickers(req.user.sub);
   }
 
+  @Get('my-stickers')
+  async getMyStickers(@Request() req: any) {
+    return this.stickerService.getUserStickers(req.user.sub);
+  }
+
   @Post('check')
   async checkAndUnlock(@Request() req: any) {
     return this.stickerService.checkAndUnlockStickers(req.user.sub);

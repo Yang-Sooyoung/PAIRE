@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils"
 import { useUserStore } from "@/app/store/userStore"
 import { addFavorite, removeFavorite, checkFavorite } from "@/app/api/favorite"
 import { generateShoppingLink, detectCountry, openExternalLink } from "@/lib/region-detector"
+import { generateCoupangLink } from "@/lib/coupang-partners"
 
 interface DrinkDetailScreenProps {
   drink: {
@@ -272,11 +273,13 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
   const handlePurchase = async () => {
     const country = detectCountry();
     
-    // 쿠팡 구매 링크가 있고 한국이면 해당 링크로
-    if (drink.purchaseUrl && country === 'KR') {
-      await openExternalLink(drink.purchaseUrl);
+    // 한국이면 쿠팡 링크 생성
+    if (country === 'KR') {
+      // 쿠팡 구매 링크가 있으면 사용, 없으면 생성
+      const coupangLink = drink.purchaseUrl || generateCoupangLink(drink.name);
+      await openExternalLink(coupangLink);
     } else {
-      // 지역별 쇼핑 링크 생성
+      // 해외는 지역별 쇼핑 링크 생성
       const shoppingLink = generateShoppingLink(drink.name, drink.type, country);
       await openExternalLink(shoppingLink);
     }
@@ -556,6 +559,16 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
             {isKorean ? '구매하기' : 'Buy Now'}
           </Button>
         </div>
+
+        {/* 쿠팡 파트너스 면책 조항 */}
+        <p className={cn(
+          "text-xs text-center text-muted-foreground mt-4 px-4",
+          isKorean && "font-[var(--font-noto-kr)]"
+        )}>
+          {isKorean 
+            ? '이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.'
+            : 'This post is part of Coupang Partners activities, and we receive a certain amount of commission accordingly.'}
+        </p>
       </div>
 
       {/* Custom Dialog */}

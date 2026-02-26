@@ -2,12 +2,11 @@
 
 import { useState, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { ArrowLeft, ChevronLeft, ChevronRight, ShoppingBag, RefreshCw, Share2, ExternalLink } from "lucide-react"
+import { ArrowLeft, ChevronLeft, ChevronRight, ShoppingBag, RefreshCw, Share2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useI18n } from "@/lib/i18n/context"
 import { cn } from "@/lib/utils"
 import { shareViaWebAPI, copyToClipboard, generateShareText } from "@/lib/share"
-import { generateCoupangLink, COUPANG_DISCLAIMER } from "@/lib/coupang-partners"
 import { LoadingFairy } from "./loading-fairy"
 
 interface RecommendationScreenProps {
@@ -358,30 +357,6 @@ export function RecommendationScreen({
                     <span className="text-gold text-sm font-medium">{currentDrink.aiScore}</span>
                   </div>
                 )}
-              </div>
-
-              {/* 쿠팡 구매 버튼 */}
-              <div className="mt-4">
-                <Button
-                  onClick={() => {
-                    const purchaseUrl = currentDrink.purchaseUrl || generateCoupangLink(currentDrink.name);
-                    window.open(purchaseUrl, '_blank', 'noopener,noreferrer');
-                  }}
-                  className={cn(
-                    "w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold",
-                    isKorean && "font-[var(--font-noto-kr)]"
-                  )}
-                >
-                  <ShoppingBag className="w-4 h-4 mr-2" />
-                  {isKorean ? '쿠팡에서 구매하기' : 'Buy on Coupang'}
-                  <ExternalLink className="w-4 h-4 ml-2" />
-                </Button>
-                <p className={cn(
-                  "text-xs text-muted-foreground text-center mt-2",
-                  isKorean && "font-[var(--font-noto-kr)]"
-                )}>
-                  {isKorean ? COUPANG_DISCLAIMER.ko : COUPANG_DISCLAIMER.en}
-                </p>
               </div>
             </div>
           </motion.div>
