@@ -20,6 +20,7 @@ interface DrinkDetailScreenProps {
     type: string
     typeKey?: string
     description: string
+    descriptionEn?: string
     descriptionKey?: string
     tastingNotes: string[]
     image: string | null
@@ -255,17 +256,15 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
     return items.slice(0, 3) // 최대 3개
   }
 
-  // 페어리 노트 번역
-  const translateFairyNote = (description: string) => {
-    if (!description) return ""
-
-    // 영어 모드이고 한글 텍스트인 경우
-    if (!isKorean && /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(description)) {
-      // 간단한 번역 매핑 (실제로는 백엔드에서 처리하는 것이 좋음)
+  // 페어리 노트: 영어 모드면 descriptionEn 우선, 없으면 한글 감지 시 기본 영문 메시지
+  const getDescription = () => {
+    if (isKorean) return drink.description
+    if (drink.descriptionEn) return drink.descriptionEn
+    // descriptionEn 없고 한글이면 기본 영문 메시지
+    if (/[가-힣]/.test(drink.description)) {
       return "This drink pairs perfectly with your dish, creating a harmonious balance of flavors."
     }
-
-    return description
+    return drink.description
   }
 
   const flavorProfile = calculateFlavorProfile()
@@ -504,7 +503,7 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
               "text-muted-foreground leading-relaxed",
               isKorean && "font-[var(--font-noto-kr)] text-sm leading-relaxed"
             )}>
-              {translateFairyNote(drink.description)}
+              {getDescription()}
             </p>
           </div>
 

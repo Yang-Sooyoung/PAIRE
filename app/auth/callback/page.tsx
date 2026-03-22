@@ -49,7 +49,7 @@ export default function AuthCallbackPage() {
     <div className="min-h-screen bg-background flex items-center justify-center">
       <div className="text-center">
         <div className="text-foreground text-2xl font-light mb-4">PAIRÉ</div>
-        <div className="text-muted-foreground">로그인 중...</div>
+        <div className="text-muted-foreground">Signing in...</div>
       </div>
     </div>
   );

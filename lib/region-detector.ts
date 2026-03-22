@@ -1,7 +1,7 @@
 // 국가 및 지역 감지 유틸리티 (Capacitor 지원)
 export type CountryCode = 'KR' | 'US' | 'OTHER';
 export type PaymentProvider = 'toss' | 'stripe';
-export type ShoppingPlatform = 'coupang' | 'vivino' | 'amazon';
+export type ShoppingPlatform = 'coupang' | 'amazon';
 
 interface RegionConfig {
   country: CountryCode;
@@ -145,7 +145,7 @@ export function getRegionConfig(country?: CountryCode): RegionConfig {
       return {
         country: 'OTHER',
         paymentProvider: 'stripe',
-        shoppingPlatform: 'vivino',
+        shoppingPlatform: 'amazon',
         currency: 'USD',
         currencySymbol: '$',
       };
@@ -209,10 +209,8 @@ export function generateShoppingLink(
       return `https://www.coupang.com/np/search?q=${searchQuery}`;
     case 'amazon':
       return `https://www.amazon.com/s?k=${searchQuery}`;
-    case 'vivino':
-      return `https://www.vivino.com/search/wines?q=${searchQuery}`;
     default:
-      return `https://www.vivino.com/search/wines?q=${searchQuery}`;
+      return `https://www.amazon.com/s?k=${searchQuery}`;
   }
 }
 
