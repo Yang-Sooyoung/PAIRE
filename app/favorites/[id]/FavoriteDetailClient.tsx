@@ -11,6 +11,8 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { removeFavorite, getDrinkDetail } from '@/app/api/favorite';
 import { translateDrinkType, translateTastingNote } from '@/lib/drink-translations';
+import { generateShoppingLink, detectCountry, openExternalLink } from '@/lib/region-detector';
+import { generateCoupangLink } from '@/lib/coupang-partners';
 
 // 음료 상세 데이터 타입
 interface DrinkDetail {
@@ -21,6 +23,7 @@ interface DrinkDetail {
   tastingNotes: string[];
   image: string;
   price: string;
+  purchaseUrl?: string;
   alcohol?: string;
   origin?: string;
   pairing?: string[];
@@ -69,6 +72,18 @@ export default function FavoriteDetailPage({ id }: { id: string }) {
       toast.error(error.message || t('favorites.failedToRemove'));
     } finally {
       setRemoving(false);
+    }
+  };
+
+  const handlePurchase = async () => {
+    if (!drink) return;
+    const country = detectCountry();
+    if (country === 'KR') {
+      const link = drink.purchaseUrl || generateCoupangLink(drink.name);
+      await openExternalLink(link);
+    } else {
+      const link = generateShoppingLink(drink.name, drink.type, country);
+      await openExternalLink(link);
     }
   };
 
@@ -304,6 +319,7 @@ export default function FavoriteDetailPage({ id }: { id: string }) {
             </Button>
             
             <Button
+              onClick={handlePurchase}
               className={cn(
                 "flex-1 bg-gold hover:bg-gold-light text-background",
                 isKorean && "font-[var(--font-noto-kr)]"

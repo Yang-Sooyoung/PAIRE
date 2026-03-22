@@ -16,6 +16,7 @@ interface DrinkDetailScreenProps {
   drink: {
     id: string
     name: string
+    nameEn?: string
     type: string
     typeKey?: string
     description: string
@@ -336,7 +337,9 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
           animate={{ opacity: 1, y: 0 }}
           className="mb-6"
         >
-          <h1 className="text-foreground text-3xl font-bold mb-2">{drink.name}</h1>
+          <h1 className="text-foreground text-3xl font-bold mb-2">
+            {isKorean ? drink.name : (drink.nameEn || drink.name)}
+          </h1>
           <p className="text-gold text-2xl font-semibold">{drink.price}</p>
         </motion.div>
 
