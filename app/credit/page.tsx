@@ -63,7 +63,7 @@ const STRIPE_CREDIT_PRICE_IDS: Record<string, string> = {
 
 export default function CreditPage() {
   const router = useRouter();
-  const { user } = useUserStore();
+  const { user, initializeUser } = useUserStore();
   const { language } = useI18n();
   const isKorean = language === 'ko';
   const [credits, setCredits] = useState(0);
@@ -73,8 +73,15 @@ export default function CreditPage() {
   const activeRegion = regionConfig;
 
   useEffect(() => {
+    // Stripe 뒤로가기 등으로 store가 초기화된 경우 복구
     if (!user) {
-      router.push('/login');
+      initializeUser().then(() => {
+        // initializeUser 후에도 user 없으면 login으로
+        const currentUser = useUserStore.getState().user;
+        if (!currentUser) {
+          router.push('/login');
+        }
+      });
       return;
     }
 

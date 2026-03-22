@@ -60,7 +60,7 @@ const CREDIT_PACKAGES = [
 ];
 
 export default function SubscriptionPage() {
-  const { user, token, setUser, refreshTokenIfNeeded } = useUserStore();
+  const { user, token, setUser, refreshTokenIfNeeded, initializeUser } = useUserStore();
   const { language, t } = useI18n();
   const isKorean = language === 'ko';
   const router = useRouter();
@@ -82,6 +82,13 @@ export default function SubscriptionPage() {
     description: ''
   });
   const selectedPlan = PLANS[selectedPlanIndex];
+
+  // Stripe 뒤로가기 등으로 store가 초기화된 경우 복구
+  useEffect(() => {
+    if (!user || !token) {
+      initializeUser();
+    }
+  }, []);
 
   // 지역 및 앱 모드 감지
   useEffect(() => {
@@ -244,14 +251,29 @@ export default function SubscriptionPage() {
 
       // Stripe 결제 (해외)
       if (activeRegion.paymentProvider === 'stripe') {
-        // Stripe Price ID 매핑 (환경변수에서 가져오기)
-        const stripePriceId = selectedPlan.interval === 'MONTHLY'
-          ? process.env.NEXT_PUBLIC_STRIPE_PRICE_MONTHLY
-          : process.env.NEXT_PUBLIC_STRIPE_PRICE_YEARLY;
+        // Stripe Price ID 매핑 - 플랜별로 정확히 매핑
+        let stripePriceId: string | undefined;
+        if (selectedPlan.interval === 'WEEKLY') {
+          stripePriceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_WEEKLY;
+        } else if (selectedPlan.interval === 'MONTHLY') {
+          stripePriceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_MONTHLY;
+        } else {
+          stripePriceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_YEARLY;
+        }
+
+        // WEEKLY 환경변수 없으면 MONTHLY로 fallback (경고 출력)
+        if (!stripePriceId) {
+          if (selectedPlan.interval === 'WEEKLY') {
+            stripePriceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_MONTHLY;
+            console.warn('NEXT_PUBLIC_STRIPE_PRICE_WEEKLY not set, falling back to MONTHLY');
+          }
+        }
 
         if (!stripePriceId) {
           throw new Error('Stripe price ID is not configured');
         }
+
+        console.log(`[subscribe] interval=${selectedPlan.interval}, priceId=${stripePriceId}`);
 
         // 백엔드에 /api prefix 없음 - BASE_URL 사용
         const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api').replace(/\/api$/, '');
