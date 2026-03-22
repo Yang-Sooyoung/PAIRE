@@ -45,9 +45,10 @@ export default function LoginPage() {
     }
   };
 
-  const handleOAuthLogin = (provider: 'google' | 'kakao') => {
+  const handleOAuthLogin = async (provider: 'google' | 'kakao') => {
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
-    window.location.href = `${API_URL}/auth/${provider}`;
+    const { openOAuthBrowser } = await import('@/lib/capacitor');
+    await openOAuthBrowser(`${API_URL}/auth/${provider}`);
   };
 
   return (

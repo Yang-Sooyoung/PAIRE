@@ -2,6 +2,7 @@ import React from "react"
 import type { Metadata, Viewport } from 'next'
 import { Cormorant_Garamond, Noto_Sans_KR } from 'next/font/google'
 import { I18nProvider } from "@/lib/i18n/context"
+import AppInit from "@/components/AppInit"
 import './globals.css'
 
 const cormorant = Cormorant_Garamond({ 
@@ -56,6 +57,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${cormorant.className} ${notoSansKR.variable} font-sans antialiased`}>
         <I18nProvider>
+          <AppInit />
           {children}
         </I18nProvider>
       </body>

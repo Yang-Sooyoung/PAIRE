@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useUserStore } from '@/app/store/userStore';
 import { getCurrentUser } from '@/app/api/auth';
+import { closeOAuthBrowser } from '@/lib/capacitor';
 
 export default function AuthCallbackPage() {
   const router = useRouter();
@@ -21,21 +22,22 @@ export default function AuthCallbackPage() {
       }
 
       try {
-        // 토큰 저장
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', refreshToken);
 
         setToken(accessToken);
         setRefreshToken(refreshToken);
 
-        // 사용자 정보 가져오기
         const userData = await getCurrentUser(accessToken);
         setUser(userData);
 
-        // 메인 페이지로 이동
+        // 인앱 브라우저 닫기 (네이티브 앱인 경우)
+        await closeOAuthBrowser();
+
         router.push('/');
       } catch (error) {
         console.error('OAuth callback error:', error);
+        await closeOAuthBrowser();
         router.push('/login');
       }
     };

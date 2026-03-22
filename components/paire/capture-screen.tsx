@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { useI18n } from "@/lib/i18n/context"
 import { cn } from "@/lib/utils"
 import imageCompression from 'browser-image-compression'
+import { isNative } from "@/lib/capacitor"
 
 interface CaptureScreenProps {
   onCapture: (imageUrl: string) => void
@@ -28,6 +29,29 @@ export function CaptureScreen({ onCapture, onBack }: CaptureScreenProps) {
 
   // 카메라 시작
   const startCamera = useCallback(async () => {
+    // 네이티브 앱: Capacitor Camera 플러그인 사용
+    if (isNative()) {
+      try {
+        const { Camera: CapCamera, CameraResultType, CameraSource } = await import('@capacitor/camera');
+        const photo = await CapCamera.getPhoto({
+          resultType: CameraResultType.DataUrl,
+          source: CameraSource.Camera,
+          quality: 90,
+          direction: facingMode === 'environment' ? 1 : 0, // REAR=1, FRONT=0
+        });
+        if (photo.dataUrl) {
+          setPreview(photo.dataUrl);
+        }
+      } catch (error: any) {
+        if (error?.message !== 'User cancelled photos app') {
+          console.error('카메라 접근 실패:', error);
+          alert(isKorean ? '카메라 접근 권한이 필요합니다.' : 'Camera access is required.');
+        }
+      }
+      return;
+    }
+
+    // 웹: getUserMedia 사용
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: {
@@ -131,6 +155,37 @@ export function CaptureScreen({ onCapture, onBack }: CaptureScreenProps) {
   }, [stopCamera])
 
   const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    // 네이티브 앱: Capacitor Camera 플러그인으로 갤러리 열기
+    if (isNative()) {
+      try {
+        const { Camera: CapCamera, CameraResultType, CameraSource } = await import('@capacitor/camera');
+        const photo = await CapCamera.getPhoto({
+          resultType: CameraResultType.DataUrl,
+          source: CameraSource.Photos,
+          quality: 90,
+        });
+        if (photo.dataUrl) {
+          setIsCompressing(true);
+          try {
+            const res = await fetch(photo.dataUrl);
+            const blob = await res.blob();
+            const compressed = await imageCompression(blob as File, { maxSizeMB: 1, maxWidthOrHeight: 1920, useWebWorker: true });
+            const reader = new FileReader();
+            reader.onload = (ev) => { setPreview(ev.target?.result as string); setIsCompressing(false); };
+            reader.readAsDataURL(compressed);
+          } catch {
+            setPreview(photo.dataUrl);
+            setIsCompressing(false);
+          }
+        }
+      } catch (error: any) {
+        if (error?.message !== 'User cancelled photos app') {
+          console.error('갤러리 접근 실패:', error);
+        }
+      }
+      return;
+    }
+
     const file = e.target.files?.[0]
     if (!file) return
 
@@ -327,7 +382,7 @@ export function CaptureScreen({ onCapture, onBack }: CaptureScreenProps) {
             <div className="flex gap-3">
               <Button
                 variant="outline"
-                onClick={() => fileInputRef.current?.click()}
+                onClick={() => isNative() ? handleFileSelect({} as any) : fileInputRef.current?.click()}
                 disabled={isCompressing}
                 className={cn(
                   "flex-1 h-12 border-gold/40 text-gold hover:bg-gold/10",
@@ -364,7 +419,7 @@ export function CaptureScreen({ onCapture, onBack }: CaptureScreenProps) {
             </Button>
             <Button
               variant="outline"
-              onClick={() => fileInputRef.current?.click()}
+              onClick={() => isNative() ? handleFileSelect({} as any) : fileInputRef.current?.click()}
               disabled={isCompressing}
               className={cn(
                 "w-full h-12 border-gold/40 text-gold hover:bg-gold/10",
