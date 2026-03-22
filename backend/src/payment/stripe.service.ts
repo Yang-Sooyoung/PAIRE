@@ -16,7 +16,7 @@ export class StripeService {
     }
 
     this.stripe = new Stripe(apiKey, {
-      apiVersion: '2024-12-18.acacia',
+      apiVersion: '2025-02-24.acacia',
     });
   }
 
