@@ -81,11 +81,11 @@ export default function FavoriteDetailPage({ id }: { id: string }) {
     if (!drink) return;
     const country = await detectCountryByIP();
     if (country === 'KR') {
-      // 한국: 쿠팡 링크 (purchaseUrl 우선)
-      const link = drink.purchaseUrl || generateCoupangLink(drink.name);
+      // 한국: 항상 한글 이름으로 쿠팡 검색
+      const link = generateCoupangLink(drink.name);
       await openExternalLink(link);
     } else {
-      // 해외: purchaseUrl 무시하고 항상 아마존/vivino 링크 생성
+      // 해외: 아마존 링크
       const drinkName = drink.nameEn || drink.name;
       const link = generateShoppingLink(drinkName, drink.type, country);
       await openExternalLink(link);

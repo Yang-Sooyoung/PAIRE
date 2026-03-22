@@ -275,11 +275,11 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
     const country = await detectCountryByIP();
     
     if (country === 'KR') {
-      // 한국: 쿠팡 링크 (purchaseUrl 우선)
-      const coupangLink = drink.purchaseUrl || generateCoupangLink(drink.name);
+      // 한국: 항상 한글 이름으로 쿠팡 검색 (purchaseUrl 무시 - 영문 검색어 방지)
+      const coupangLink = generateCoupangLink(drink.name);
       await openExternalLink(coupangLink);
     } else {
-      // 해외: purchaseUrl 무시하고 항상 아마존/vivino 링크 생성
+      // 해외: 아마존 링크
       const drinkName = drink.nameEn || drink.name;
       const shoppingLink = generateShoppingLink(drinkName, drink.type, country);
       await openExternalLink(shoppingLink);
