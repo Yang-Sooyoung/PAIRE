@@ -19,6 +19,7 @@ interface Subscription {
   nextBillingDate: string;
   status: string;
   paymentMethod: string;
+  isStripe?: boolean;
 }
 
 export default function SubscriptionStatusPage() {
@@ -33,6 +34,12 @@ export default function SubscriptionStatusPage() {
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [showErrorDialog, setShowErrorDialog] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    detectCountryByIP().then(country => {
+      setIsStripe(getRegionConfig(country).paymentProvider === 'stripe');
+    });
+  }, []);
 
   useEffect(() => {
     if (!user || !token) {
@@ -284,7 +291,9 @@ export default function SubscriptionStatusPage() {
                 </span>
               </div>
               <span className="text-foreground font-medium">
-                ₩{subscription.price.toLocaleString()}
+                {subscription.isStripe
+                  ? `$${(subscription.price / 100).toFixed(2)}`
+                  : `₩${subscription.price.toLocaleString()}`}
               </span>
             </div>
 

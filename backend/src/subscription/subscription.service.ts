@@ -144,8 +144,9 @@ export class SubscriptionService {
         price: subscription.price,
         nextBillingDate: subscription.nextBillingDate,
         status: subscription.status,
-        paymentMethod: '카드 ****',
+        paymentMethod: subscription.stripeSubscriptionId || subscription.stripeCustomerId ? 'Card ****' : '카드 ****',
         willExpire: subscription.status === 'CANCELLED', // 취소 예정 플래그
+        isStripe: !!subscription.stripeSubscriptionId || !!subscription.stripeCustomerId,
       },
     };
   }
