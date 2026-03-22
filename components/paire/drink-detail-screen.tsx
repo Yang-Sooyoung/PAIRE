@@ -11,6 +11,7 @@ import { useUserStore } from "@/app/store/userStore"
 import { addFavorite, removeFavorite, checkFavorite } from "@/app/api/favorite"
 import { generateShoppingLink, detectCountryByIP, openExternalLink } from "@/lib/region-detector"
 import { generateCoupangLink } from "@/lib/coupang-partners"
+import { formatDrinkPrice } from "@/lib/drink-translations"
 
 interface DrinkDetailScreenProps {
   drink: {
@@ -339,7 +340,7 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
           <h1 className="text-foreground text-3xl font-bold mb-2">
             {isKorean ? drink.name : (drink.nameEn || drink.name)}
           </h1>
-          <p className="text-gold text-2xl font-semibold">{drink.price}</p>
+          <p className="text-gold text-2xl font-semibold">{formatDrinkPrice(drink.price, language)}</p>
         </motion.div>
 
         {/* Tasting Notes */}

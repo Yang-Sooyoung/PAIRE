@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUserStore } from '@/app/store/userStore';
 import { Button } from '@/components/ui/button';
@@ -9,6 +9,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Coffee, Heart, MessageSquare, Briefcase, Send, Sparkles } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils';
+import { detectCountryByIP, getRegionConfig } from '@/lib/region-detector';
 
 export default function SupportPage() {
   const router = useRouter();
@@ -20,11 +21,18 @@ export default function SupportPage() {
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
+  const [isStripe, setIsStripe] = useState(false);
   const [dialogConfig, setDialogConfig] = useState<{ type: 'info' | 'success' | 'warning' | 'error', title: string, description: string }>({
     type: 'info',
     title: '',
     description: ''
   });
+
+  useEffect(() => {
+    detectCountryByIP().then(country => {
+      setIsStripe(getRegionConfig(country).paymentProvider === 'stripe');
+    });
+  }, []);
 
   const handleSendMessage = async () => {
     if (!message.trim()) {
@@ -68,7 +76,15 @@ export default function SupportPage() {
     }
   };
 
-  const handleSupport = async (amount: number) => {
+  // KRW 금액 → USD 표시 (1400 KRW = 1 USD)
+  const formatSupportAmount = (krwAmount: number): string => {
+    if (isStripe) {
+      return `$${(krwAmount / 1400).toFixed(2)}`;
+    }
+    return `₩${krwAmount.toLocaleString()}`;
+  };
+
+  const handleSupport = async (krwAmount: number) => {
     if (!user) {
       setDialogConfig({
         type: 'warning',
@@ -81,23 +97,38 @@ export default function SupportPage() {
 
     try {
       setLoading(true);
-      
-      // 토스페이먼츠 SDK 로드
+
+      if (isStripe) {
+        const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api').replace(/\/api$/, '');
+        const currentToken = useUserStore.getState().token;
+        const response = await fetch(`${BASE_URL}/stripe/create-support-session`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${currentToken}` },
+          body: JSON.stringify({
+            krwAmount,
+            successUrl: `${window.location.origin}/support/success?amount=${krwAmount}`,
+            cancelUrl: `${window.location.origin}/support`,
+          }),
+        });
+        if (!response.ok) throw new Error('Stripe session creation failed');
+        const { url } = await response.json();
+        if (url) window.location.href = url;
+        return;
+      }
+
+      // 한국: 토스페이먼츠
       const { loadTossPayments } = await import('@tosspayments/sdk');
       const tossPayments = await loadTossPayments(process.env.NEXT_PUBLIC_TOSS_TEST_CLIENT_KEY!);
-
-      // 주문 ID 생성 (고유해야 함)
       const orderId = `support_${user.id}_${Date.now()}`;
-      const orderName = isKorean ? `PAIRÉ 개발자 후원 ${amount.toLocaleString()}원` : `PAIRÉ Developer Support ${amount.toLocaleString()}₩`;
+      const orderName = `PAIRÉ 개발자 후원 ${krwAmount.toLocaleString()}원`;
 
-      // 결제 요청
       await tossPayments.requestPayment('카드', {
-        amount,
+        amount: krwAmount,
         orderId,
         orderName,
         customerName: user.nickname || user.username,
         customerEmail: user.email,
-        successUrl: `${window.location.origin}/support/success?amount=${amount}`,
+        successUrl: `${window.location.origin}/support/success?amount=${krwAmount}`,
         failUrl: `${window.location.origin}/support/fail`,
       });
     } catch (error) {
@@ -199,7 +230,7 @@ export default function SupportPage() {
             >
               <div className="text-center">
                 <div className="text-2xl mb-1">☕</div>
-                <div className="text-xs">₩3,000</div>
+                <div className="text-xs">{formatSupportAmount(3000)}</div>
               </div>
             </Button>
             <Button
@@ -211,7 +242,7 @@ export default function SupportPage() {
             >
               <div className="text-center">
                 <div className="text-2xl mb-1">🍷</div>
-                <div className="text-xs">₩5,000</div>
+                <div className="text-xs">{formatSupportAmount(5000)}</div>
               </div>
             </Button>
             <Button
@@ -223,7 +254,7 @@ export default function SupportPage() {
             >
               <div className="text-center">
                 <div className="text-2xl mb-1">🍾</div>
-                <div className="text-xs">₩10,000</div>
+                <div className="text-xs">{formatSupportAmount(10000)}</div>
               </div>
             </Button>
           </div>

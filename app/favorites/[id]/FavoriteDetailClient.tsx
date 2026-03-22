@@ -10,7 +10,7 @@ import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { removeFavorite, getDrinkDetail } from '@/app/api/favorite';
-import { translateDrinkType, translateTastingNote } from '@/lib/drink-translations';
+import { translateDrinkType, translateTastingNote, formatDrinkPrice } from '@/lib/drink-translations';
 import { generateShoppingLink, detectCountryByIP, openExternalLink } from '@/lib/region-detector';
 import { generateCoupangLink } from '@/lib/coupang-partners';
 
@@ -197,7 +197,7 @@ export default function FavoriteDetailPage({ id }: { id: string }) {
               {isKorean ? drink.description : (drink.descriptionEn || drink.description)}
             </p>
             <div className="text-2xl font-bold text-gold">
-              {drink.price}
+              {formatDrinkPrice(drink.price, language)}
             </div>
           </div>
 

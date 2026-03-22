@@ -194,6 +194,45 @@ export class StripeService {
   }
 
   /**
+   * 동적 금액 Checkout Session 생성 (후원 등)
+   */
+  async createDynamicCheckoutSession(params: {
+    userId: string;
+    email: string;
+    amountCents: number;
+    currency: string;
+    name: string;
+    successUrl: string;
+    cancelUrl: string;
+    metadata?: Record<string, string>;
+  }) {
+    if (!this.stripe) {
+      throw new Error('Stripe is not initialized');
+    }
+
+    const session = await this.stripe.checkout.sessions.create({
+      customer_email: params.email,
+      client_reference_id: params.userId,
+      line_items: [
+        {
+          price_data: {
+            currency: params.currency,
+            unit_amount: params.amountCents,
+            product_data: { name: params.name },
+          },
+          quantity: 1,
+        },
+      ],
+      mode: 'payment',
+      success_url: params.successUrl,
+      cancel_url: params.cancelUrl,
+      metadata: params.metadata || {},
+    });
+
+    return session;
+  }
+
+  /**
    * Customer Portal Session 생성 (구독 관리)
    */
   async createPortalSession(params: {

@@ -50,6 +50,31 @@ export class StripeController {
     }
 
     /**
+     * 후원 Checkout Session 생성 (동적 금액)
+     */
+    @Post('create-support-session')
+    @UseGuards(JwtAuthGuard)
+    async createSupportSession(@Request() req: any, @Body() body: any) {
+        const userId = req.user.sub;
+        const { krwAmount, successUrl, cancelUrl } = body;
+
+        const usdCents = Math.round((krwAmount / 1400) * 100);
+
+        const session = await this.stripeService.createDynamicCheckoutSession({
+            userId,
+            email: req.user.email || `user_${userId}@paire.app`,
+            amountCents: usdCents,
+            currency: 'usd',
+            name: 'PAIRÉ Developer Support',
+            successUrl: successUrl || `${process.env.FRONTEND_URL}/support/success`,
+            cancelUrl: cancelUrl || `${process.env.FRONTEND_URL}/support`,
+            metadata: { userId, type: 'support', krwAmount: krwAmount?.toString() },
+        });
+
+        return { sessionId: session.id, url: session.url };
+    }
+
+    /**
      * Stripe Subscription Session 생성 (정기 결제)
      */
     @Post('create-subscription-session')

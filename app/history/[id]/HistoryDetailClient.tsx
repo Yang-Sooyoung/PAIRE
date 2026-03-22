@@ -10,7 +10,7 @@ import { ArrowLeft, Clock, Heart, Loader2, Sparkles } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { translateDrinkType, translateOccasion } from '@/lib/drink-translations';
+import { translateDrinkType, translateOccasion, formatDrinkPrice } from '@/lib/drink-translations';
 
 interface Drink {
     id: string;
@@ -299,7 +299,7 @@ export default function HistoryDetailPage({ id }: { id: string }) {
                                                 </p>
                                                 {drink.price && (
                                                     <p className="text-sm font-medium text-gold">
-                                                        {drink.price}
+                                                        {formatDrinkPrice(drink.price, language)}
                                                     </p>
                                                 )}
                                             </div>

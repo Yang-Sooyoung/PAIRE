@@ -105,3 +105,24 @@ export function translateOccasion(occasion: string, language: 'ko' | 'en'): stri
   const translation = occasionTranslations[occasion]
   return translation ? translation[language] : occasion
 }
+
+// 가격 표시: 한국어 모드는 원화 그대로, 영어 모드는 USD 변환
+// DB에 "₩15,000" 또는 "15000" 형태로 저장됨
+// 환율: 1 USD ≈ 1,400 KRW (고정 근사값)
+const KRW_TO_USD_RATE = 1400;
+
+export function formatDrinkPrice(price: string, language: 'ko' | 'en'): string {
+  if (!price) return price;
+  if (language === 'ko') return price;
+
+  // 이미 $ 표시면 그대로
+  if (price.startsWith('$')) return price;
+
+  // 숫자만 추출
+  const numericValue = parseInt(price.replace(/[^0-9]/g, ''), 10);
+  if (isNaN(numericValue) || numericValue === 0) return price;
+
+  // KRW → USD 변환
+  const usdValue = numericValue / KRW_TO_USD_RATE;
+  return `$${usdValue.toFixed(2)}`;
+}
