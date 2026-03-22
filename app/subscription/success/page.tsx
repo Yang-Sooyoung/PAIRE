@@ -7,6 +7,7 @@ import { Check } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
+import { useUserStore } from '@/app/store/userStore';
 
 export default function SubscriptionSuccessPage() {
   const router = useRouter();
@@ -14,6 +15,14 @@ export default function SubscriptionSuccessPage() {
   const isKorean = language === 'ko';
 
   useEffect(() => {
+    // webhook 처리 시간 대기 후 유저 정보 갱신
+    const refresh = async () => {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      const { initializeUser } = useUserStore.getState();
+      await initializeUser();
+    };
+    refresh();
+
     // 3초 후 자동으로 홈으로 이동
     const timer = setTimeout(() => {
       router.push('/user-info');

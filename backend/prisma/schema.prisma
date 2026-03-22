@@ -56,9 +56,13 @@ model Subscription {
   membership Membership
   interval  BillingInterval
   price     Int
-  billingKey String
+  billingKey String?
   
-  nextBillingDate DateTime
+  // Stripe 구독 정보
+  stripeSubscriptionId String?
+  stripeCustomerId     String?
+  
+  nextBillingDate DateTime?
   status    SubscriptionStatus @default(ACTIVE)
   
   createdAt DateTime @default(now())

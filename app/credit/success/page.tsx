@@ -25,9 +25,16 @@ function CreditSuccessContent() {
 
       console.log('Credit success page - params:', { paymentKey, orderId, amount });
 
+      // Stripe 결제 완료 (파라미터 없음 - webhook에서 처리됨)
       if (!paymentKey || !orderId || !amount) {
-        console.error('Missing payment parameters');
-        router.push('/subscription');
+        // 잠시 대기 후 유저 정보 갱신 (webhook 처리 시간)
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        const { initializeUser } = useUserStore.getState();
+        await initializeUser();
+        // 갱신된 크레딧 표시
+        const updatedUser = useUserStore.getState().user;
+        setCredits(updatedUser?.credits || 0);
+        setProcessing(false);
         return;
       }
 
