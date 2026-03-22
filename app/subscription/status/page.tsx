@@ -36,12 +36,6 @@ export default function SubscriptionStatusPage() {
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
-    detectCountryByIP().then(country => {
-      setIsStripe(getRegionConfig(country).paymentProvider === 'stripe');
-    });
-  }, []);
-
-  useEffect(() => {
     if (!user || !token) {
       router.push('/login');
       return;
