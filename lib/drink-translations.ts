@@ -71,3 +71,37 @@ export function translateTastingNote(note: string, language: 'ko' | 'en'): strin
   const translation = tastingNoteTranslations[note.toLowerCase()]
   return translation ? translation[language] : note
 }
+
+// occasion 번역
+export const occasionTranslations: Record<string, { ko: string; en: string }> = {
+  "date": { ko: "데이트", en: "Date Night" },
+  "solo": { ko: "혼자", en: "Solo Time" },
+  "solo-drinking": { ko: "혼술", en: "Solo Drinking" },
+  "solo-meal": { ko: "혼밥", en: "Solo Meal" },
+  "friends": { ko: "친구 모임", en: "Friends Gathering" },
+  "gathering": { ko: "모임", en: "Gathering" },
+  "family": { ko: "가족", en: "Family" },
+  "business": { ko: "비즈니스", en: "Business" },
+  "celebration": { ko: "축하", en: "Celebration" },
+  "camping": { ko: "캠핑", en: "Camping" },
+  "all": { ko: "일반", en: "General" },
+  // 한글 키도 지원 (DB에 한글로 저장된 경우)
+  "데이트": { ko: "데이트", en: "Date Night" },
+  "혼자": { ko: "혼자", en: "Solo Time" },
+  "혼술": { ko: "혼술", en: "Solo Drinking" },
+  "혼밥": { ko: "혼밥", en: "Solo Meal" },
+  "친구 모임": { ko: "친구 모임", en: "Friends Gathering" },
+  "친구모임": { ko: "친구 모임", en: "Friends Gathering" },
+  "모임": { ko: "모임", en: "Gathering" },
+  "가족": { ko: "가족", en: "Family" },
+  "비즈니스": { ko: "비즈니스", en: "Business" },
+  "축하": { ko: "축하", en: "Celebration" },
+  "캠핑": { ko: "캠핑", en: "Camping" },
+  "일반": { ko: "일반", en: "General" },
+}
+
+export function translateOccasion(occasion: string, language: 'ko' | 'en'): string {
+  if (!occasion) return occasion
+  const translation = occasionTranslations[occasion]
+  return translation ? translation[language] : occasion
+}

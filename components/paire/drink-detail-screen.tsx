@@ -9,7 +9,7 @@ import { useI18n } from "@/lib/i18n/context"
 import { cn } from "@/lib/utils"
 import { useUserStore } from "@/app/store/userStore"
 import { addFavorite, removeFavorite, checkFavorite } from "@/app/api/favorite"
-import { generateShoppingLink, detectCountry, openExternalLink } from "@/lib/region-detector"
+import { generateShoppingLink, detectCountryByIP, openExternalLink } from "@/lib/region-detector"
 import { generateCoupangLink } from "@/lib/coupang-partners"
 
 interface DrinkDetailScreenProps {
@@ -272,16 +272,16 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
   const perfectForItems = getPerfectForItems()
 
   const handlePurchase = async () => {
-    const country = detectCountry();
+    const country = await detectCountryByIP();
     
-    // 한국이면 쿠팡 링크 생성
     if (country === 'KR') {
-      // 쿠팡 구매 링크가 있으면 사용, 없으면 생성
+      // 한국: 쿠팡 링크 (purchaseUrl 우선)
       const coupangLink = drink.purchaseUrl || generateCoupangLink(drink.name);
       await openExternalLink(coupangLink);
     } else {
-      // 해외는 지역별 쇼핑 링크 생성
-      const shoppingLink = generateShoppingLink(drink.name, drink.type, country);
+      // 해외: purchaseUrl 무시하고 항상 아마존/vivino 링크 생성
+      const drinkName = drink.nameEn || drink.name;
+      const shoppingLink = generateShoppingLink(drinkName, drink.type, country);
       await openExternalLink(shoppingLink);
     }
   }
@@ -563,15 +563,12 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
           </Button>
         </div>
 
-        {/* 쿠팡 파트너스 면책 조항 */}
-        <p className={cn(
-          "text-xs text-center text-muted-foreground mt-4 px-4",
-          isKorean && "font-[var(--font-noto-kr)]"
-        )}>
-          {isKorean 
-            ? '이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.'
-            : 'This post is part of Coupang Partners activities, and we receive a certain amount of commission accordingly.'}
-        </p>
+        {/* 쿠팡 파트너스 면책 조항 - 한국만 표시 */}
+        {isKorean && (
+          <p className="font-[var(--font-noto-kr)] text-xs text-center text-muted-foreground mt-4 px-4">
+            이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.
+          </p>
+        )}
       </div>
 
       {/* Custom Dialog */}

@@ -11,15 +11,17 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { removeFavorite, getDrinkDetail } from '@/app/api/favorite';
 import { translateDrinkType, translateTastingNote } from '@/lib/drink-translations';
-import { generateShoppingLink, detectCountry, openExternalLink } from '@/lib/region-detector';
+import { generateShoppingLink, detectCountryByIP, openExternalLink } from '@/lib/region-detector';
 import { generateCoupangLink } from '@/lib/coupang-partners';
 
 // 음료 상세 데이터 타입
 interface DrinkDetail {
   id: string;
   name: string;
+  nameEn?: string;
   type: string;
   description: string;
+  descriptionEn?: string;
   tastingNotes: string[];
   image: string;
   price: string;
@@ -77,12 +79,15 @@ export default function FavoriteDetailPage({ id }: { id: string }) {
 
   const handlePurchase = async () => {
     if (!drink) return;
-    const country = detectCountry();
+    const country = await detectCountryByIP();
     if (country === 'KR') {
+      // 한국: 쿠팡 링크 (purchaseUrl 우선)
       const link = drink.purchaseUrl || generateCoupangLink(drink.name);
       await openExternalLink(link);
     } else {
-      const link = generateShoppingLink(drink.name, drink.type, country);
+      // 해외: purchaseUrl 무시하고 항상 아마존/vivino 링크 생성
+      const drinkName = drink.nameEn || drink.name;
+      const link = generateShoppingLink(drinkName, drink.type, country);
       await openExternalLink(link);
     }
   };
@@ -177,7 +182,7 @@ export default function FavoriteDetailPage({ id }: { id: string }) {
               "text-2xl font-bold text-foreground mb-2",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {drink.name}
+              {isKorean ? drink.name : (drink.nameEn || drink.name)}
             </h2>
             <p className={cn(
               "text-lg text-muted-foreground mb-4",
@@ -189,7 +194,7 @@ export default function FavoriteDetailPage({ id }: { id: string }) {
               "text-foreground leading-relaxed mb-4",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {drink.description}
+              {isKorean ? drink.description : (drink.descriptionEn || drink.description)}
             </p>
             <div className="text-2xl font-bold text-gold">
               {drink.price}

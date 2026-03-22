@@ -141,8 +141,10 @@ enum PaymentStatus {
 model Drink {
   id        String   @id @default(cuid())
   name      String
+  nameEn    String?  // English name
   type      String   // sparkling, red wine, white wine, tea, non-alcoholic, etc.
   description String
+  descriptionEn String? // English description
   tastingNotes String[] // fruity, elegant, light, etc.
   image     String?
   price     String

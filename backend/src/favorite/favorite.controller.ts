@@ -49,6 +49,36 @@ export class DrinkController {
       return { drink: null };
     }
 
-    return { drink };
+    // AI 캐시에서 이 음료의 영어 이름/설명 찾기
+    let nameEn = (drink as any).nameEn || null;
+    let descriptionEn = (drink as any).descriptionEn || null;
+
+    if (!nameEn || !descriptionEn) {
+      // AI 추천 캐시에서 이 drinkId가 포함된 캐시 검색
+      const caches = await this.prisma.aiRecommendationCache.findMany({
+        take: 20,
+        orderBy: { lastUsedAt: 'desc' },
+      });
+
+      for (const cache of caches) {
+        const recs = cache.recommendations as any[];
+        if (Array.isArray(recs)) {
+          const match = recs.find((r: any) => r.drinkId === id);
+          if (match) {
+            if (!nameEn && match.drinkNameEn) nameEn = match.drinkNameEn;
+            if (!descriptionEn && match.descriptionEn) descriptionEn = match.descriptionEn;
+            if (nameEn && descriptionEn) break;
+          }
+        }
+      }
+    }
+
+    return {
+      drink: {
+        ...drink,
+        nameEn: nameEn || drink.name,
+        descriptionEn: descriptionEn || drink.description,
+      },
+    };
   }
 }

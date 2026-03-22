@@ -22,8 +22,18 @@ export function isCapacitorApp(): boolean {
 
 /**
  * IP 기반 국가 감지 (비동기, 가장 정확)
+ * 언어 설정이 'en'이면 IP와 무관하게 해외로 처리
  */
 export async function detectCountryByIP(): Promise<CountryCode> {
+  if (typeof window === 'undefined') return 'OTHER';
+
+  // 언어 설정이 영어면 무조건 해외 처리 (한국 IP여도 영어 모드면 아마존 링크)
+  const currentLanguage = localStorage.getItem('paire-language') || 'en';
+  if (currentLanguage !== 'ko') {
+    return 'OTHER';
+  }
+
+  // 한국어 모드일 때만 IP로 정확히 확인
   try {
     const res = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(3000) });
     const data = await res.json();

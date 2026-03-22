@@ -9,6 +9,7 @@ import { ArrowLeft, Clock, Wine, Loader2, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils';
+import { translateOccasion } from '@/lib/drink-translations';
 
 interface HistoryItem {
   id: string;
@@ -202,7 +203,7 @@ export default function HistoryPage() {
                       "text-foreground font-medium mb-2",
                       isKorean && "font-[var(--font-noto-kr)]"
                     )}>
-                      {item.occasion}
+                      {translateOccasion(item.occasion, language)}
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {item.drinks.slice(0, 3).map((drink: any, i: number) => (
@@ -210,7 +211,7 @@ export default function HistoryPage() {
                           key={i}
                           className="text-xs px-2 py-1 rounded-full bg-gold/10 text-gold"
                         >
-                          {drink.name}
+                          {isKorean ? drink.name : (drink.nameEn || drink.name)}
                         </span>
                       ))}
                       {item.drinks.length > 3 && (

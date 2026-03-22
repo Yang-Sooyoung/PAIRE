@@ -377,6 +377,7 @@ ${drinkList}
       "drinkName": "한글이름",
       "drinkNameEn": "영어이름",
       "drinkType": "타입",
+      "descriptionEn": "영어 설명 (2-3문장)",
       "reason": "추천이유 (3-4문장, 한글)",
       "score": 95,
       "pairingNotes": "페어링 설명 (2-3문장, 한글)"
@@ -403,6 +404,7 @@ Recommend 3 drinks from the list above. All descriptions in English. JSON format
       "drinkName": "Korean name",
       "drinkNameEn": "English name",
       "drinkType": "type",
+      "descriptionEn": "English description (2-3 sentences)",
       "reason": "recommendation reason (3-4 sentences, English)",
       "score": 95,
       "pairingNotes": "pairing description (2-3 sentences, English)"
