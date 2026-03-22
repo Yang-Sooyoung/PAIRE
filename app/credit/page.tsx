@@ -16,6 +16,7 @@ const CREDIT_PACKAGES = [
     id: 'CREDIT_5',
     credits: 5,
     price: 5000,
+    priceUSD: 3.99,
     nameKo: '크레딧 5회',
     nameEn: '5 Credits',
     descKo: '추천 5회 이용권',
@@ -26,6 +27,7 @@ const CREDIT_PACKAGES = [
     id: 'CREDIT_10',
     credits: 10,
     price: 9000,
+    priceUSD: 6.99,
     nameKo: '크레딧 10회',
     nameEn: '10 Credits',
     descKo: '추천 10회 이용권',
@@ -33,11 +35,13 @@ const CREDIT_PACKAGES = [
     badge: '⭐',
     discount: 10,
     savings: 1000,
+    savingsUSD: 0.8,
   },
   {
     id: 'CREDIT_30',
     credits: 30,
     price: 24000,
+    priceUSD: 17.99,
     nameKo: '크레딧 30회',
     nameEn: '30 Credits',
     descKo: '추천 30회 이용권',
@@ -45,6 +49,7 @@ const CREDIT_PACKAGES = [
     badge: '✨',
     discount: 20,
     savings: 6000,
+    savingsUSD: 4.0,
     popular: true,
   },
 ];
@@ -280,12 +285,16 @@ export default function CreditPage() {
               {/* 가격 */}
               <div className="text-center mb-6">
                 <div className="text-3xl font-bold text-gold mb-1">
-                  ₩{pkg.price.toLocaleString()}
+                  {regionConfig.paymentProvider === 'stripe'
+                    ? `$${pkg.priceUSD.toFixed(2)}`
+                    : `₩${pkg.price.toLocaleString()}`}
                 </div>
                 {pkg.discount && (
                   <div className="flex items-center justify-center gap-2">
                     <span className="text-sm text-muted-foreground line-through">
-                      ₩{(pkg.price + (pkg.savings || 0)).toLocaleString()}
+                      {regionConfig.paymentProvider === 'stripe'
+                        ? `$${(pkg.priceUSD + (pkg.savingsUSD || 0)).toFixed(2)}`
+                        : `₩${(pkg.price + (pkg.savings || 0)).toLocaleString()}`}
                     </span>
                     <span className="text-sm text-gold font-semibold">
                       {pkg.discount}% {isKorean ? '할인' : 'OFF'}
@@ -306,7 +315,9 @@ export default function CreditPage() {
                   <div className="flex items-center gap-2 text-sm text-foreground">
                     <Check className="w-4 h-4 text-gold" />
                     <span className={isKorean ? "font-[var(--font-noto-kr)]" : ""}>
-                      ₩{pkg.savings?.toLocaleString()} {isKorean ? '절약' : 'saved'}
+                      {regionConfig.paymentProvider === 'stripe'
+                        ? `$${(pkg.savingsUSD || 0).toFixed(2)}`
+                        : `₩${pkg.savings?.toLocaleString()}`} {isKorean ? '절약' : 'saved'}
                     </span>
                   </div>
                 )}

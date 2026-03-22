@@ -10,6 +10,7 @@ export interface Plan {
   priceWeekly?: number;
   priceMonthly: number;
   priceYearly: number;
+  priceMonthlyUSD: number;  // USD 가격
   membership: MembershipType;
   interval: 'WEEKLY' | 'MONTHLY' | 'ANNUALLY';
   features: string[];
@@ -25,6 +26,7 @@ export const PLANS: Plan[] = [
     priceWeekly: 4900,
     priceMonthly: 4900,
     priceYearly: 4900,
+    priceMonthlyUSD: 3.99,
     membership: 'PREMIUM',
     interval: 'WEEKLY',
     badge: '🌟',
@@ -43,6 +45,7 @@ export const PLANS: Plan[] = [
     priceWeekly: 14900,
     priceMonthly: 14900,
     priceYearly: 14900,
+    priceMonthlyUSD: 10.99,
     membership: 'PREMIUM',
     interval: 'MONTHLY',
     badge: '⭐',
@@ -63,6 +66,7 @@ export const PLANS: Plan[] = [
     priceWeekly: 119000,
     priceMonthly: 119000,
     priceYearly: 119000,
+    priceMonthlyUSD: 89.99,
     membership: 'PREMIUM',
     interval: 'ANNUALLY',
     badge: '✨',
