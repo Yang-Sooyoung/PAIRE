@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils';
 import { loadTossPayments } from '@tosspayments/sdk';
+import { detectCountryByIP, getRegionConfig } from '@/lib/region-detector';
 
 const CREDIT_PACKAGES = [
   {
@@ -48,6 +49,13 @@ const CREDIT_PACKAGES = [
   },
 ];
 
+// Stripe Price ID 매핑 (크레딧 패키지별)
+const STRIPE_CREDIT_PRICE_IDS: Record<string, string> = {
+  CREDIT_5: process.env.NEXT_PUBLIC_STRIPE_PRICE_CREDIT_5 || '',
+  CREDIT_10: process.env.NEXT_PUBLIC_STRIPE_PRICE_CREDIT_10 || '',
+  CREDIT_30: process.env.NEXT_PUBLIC_STRIPE_PRICE_CREDIT_30 || '',
+};
+
 export default function CreditPage() {
   const router = useRouter();
   const { user } = useUserStore();
@@ -55,12 +63,18 @@ export default function CreditPage() {
   const isKorean = language === 'ko';
   const [credits, setCredits] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [regionConfig, setRegionConfig] = useState(getRegionConfig('KR'));
 
   useEffect(() => {
     if (!user) {
       router.push('/login');
       return;
     }
+
+    // IP 기반 지역 감지
+    detectCountryByIP().then(country => {
+      setRegionConfig(getRegionConfig(country));
+    });
 
     // 크레딧 잔액 조회
     const fetchBalance = async () => {
@@ -102,7 +116,35 @@ export default function CreditPage() {
 
       const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
-      // 구매 생성
+      // 해외: Stripe Checkout
+      if (regionConfig.paymentProvider === 'stripe') {
+        const priceId = STRIPE_CREDIT_PRICE_IDS[pkg.id];
+        if (!priceId) {
+          alert(isKorean ? 'Stripe 결제가 설정되지 않았습니다.' : 'Stripe payment is not configured.');
+          return;
+        }
+
+        const response = await fetch(`${API_URL}/stripe/create-checkout-session`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${currentToken}`,
+          },
+          body: JSON.stringify({
+            priceId,
+            credits: pkg.credits,
+            successUrl: `${window.location.origin}/credit/success`,
+            cancelUrl: `${window.location.origin}/credit`,
+          }),
+        });
+
+        if (!response.ok) throw new Error('Stripe session 생성 실패');
+        const { url } = await response.json();
+        if (url) window.location.href = url;
+        return;
+      }
+
+      // 한국: 토스페이먼츠
       const response = await fetch(`${API_URL}/credit/purchase`, {
         method: 'POST',
         headers: {
@@ -112,15 +154,10 @@ export default function CreditPage() {
         body: JSON.stringify({ packageType: pkg.id }),
       });
 
-      if (!response.ok) {
-        throw new Error('구매 생성 실패');
-      }
+      if (!response.ok) throw new Error('구매 생성 실패');
 
       const { orderId, amount, orderName } = await response.json();
-
-      // Toss Payments 결제 위젯
       const tossPayments = await loadTossPayments(process.env.NEXT_PUBLIC_TOSS_TEST_CLIENT_KEY!);
-
       await tossPayments.requestPayment('카드', {
         amount,
         orderId,
