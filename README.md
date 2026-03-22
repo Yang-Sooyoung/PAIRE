@@ -6,6 +6,37 @@
 
 **PAIRÉ**는 음식 사진을 촬영하면 AI가 음식을 인식하고, 사용자의 상황과 취향에 맞는 최적의 음료를 추천해주는 서비스입니다.
 
+<div display="inline-block">
+  <img width="250" height="500" alt="20260322_142851_15" src="https://github.com/user-attachments/assets/573d4230-d436-4331-92c4-0675a1b90ba1" />
+  <img width="250" height="500" alt="20260322_142851_17" src="https://github.com/user-attachments/assets/cfd27b37-5c32-4573-b30b-859acd15a12e" />
+  <img width="250" height="500" alt="20260322_142851_18" src="https://github.com/user-attachments/assets/13354dc6-291a-49aa-b0db-2fb8f04725a9" />
+
+  <img width="250" height="500" alt="20260322_154807_1" src="https://github.com/user-attachments/assets/ddfbd2ed-0b04-48a7-8e01-790d1c7dd76d" />
+  <img width="250" height="500" alt="20260322_154807_2" src="https://github.com/user-attachments/assets/426e1ee4-c96f-4a56-b07b-d3dd63441bb1" />
+  <img width="250" height="500" alt="20260322_142851_22" src="https://github.com/user-attachments/assets/e8a9d2ee-9504-4e14-bb1e-1a129b827766" />
+</div>
+
+
+
+<details>
+<summary>📱화면 더보기</summary>
+<div display="inline-block">
+  <img width="250" height="500" alt="20260322_142851_2" src="https://github.com/user-attachments/assets/72fb4eb2-26f2-4c8f-a1e4-17a47998fdef" />
+  <img width="250" height="500" alt="20260322_142851_3" src="https://github.com/user-attachments/assets/24404906-0ccc-48f0-b485-b9771f27d89b" />
+  <img width="250" height="500" alt="20260322_142851_9" src="https://github.com/user-attachments/assets/629ea295-b476-4e5f-97dd-1f9447bcf1b2" />
+
+  <img width="250" height="500" alt="20260322_142851_10" src="https://github.com/user-attachments/assets/fdb4043b-1e41-4d11-9ad9-78964db9c41b" />
+  <img width="250" height="500" alt="20260322_142851_11" src="https://github.com/user-attachments/assets/377bf54d-537d-47f3-8ac8-defc24fc3497" />
+  <img width="250" height="500" alt="20260322_142851_13" src="https://github.com/user-attachments/assets/be820898-6822-4f13-9230-361028fc8d3e" />
+
+  <img width="250" height="500" alt="20260322_142851_4" src="https://github.com/user-attachments/assets/cd37ab41-1049-4ac6-8bf5-8318bdd647d8" />
+  <img width="250" height="500" alt="20260322_142851_6" src="https://github.com/user-attachments/assets/83f21680-4b6d-4df8-a543-5a4a824bb967" />
+  <img width="250" height="500" alt="20260322_154807_3" src="https://github.com/user-attachments/assets/d05ec363-b81c-434f-b8bb-86a59bfe05eb" />
+  <img width="250" height="500" alt="20260322_142851_7" src="https://github.com/user-attachments/assets/35267975-0a63-4039-a430-be7b22989ab7" />
+</div>
+</details>
+
+
 ### 핵심 가치
 - **모든 사람을 위한 고급스러운 페어링**: 와인/위스키 지식이 없어도 괜찮아요
 - **"센스"를 빌려주는 서비스**: 전문 지식이 아닌 감성적인 추천
