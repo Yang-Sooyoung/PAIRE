@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useUserStore } from '@/app/store/userStore';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Heart, Loader2, Share2, ShoppingCart } from 'lucide-react';
@@ -27,10 +27,8 @@ interface DrinkDetail {
   servingTemp?: string;
 }
 
-export default function FavoriteDetailPage() {
+export default function FavoriteDetailPage({ id }: { id: string }) {
   const router = useRouter();
-  const params = useParams();
-  const id = params.id as string;
   const { user } = useUserStore();
   const { language, t } = useI18n();
   const isKorean = language === 'ko';

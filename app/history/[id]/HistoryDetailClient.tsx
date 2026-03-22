@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useUserStore } from '@/app/store/userStore';
 import { getRecommendationDetail } from '@/app/api/recommendation';
 import { addFavorite, removeFavorite, checkFavorite } from '@/app/api/favorite';
@@ -32,10 +32,8 @@ interface RecommendationDetail {
     createdAt: string;
 }
 
-export default function HistoryDetailPage() {
+export default function HistoryDetailPage({ id }: { id: string }) {
     const router = useRouter();
-    const params = useParams();
-    const id = params.id as string;
     const { user } = useUserStore();
     const { language } = useI18n();
     const isKorean = language === 'ko';
