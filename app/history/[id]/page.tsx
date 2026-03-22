@@ -54,10 +54,23 @@ export default function HistoryDetailPage() {
         const fetchDetail = async () => {
             try {
                 const response = await getRecommendationDetail(id);
-                setDetail(response.recommendation);
+                const rec = response.recommendation;
+
+                // JSON 필드가 string으로 올 경우 파싱
+                if (rec && typeof rec.drinks === 'string') {
+                    try { rec.drinks = JSON.parse(rec.drinks); } catch { rec.drinks = []; }
+                }
+                if (rec && typeof rec.detectedFoods === 'string') {
+                    try { rec.detectedFoods = JSON.parse(rec.detectedFoods); } catch { rec.detectedFoods = []; }
+                }
+                if (rec && typeof rec.tastes === 'string') {
+                    try { rec.tastes = JSON.parse(rec.tastes); } catch { rec.tastes = []; }
+                }
+
+                setDetail(rec);
 
                 // drinks가 배열인지 확인
-                const drinks = response.recommendation?.drinks;
+                const drinks = rec?.drinks;
                 if (drinks && Array.isArray(drinks)) {
                     // 각 음료의 즐겨찾기 상태 확인
                     const statusMap: Record<string, boolean> = {};
@@ -175,7 +188,7 @@ export default function HistoryDetailPage() {
                         {detail.occasion}
                     </h2>
 
-                    {detail.detectedFoods.length > 0 && (
+                    {detail.detectedFoods && detail.detectedFoods.length > 0 && (
                         <div className="mb-3">
                             <p className={cn(
                                 "text-sm text-muted-foreground mb-2",
@@ -196,7 +209,7 @@ export default function HistoryDetailPage() {
                         </div>
                     )}
 
-                    {detail.tastes.length > 0 && (
+                    {detail.tastes && detail.tastes.length > 0 && (
                         <div>
                             <p className={cn(
                                 "text-sm text-muted-foreground mb-2",

@@ -12,4 +12,4 @@ import { TossModule } from '@/toss/toss.module';
   controllers: [StripeController, CreditController],
   exports: [StripeService, CreditService],
 })
-export class PaymentModule {}
+export class PaymentModule { }

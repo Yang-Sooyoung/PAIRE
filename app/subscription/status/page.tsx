@@ -6,7 +6,7 @@ import { useUserStore } from '@/app/store/userStore';
 import { Button } from '@/components/ui/button';
 import { CustomDialog } from '@/components/ui/custom-dialog';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Crown, Calendar, CreditCard, AlertCircle, Loader2 } from 'lucide-react';
+import { ArrowLeft, Crown, Calendar, CreditCard, Loader2 } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils';
 import axios from 'axios';
@@ -40,12 +40,6 @@ export default function SubscriptionStatusPage() {
       return;
     }
 
-    // PREMIUM 사용자만 접근 가능 (CANCELLED 포함)
-    if (user.membership !== 'PREMIUM') {
-      router.push('/subscription');
-      return;
-    }
-
     fetchSubscriptionStatus();
   }, [user, token, router]);
 
@@ -61,13 +55,6 @@ export default function SubscriptionStatusPage() {
 
         if (response.data?.subscription) {
           setSubscription(response.data.subscription);
-          
-          // 구독이 CANCELLED 상태면 구독 페이지로 리다이렉트
-          if (response.data.subscription.status === 'CANCELLED') {
-            setTimeout(() => {
-              router.push('/subscription');
-            }, 100);
-          }
         }
       } catch (error: any) {
         if (error?.response?.status === 401) {
@@ -78,13 +65,6 @@ export default function SubscriptionStatusPage() {
             });
             if (response.data?.subscription) {
               setSubscription(response.data.subscription);
-              
-              // 구독이 CANCELLED 상태면 구독 페이지로 리다이렉트
-              if (response.data.subscription.status === 'CANCELLED') {
-                setTimeout(() => {
-                  router.push('/subscription');
-                }, 100);
-              }
             }
           } else {
             router.push('/login');
@@ -95,6 +75,8 @@ export default function SubscriptionStatusPage() {
       }
     } catch (error) {
       console.error('Failed to fetch subscription:', error);
+      // 구독 정보 없으면 구독 페이지로
+      router.push('/subscription');
     } finally {
       setLoading(false);
     }
@@ -159,32 +141,7 @@ export default function SubscriptionStatusPage() {
   }
 
   if (!subscription) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center"
-        >
-          <AlertCircle className="w-16 h-16 text-gold/30 mx-auto mb-4" />
-          <h2 className={cn(
-            "text-2xl font-light text-foreground mb-6",
-            isKorean && "font-[var(--font-noto-kr)]"
-          )}>
-            {isKorean ? '활성 구독을 찾을 수 없습니다' : 'No active subscription found'}
-          </h2>
-          <Button
-            onClick={() => router.push('/subscription')}
-            className={cn(
-              "bg-gold hover:bg-gold-light text-background",
-              isKorean && "font-[var(--font-noto-kr)]"
-            )}
-          >
-            {isKorean ? '구독하기' : 'Subscribe'}
-          </Button>
-        </motion.div>
-      </div>
-    );
+    return null; // fetchSubscriptionStatus에서 이미 redirect 처리
   }
 
   const nextBillingDate = new Date(subscription.nextBillingDate);
