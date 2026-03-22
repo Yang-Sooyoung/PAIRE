@@ -18,11 +18,22 @@ function SubscriptionSuccessContent() {
 
   useEffect(() => {
     const confirm = async () => {
+      // Stripe에서 돌아올 때 store가 초기화되어 있으므로 먼저 initializeUser 실행
+      const { initializeUser } = useUserStore.getState();
+      await initializeUser();
+
       const sessionId = searchParams.get('session_id');
 
       if (sessionId) {
         try {
-          const token = useUserStore.getState().token;
+          // store 또는 localStorage에서 토큰 가져오기
+          const token = useUserStore.getState().token || localStorage.getItem('accessToken');
+          if (!token) {
+            console.error('[subscription/success] No token available');
+            setProcessing(false);
+            router.push('/login');
+            return;
+          }
           const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api').replace(/\/api$/, '');
           const res = await fetch(`${BASE_URL}/stripe/confirm-session`, {
             method: 'POST',
@@ -34,17 +45,14 @@ function SubscriptionSuccessContent() {
           if (!res.ok) {
             console.error('[subscription/success] confirm-session failed:', data);
           }
+          // 멤버십 반영을 위해 유저 정보 재갱신
+          await initializeUser();
         } catch (e) {
           console.error('Confirm session error:', e);
         }
       }
 
-      // 유저 정보 갱신
-      const { initializeUser } = useUserStore.getState();
-      await initializeUser();
       setProcessing(false);
-
-      // 3초 후 이동
       setTimeout(() => router.push('/user-info'), 3000);
     };
     confirm();

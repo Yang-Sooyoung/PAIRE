@@ -30,7 +30,17 @@ function CreditSuccessContent() {
         const sessionId = searchParams.get('session_id');
         if (sessionId) {
           try {
-            const token = useUserStore.getState().token;
+            // Stripe에서 돌아올 때 store가 초기화되어 있으므로 먼저 initializeUser 실행
+            const { initializeUser } = useUserStore.getState();
+            await initializeUser();
+
+            const token = useUserStore.getState().token || localStorage.getItem('accessToken');
+            if (!token) {
+              console.error('[credit/success] No token available');
+              setProcessing(false);
+              router.push('/login');
+              return;
+            }
             const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api').replace(/\/api$/, '');
             const res = await fetch(`${BASE_URL}/stripe/confirm-session`, {
               method: 'POST',
@@ -38,10 +48,12 @@ function CreditSuccessContent() {
               body: JSON.stringify({ sessionId }),
             });
             const data = await res.json();
+            console.log('[credit/success] confirm-session response:', data);
             if (data.success) {
-              const { initializeUser } = useUserStore.getState();
               await initializeUser();
               setCredits(data.credits || useUserStore.getState().user?.credits || 0);
+            } else {
+              console.error('[credit/success] confirm-session failed:', data);
             }
           } catch (e) {
             console.error('Stripe confirm error:', e);
