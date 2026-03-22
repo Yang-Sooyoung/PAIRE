@@ -221,6 +221,70 @@ export class RecommendationService {
   /**
    * AI 추천 결과에 음료 상세 정보 추가
    */
+  // 음료 타입별 검증된 이미지 (Unsplash 와인/음료 사진)
+  private readonly DRINK_TYPE_IMAGES: Record<string, string[]> = {
+    'sparkling': [
+      'https://images.unsplash.com/photo-1569529465841-dfecdab7503b?w=400&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1558346490-a72e53ae2d4f?w=400&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&h=600&fit=crop',
+    ],
+    'red wine': [
+      'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=400&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1553361371-9b22f78e8b1d?w=400&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1547595628-c61a29f496f0?w=400&h=600&fit=crop',
+    ],
+    'white wine': [
+      'https://images.unsplash.com/photo-1560148489-8d4b61c5e963?w=400&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1574096079513-d8259312b785?w=400&h=600&fit=crop',
+    ],
+    'rose wine': [
+      'https://images.unsplash.com/photo-1569529465841-dfecdab7503b?w=400&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1558346490-a72e53ae2d4f?w=400&h=600&fit=crop',
+    ],
+    'beer': [
+      'https://images.unsplash.com/photo-1535958636474-b021ee887b13?w=400&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1608270586620-248524c67de9?w=400&h=600&fit=crop',
+    ],
+    'whiskey': [
+      'https://images.unsplash.com/photo-1527281400683-1aae777175f8?w=400&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1569529465841-dfecdab7503b?w=400&h=600&fit=crop',
+    ],
+    'cocktail': [
+      'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=400&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=400&h=600&fit=crop',
+    ],
+    'sake': [
+      'https://images.unsplash.com/photo-1547595628-c61a29f496f0?w=400&h=600&fit=crop',
+    ],
+    'default': [
+      'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=400&h=600&fit=crop',
+    ],
+  };
+
+  // 알려진 비음료 이미지 ID (도넛 등 잘못된 이미지)
+  private readonly INVALID_IMAGE_IDS = [
+    '1586370434639-0fe43b2d32d6', // 도넛
+    '1585553616435-2dc0a54e271d', // 비음료
+    '1597329428431-e3a0c7b0f3f3', // 비음료
+    '1596285388606-b3d3e5d39f26', // 비음료
+    '1584916201218-f4242ceb4809', // 비음료
+    '1598524722956-30b0c5b8c7ae', // 비음료
+    '1516594915697-87eb3b1c14ea', // 비음료
+    '1566754436306-0b4c01c5b7b6', // 비음료
+  ];
+
+  private getSafeImage(image: string | null | undefined, type: string, index = 0): string {
+    if (image) {
+      const isInvalid = this.INVALID_IMAGE_IDS.some(id => image.includes(id));
+      if (!isInvalid) return image;
+    }
+    const typeKey = type?.toLowerCase() || 'default';
+    const images = this.DRINK_TYPE_IMAGES[typeKey] || this.DRINK_TYPE_IMAGES['default'];
+    return images[index % images.length];
+  }
+
   private async enrichDrinkData(recommendations: any[]): Promise<any[]> {
     const enrichedDrinks = await Promise.all(
       recommendations.map(async (rec) => {
@@ -233,7 +297,7 @@ export class RecommendationService {
             type: rec.drinkType || 'unknown',
             description: rec.description,
             tastingNotes: rec.tastingNotes || [],
-            image: rec.image,
+            image: this.getSafeImage(rec.image, rec.drinkType || 'default'),
             price: rec.price,
             purchaseUrl: `https://www.coupang.com/np/search?q=${encodeURIComponent(rec.drinkName)}`,
             // AI 추천 정보
@@ -270,7 +334,7 @@ export class RecommendationService {
       type: drink.type,
       description: drink.description,
       tastingNotes: drink.tastingNotes,
-      image: drink.image,
+      image: this.getSafeImage(drink.image, drink.type),
       price: drink.price,
       purchaseUrl: drink.purchaseUrl || coupangSearchUrl,
       aiReason: rec.reason,
