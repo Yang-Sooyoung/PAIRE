@@ -14,13 +14,13 @@ export default function PrivacyPage() {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* 배경 ?�과 */}
+      {/* 배경 효과 */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gold/5 rounded-full blur-3xl" />
         <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-gold/3 rounded-full blur-3xl" />
       </div>
 
-      {/* ?�더 */}
+      {/* 헤더 */}
       <div className="bg-card/50 backdrop-blur-sm border-b border-border sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center gap-4">
           <button
@@ -39,7 +39,7 @@ export default function PrivacyPage() {
         </div>
       </div>
 
-      {/* 콘텐�?*/}
+      {/* 콘텐츠 */}
       <div className="max-w-2xl mx-auto px-4 py-8 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -51,24 +51,24 @@ export default function PrivacyPage() {
               "text-lg font-semibold text-foreground mb-3",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? '1. 개인?�보???�집' : '1. Collection of Personal Information'}
+              {isKorean ? '1. 개인정보의 수집' : '1. Collection of Personal Information'}
             </h2>
             <p className={cn(
               "text-muted-foreground mb-2",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? 'PAIRÉ???�음??개인?�보�??�집?�니??' : 'PAIRÉ collects the following personal information:'}
+              {isKorean ? 'PAIRÉ는 다음의 개인정보를 수집합니다:' : 'PAIRÉ collects the following personal information:'}
             </p>
             <ul className={cn(
               "list-disc list-inside space-y-2 text-muted-foreground",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              <li>{isKorean ? '?�메??주소' : 'Email address'}</li>
-              <li>{isKorean ? '?�용?�명, ?�네?? : 'Username, nickname'}</li>
-              <li>{isKorean ? '비�?번호 (?�호???�??' : 'Password (encrypted)'}</li>
-              <li>{isKorean ? '?�식 ?�진 (추천 목적)' : 'Food photos (for recommendations)'}</li>
-              <li>{isKorean ? '추천 기록 �?취향 ?�보' : 'Recommendation history and preferences'}</li>
-              <li>{isKorean ? '결제 ?�보 (결제 ?�단 ?�큰)' : 'Payment information (payment method tokens)'}</li>
+              <li>{isKorean ? '이메일 주소' : 'Email address'}</li>
+              <li>{isKorean ? '사용자명, 닉네임' : 'Username, nickname'}</li>
+              <li>{isKorean ? '비밀번호 (암호화 저장)' : 'Password (encrypted)'}</li>
+              <li>{isKorean ? '음식 사진 (추천 목적)' : 'Food photos (for recommendations)'}</li>
+              <li>{isKorean ? '추천 기록 및 취향 정보' : 'Recommendation history and preferences'}</li>
+              <li>{isKorean ? '결제 정보 (결제 수단 토큰)' : 'Payment information (payment method tokens)'}</li>
             </ul>
           </section>
 
@@ -77,24 +77,24 @@ export default function PrivacyPage() {
               "text-lg font-semibold text-foreground mb-3",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? '2. 개인?�보???�용' : '2. Use of Personal Information'}
+              {isKorean ? '2. 개인정보의 이용' : '2. Use of Personal Information'}
             </h2>
             <p className={cn(
               "text-muted-foreground mb-2",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? '?�집??개인?�보???�음??목적?�로�??�용?�니??' : 'Collected personal information is used only for the following purposes:'}
+              {isKorean ? '수집된 개인정보는 다음의 목적으로만 이용됩니다:' : 'Collected personal information is used only for the following purposes:'}
             </p>
             <ul className={cn(
               "list-disc list-inside space-y-2 text-muted-foreground",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              <li>{isKorean ? '?�비???�공 �?개선' : 'Service provision and improvement'}</li>
-              <li>{isKorean ? '?�용???�증 �?계정 관�? : 'User authentication and account management'}</li>
-              <li>{isKorean ? '추천 ?�고리즘 개선' : 'Recommendation algorithm improvement'}</li>
-              <li>{isKorean ? '결제 �?구독 관�? : 'Payment and subscription management'}</li>
-              <li>{isKorean ? '고객 지??�?문의 ?�답' : 'Customer support and inquiry responses'}</li>
-              <li>{isKorean ? '법적 ?�무 ?�행' : 'Legal compliance'}</li>
+              <li>{isKorean ? '서비스 제공 및 개선' : 'Service provision and improvement'}</li>
+              <li>{isKorean ? '사용자 인증 및 계정 관리' : 'User authentication and account management'}</li>
+              <li>{isKorean ? '추천 알고리즘 개선' : 'Recommendation algorithm improvement'}</li>
+              <li>{isKorean ? '결제 및 구독 관리' : 'Payment and subscription management'}</li>
+              <li>{isKorean ? '고객 지원 및 문의 응답' : 'Customer support and inquiry responses'}</li>
+              <li>{isKorean ? '법적 의무 이행' : 'Legal compliance'}</li>
             </ul>
           </section>
 
@@ -103,22 +103,22 @@ export default function PrivacyPage() {
               "text-lg font-semibold text-foreground mb-3",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? '3. 개인?�보??보호' : '3. Protection of Personal Information'}
+              {isKorean ? '3. 개인정보의 보호' : '3. Protection of Personal Information'}
             </h2>
             <p className={cn(
               "text-muted-foreground mb-2",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? 'PAIRÉ??개인?�보 보호�??�해 ?�음??조치�?취합?�다:' : 'PAIRÉ takes the following measures to protect personal information:'}
+              {isKorean ? 'PAIRÉ는 개인정보 보호를 위해 다음의 조치를 취합니다:' : 'PAIRÉ takes the following measures to protect personal information:'}
             </p>
             <ul className={cn(
               "list-disc list-inside space-y-2 text-muted-foreground",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              <li>{isKorean ? '?�호???�??(비�?번호, 결제 ?�보)' : 'Encrypted storage (passwords, payment info)'}</li>
-              <li>{isKorean ? 'HTTPS ?�신' : 'HTTPS communication'}</li>
-              <li>{isKorean ? '?�근 ?�어 �?권한 관�? : 'Access control and permission management'}</li>
-              <li>{isKorean ? '?�기?�인 보안 감시' : 'Regular security monitoring'}</li>
+              <li>{isKorean ? '암호화 저장 (비밀번호, 결제 정보)' : 'Encrypted storage (passwords, payment info)'}</li>
+              <li>{isKorean ? 'HTTPS 통신' : 'HTTPS communication'}</li>
+              <li>{isKorean ? '접근 제어 및 권한 관리' : 'Access control and permission management'}</li>
+              <li>{isKorean ? '정기적인 보안 감시' : 'Regular security monitoring'}</li>
             </ul>
           </section>
 
@@ -127,23 +127,23 @@ export default function PrivacyPage() {
               "text-lg font-semibold text-foreground mb-3",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? '4. 개인?�보???????�공' : '4. Third-Party Disclosure'}
+              {isKorean ? '4. 개인정보의 제3자 제공' : '4. Third-Party Disclosure'}
             </h2>
             <p className={cn(
               "text-muted-foreground mb-2",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
               {isKorean 
-                ? 'PAIRÉ???�용?�의 ?�의 ?�이 개인?�보�????�에�??�공?��? ?�습?�다. ?? ?�음??경우???�외?�니??'
+                ? 'PAIRÉ는 사용자의 동의 없이 개인정보를 제3자에게 제공하지 않습니다. 단, 다음의 경우는 예외입니다:'
                 : 'PAIRÉ does not provide personal information to third parties without user consent, except in the following cases:'}
             </p>
             <ul className={cn(
               "list-disc list-inside space-y-2 text-muted-foreground",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              <li>{isKorean ? '법적 ?�청 ?�는 법원 명령' : 'Legal requests or court orders'}</li>
-              <li>{isKorean ? '결제 처리 (결제 ?�?�사)' : 'Payment processing (payment service providers)'}</li>
-              <li>{isKorean ? '?�비???�공 (?�라?�드 ?�스????' : 'Service provision (cloud hosting, etc.)'}</li>
+              <li>{isKorean ? '법적 요청 또는 법원 명령' : 'Legal requests or court orders'}</li>
+              <li>{isKorean ? '결제 처리 (결제 대행사)' : 'Payment processing (payment service providers)'}</li>
+              <li>{isKorean ? '서비스 제공 (클라우드 호스팅 등)' : 'Service provision (cloud hosting, etc.)'}</li>
             </ul>
           </section>
 
@@ -152,14 +152,14 @@ export default function PrivacyPage() {
               "text-lg font-semibold text-foreground mb-3",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? '5. 개인?�보??보유 �???��' : '5. Retention and Deletion'}
+              {isKorean ? '5. 개인정보의 보유 및 삭제' : '5. Retention and Deletion'}
             </h2>
             <p className={cn(
               "text-muted-foreground",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
               {isKorean
-                ? '개인?�보???�비???�용 기간 ?�안 보유?�니?? 계정 ??�� ??모든 개인?�보??즉시 ??��?�니??'
+                ? '개인정보는 서비스 이용 기간 동안 보유됩니다. 계정 삭제 시 모든 개인정보는 즉시 삭제됩니다.'
                 : 'Personal information is retained during the service usage period. All personal information is immediately deleted upon account deletion.'}
             </p>
           </section>
@@ -169,22 +169,22 @@ export default function PrivacyPage() {
               "text-lg font-semibold text-foreground mb-3",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? '6. ?�용?�의 권리' : '6. User Rights'}
+              {isKorean ? '6. 사용자의 권리' : '6. User Rights'}
             </h2>
             <p className={cn(
               "text-muted-foreground mb-2",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? '?�용?�는 ?�음??권리�?가집니??' : 'Users have the following rights:'}
+              {isKorean ? '사용자는 다음의 권리를 가집니다:' : 'Users have the following rights:'}
             </p>
             <ul className={cn(
               "list-disc list-inside space-y-2 text-muted-foreground",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              <li>{isKorean ? '개인?�보 ?�람 ?�청' : 'Request to view personal information'}</li>
-              <li>{isKorean ? '개인?�보 ?�정 ?�청' : 'Request to modify personal information'}</li>
-              <li>{isKorean ? '개인?�보 ??�� ?�청' : 'Request to delete personal information'}</li>
-              <li>{isKorean ? '개인?�보 처리 ?��? ?�청' : 'Request to stop processing personal information'}</li>
+              <li>{isKorean ? '개인정보 열람 요청' : 'Request to view personal information'}</li>
+              <li>{isKorean ? '개인정보 수정 요청' : 'Request to modify personal information'}</li>
+              <li>{isKorean ? '개인정보 삭제 요청' : 'Request to delete personal information'}</li>
+              <li>{isKorean ? '개인정보 처리 정지 요청' : 'Request to stop processing personal information'}</li>
             </ul>
           </section>
 
@@ -200,7 +200,7 @@ export default function PrivacyPage() {
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
               {isKorean
-                ? '개인?�보 처리??관??문의??ruckyrosie@gmail.com?�로 ?�락주세??'
+                ? '개인정보 처리에 관한 문의는 ruckyrosie@gmail.com으로 연락주세요.'
                 : 'For inquiries about personal information processing, please contact ruckyrosie@gmail.com.'}
             </p>
           </section>

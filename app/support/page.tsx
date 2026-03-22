@@ -30,8 +30,8 @@ export default function SupportPage() {
     if (!message.trim()) {
       setDialogConfig({
         type: 'warning',
-        title: isKorean ? '?�력 ?�요' : 'Input Required',
-        description: isKorean ? '메시지�??�력?�주?�요!' : 'Please enter a message!'
+        title: isKorean ? '입력 필요' : 'Input Required',
+        description: isKorean ? '메시지를 입력해주세요!' : 'Please enter a message!'
       });
       setShowDialog(true);
       return;
@@ -57,12 +57,12 @@ export default function SupportPage() {
         throw new Error('Failed to send message');
       }
 
-      alert(isKorean ? '메시지가 ?�달?�었?�요! 감사?�니???��' : 'Message sent! Thank you ?��');
+      alert(isKorean ? '메시지가 전달되었어요! 감사합니다 💛' : 'Message sent! Thank you 💛');
       setMessage('');
       setEmail('');
     } catch (error) {
       console.error('Send message error:', error);
-      alert(isKorean ? '?�송 ?�패... ?�시 ?�도?�주?�요!' : 'Failed to send... Please try again!');
+      alert(isKorean ? '전송 실패... 다시 시도해주세요!' : 'Failed to send... Please try again!');
     } finally {
       setSending(false);
     }
@@ -72,8 +72,8 @@ export default function SupportPage() {
     if (!user) {
       setDialogConfig({
         type: 'warning',
-        title: isKorean ? '로그???�요' : 'Login Required',
-        description: isKorean ? '?�원?�려�?로그?�이 ?�요?�니??' : 'Please login to support.'
+        title: isKorean ? '로그인 필요' : 'Login Required',
+        description: isKorean ? '후원하려면 로그인이 필요합니다.' : 'Please login to support.'
       });
       setShowDialog(true);
       return;
@@ -82,15 +82,15 @@ export default function SupportPage() {
     try {
       setLoading(true);
       
-      // ?�스?�이먼츠 SDK 로드
+      // 토스페이먼츠 SDK 로드
       const { loadTossPayments } = await import('@tosspayments/sdk');
       const tossPayments = await loadTossPayments(process.env.NEXT_PUBLIC_TOSS_TEST_CLIENT_KEY!);
 
-      // 주문 ID ?�성 (고유?�야 ??
+      // 주문 ID 생성 (고유해야 함)
       const orderId = `support_${user.id}_${Date.now()}`;
-      const orderName = isKorean ? `PAIRÉ 개발???�원 ${amount.toLocaleString()}?? : `PAIRÉ Developer Support ${amount.toLocaleString()}??;
+      const orderName = isKorean ? `PAIRÉ 개발자 후원 ${amount.toLocaleString()}원` : `PAIRÉ Developer Support ${amount.toLocaleString()}₩`;
 
-      // 결제 ?�청
+      // 결제 요청
       await tossPayments.requestPayment('카드', {
         amount,
         orderId,
@@ -104,8 +104,8 @@ export default function SupportPage() {
       console.error('Support payment error:', error);
       setDialogConfig({
         type: 'error',
-        title: isKorean ? '결제 ?�류' : 'Payment Error',
-        description: isKorean ? '결제 �??�류가 발생?�습?�다.' : 'An error occurred during payment.'
+        title: isKorean ? '결제 오류' : 'Payment Error',
+        description: isKorean ? '결제 중 오류가 발생했습니다.' : 'An error occurred during payment.'
       });
       setShowDialog(true);
     } finally {
@@ -115,13 +115,13 @@ export default function SupportPage() {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* 배경 ?�과 */}
+      {/* 배경 효과 */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gold/5 rounded-full blur-3xl" />
         <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-gold/3 rounded-full blur-3xl" />
       </div>
 
-      {/* ?�더 */}
+      {/* 헤더 */}
       <div className="bg-card/50 backdrop-blur-sm border-b border-border sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center gap-4">
           <button
@@ -134,37 +134,37 @@ export default function SupportPage() {
             "text-2xl font-light text-foreground tracking-wide",
             isKorean && "font-[var(--font-noto-kr)] tracking-normal"
           )}>
-            {isKorean ? '개발??지?�하�? : 'Support Developer'}
+            {isKorean ? '개발자 지원하기' : 'Support Developer'}
           </h1>
         </div>
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-12 relative z-10 space-y-6">
-        {/* ?�사�?*/}
+        {/* 인사말 */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-8"
         >
-          <div className="text-4xl mb-4">?��</div>
+          <div className="text-4xl mb-4">👋</div>
           <h2 className={cn(
             "text-2xl font-light text-foreground mb-2",
             isKorean && "font-[var(--font-noto-kr)]"
           )}>
-            {isKorean ? '?�녕?�세??' : 'Hello!'}
+            {isKorean ? '안녕하세요!' : 'Hello!'}
           </h2>
           <p className={cn(
             "text-muted-foreground",
             isKorean && "font-[var(--font-noto-kr)]"
           )}>
             {isKorean
-              ? 'PAIRÉ�?만든 개발?�입?�다. ?�러분의 ?�원?????�이 ?�니???��'
-              : "I'm the developer of PAIRÉ. Your support means a lot ?��"
+              ? 'PAIRÉ를 만든 개발자입니다. 여러분의 응원이 큰 힘이 됩니다 💛'
+              : "I'm the developer of PAIRÉ. Your support means a lot 💛"
             }
           </p>
         </motion.div>
 
-        {/* 커피 ?�원 */}
+        {/* 커피 후원 */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -177,7 +177,7 @@ export default function SupportPage() {
               "text-lg font-light text-foreground",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? '개발?�에�??????�주�? : 'Buy me a drink'}
+              {isKorean ? '개발자에게 한 잔 사주기' : 'Buy me a drink'}
             </h3>
           </div>
           <p className={cn(
@@ -185,8 +185,8 @@ export default function SupportPage() {
             isKorean && "font-[var(--font-noto-kr)]"
           )}>
             {isKorean
-              ? '커피 ???�의 ?�유�?개발?��? ?�원?�주?�요! ??
-              : 'Support the developer with a cup of coffee! ??
+              ? '커피 한 잔의 여유로 개발자를 응원해주세요! ☕'
+              : 'Support the developer with a cup of coffee! ☕'
             }
           </p>
           <div className="grid grid-cols-3 gap-3">
@@ -198,8 +198,8 @@ export default function SupportPage() {
               )}
             >
               <div className="text-center">
-                <div className="text-2xl mb-1">??/div>
-                <div className="text-xs">??,000</div>
+                <div className="text-2xl mb-1">☕</div>
+                <div className="text-xs">₩3,000</div>
               </div>
             </Button>
             <Button
@@ -210,8 +210,8 @@ export default function SupportPage() {
               )}
             >
               <div className="text-center">
-                <div className="text-2xl mb-1">?��</div>
-                <div className="text-xs">??,000</div>
+                <div className="text-2xl mb-1">🍷</div>
+                <div className="text-xs">₩5,000</div>
               </div>
             </Button>
             <Button
@@ -222,14 +222,14 @@ export default function SupportPage() {
               )}
             >
               <div className="text-center">
-                <div className="text-2xl mb-1">?��</div>
-                <div className="text-xs">??0,000</div>
+                <div className="text-2xl mb-1">🍾</div>
+                <div className="text-xs">₩10,000</div>
               </div>
             </Button>
           </div>
         </motion.section>
 
-        {/* 방명�?*/}
+        {/* 방명록 */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -242,7 +242,7 @@ export default function SupportPage() {
               "text-lg font-light text-foreground",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? '방명�??�기�? : 'Leave a message'}
+              {isKorean ? '방명록 남기기' : 'Leave a message'}
             </h3>
           </div>
           <p className={cn(
@@ -250,15 +250,15 @@ export default function SupportPage() {
             isKorean && "font-[var(--font-noto-kr)]"
           )}>
             {isKorean
-              ? '?�원???�마?? 개선 ?�이?�어, 뭐든 좋아?? ?��'
-              : 'Words of encouragement, ideas, anything! ?��'
+              ? '응원의 한마디, 개선 아이디어, 뭐든 좋아요! 📝'
+              : 'Words of encouragement, ideas, anything! 📝'
             }
           </p>
           <div className="space-y-3">
             {!user && (
               <input
                 type="email"
-                placeholder={isKorean ? '?�메??(?�택)' : 'Email (optional)'}
+                placeholder={isKorean ? '이메일 (선택)' : 'Email (optional)'}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className={cn(
@@ -268,7 +268,7 @@ export default function SupportPage() {
               />
             )}
             <textarea
-              placeholder={isKorean ? '메시지�??�력?�세??..' : 'Enter your message...'}
+              placeholder={isKorean ? '메시지를 입력하세요...' : 'Enter your message...'}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               rows={4}
@@ -286,18 +286,18 @@ export default function SupportPage() {
               )}
             >
               {sending ? (
-                isKorean ? '?�송 �?..' : 'Sending...'
+                isKorean ? '전송 중...' : 'Sending...'
               ) : (
                 <>
                   <Send className="w-4 h-4 mr-2" />
-                  {isKorean ? '메시지 보내�? : 'Send Message'}
+                  {isKorean ? '메시지 보내기' : 'Send Message'}
                 </>
               )}
             </Button>
           </div>
         </motion.section>
 
-        {/* ?�업 문의 */}
+        {/* 협업 문의 */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -310,7 +310,7 @@ export default function SupportPage() {
               "text-lg font-light text-foreground",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? '?�업 & 비즈?�스 문의' : 'Collaboration & Business'}
+              {isKorean ? '협업 & 비즈니스 문의' : 'Collaboration & Business'}
             </h3>
           </div>
           <p className={cn(
@@ -318,12 +318,12 @@ export default function SupportPage() {
             isKorean && "font-[var(--font-noto-kr)]"
           )}>
             {isKorean
-              ? '?�휴, 광고, ?�업 ?�안?� ?�메?�로 ?�락주세?? ?��'
-              : 'For partnerships, ads, or collaborations, email me! ?��'
+              ? '제휴, 광고, 협업 제안은 이메일로 연락주세요! 💼'
+              : 'For partnerships, ads, or collaborations, email me! 💼'
             }
           </p>
           <Button
-            onClick={() => window.location.href = 'mailto:ruckyrosie@gmail.com?subject=PAIRÉ ?�업 문의'}
+            onClick={() => window.location.href = 'mailto:ruckyrosie@gmail.com?subject=PAIRÉ 협업 문의'}
             variant="outline"
             className={cn(
               "w-full border-gold/30 text-gold hover:bg-gold/10",
@@ -334,7 +334,7 @@ export default function SupportPage() {
           </Button>
         </motion.section>
 
-        {/* ?�셜 링크 */}
+        {/* 소셜 링크 */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -347,7 +347,7 @@ export default function SupportPage() {
               "text-lg font-light text-foreground",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? '개발??SNS' : 'Follow Me'}
+              {isKorean ? '개발자 SNS' : 'Follow Me'}
             </h3>
           </div>
           <div className="grid grid-cols-2 gap-3">
@@ -359,7 +359,7 @@ export default function SupportPage() {
                 isKorean && "font-[var(--font-noto-kr)]"
               )}
             >
-              <span className="mr-2">?��</span> GitHub
+              <span className="mr-2">💻</span> GitHub
             </Button>
             <Button
               onClick={() => window.open('https://instagram.com/paire.app', '_blank')}
@@ -369,7 +369,7 @@ export default function SupportPage() {
                 isKorean && "font-[var(--font-noto-kr)]"
               )}
             >
-              <span className="mr-2">?��</span> Instagram
+              <span className="mr-2">📸</span> Instagram
             </Button>
           </div>
         </motion.section>
@@ -387,8 +387,8 @@ export default function SupportPage() {
             isKorean && "font-[var(--font-noto-kr)]"
           )}>
             {isKorean
-              ? 'PAIRÉ�??�용?�주?�서 감사?�니???��'
-              : 'Thank you for using PAIRÉ ?��'
+              ? 'PAIRÉ를 사용해주셔서 감사합니다 💛'
+              : 'Thank you for using PAIRÉ 💛'
             }
           </p>
         </motion.div>
@@ -401,7 +401,7 @@ export default function SupportPage() {
         type={dialogConfig.type}
         title={dialogConfig.title}
         description={dialogConfig.description}
-        confirmText="?�인"
+        confirmText="확인"
       />
     </div>
   );
