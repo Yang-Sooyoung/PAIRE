@@ -28,18 +28,18 @@ const CREDIT_PACKAGES = [
     credits: 5,
     price: 5000,
     priceUSD: 3.99,
-    nameKo: '크레딧 5회',
+    nameKo: '?�레??5??,
     nameEn: '5 Credits',
-    badge: '🌟',
+    badge: '?��',
   },
   {
     id: 'CREDIT_10',
     credits: 10,
     price: 9000,
     priceUSD: 6.99,
-    nameKo: '크레딧 10회',
+    nameKo: '?�레??10??,
     nameEn: '10 Credits',
-    badge: '⭐',
+    badge: '�?,
     discount: 10,
     savings: 1000,
     savingsUSD: 0.8,
@@ -49,9 +49,9 @@ const CREDIT_PACKAGES = [
     credits: 30,
     price: 24000,
     priceUSD: 17.99,
-    nameKo: '크레딧 30회',
+    nameKo: '?�레??30??,
     nameEn: '30 Credits',
-    badge: '✨',
+    badge: '??,
     discount: 20,
     savings: 6000,
     savingsUSD: 4.0,
@@ -65,14 +65,16 @@ export default function SubscriptionPage() {
   const isKorean = language === 'ko';
   const router = useRouter();
   
-  // 지역 감지
-  const [regionConfig, setRegionConfig] = useState(getRegionConfig('KR'));
+  // 지??감�? (null = 감�? �?
+  const [regionConfig, setRegionConfig] = useState<ReturnType<typeof getRegionConfig> | null>(null);
+  // 감�? ?�료 ??기본�? Stripe (?�국 감�? ?�에�?Toss�??�환)
+  const activeRegion = regionConfig ?? getRegionConfig('OTHER');
   
-  // URL 파라미터에서 탭 확인
+  // URL ?�라미터?�서 ???�인
   const [paymentType, setPaymentType] = useState<'subscription' | 'credit'>('subscription');
   const [methodRegistered, setMethodRegistered] = useState(false);
   const [billingKey, setBillingKey] = useState('');
-  const [selectedPlanIndex, setSelectedPlanIndex] = useState<number>(1); // 기본값: 월간
+  const [selectedPlanIndex, setSelectedPlanIndex] = useState<number>(1); // 기본�? ?�간
   const [loading, setLoading] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
   const [dialogConfig, setDialogConfig] = useState<{ type: 'info' | 'success' | 'warning' | 'error' | 'confirm', title: string, description: string }>({
@@ -82,9 +84,9 @@ export default function SubscriptionPage() {
   });
   const selectedPlan = PLANS[selectedPlanIndex];
 
-  // 지역 및 앱 모드 감지
+  // 지??�???모드 감�?
   useEffect(() => {
-    // IP 기반 감지 (가장 정확 - VPN도 반영)
+    // IP 기반 감�? (가???�확 - VPN??반영)
     detectCountryByIP().then(country => {
       setRegionConfig(getRegionConfig(country));
       console.log('Detected country (IP):', country);
@@ -93,7 +95,7 @@ export default function SubscriptionPage() {
     console.log('Is mobile app:', isMobileApp());
   }, []);
 
-  // URL 파라미터로 탭 설정
+  // URL ?�라미터�????�정
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const tab = params.get('tab');
@@ -103,14 +105,14 @@ export default function SubscriptionPage() {
   }, []);
 
   const getPlanPrice = (plan: Plan) => {
-    return regionConfig.paymentProvider === 'stripe' ? plan.priceMonthlyUSD : plan.priceMonthly;
+    return activeRegion.paymentProvider === 'stripe' ? plan.priceMonthlyUSD : plan.priceMonthly;
   };
 
   const formatPlanPrice = (plan: Plan) => {
-    if (regionConfig.paymentProvider === 'stripe') {
+    if (activeRegion.paymentProvider === 'stripe') {
       return `$${plan.priceMonthlyUSD.toFixed(2)}`;
     }
-    return `₩${plan.priceMonthly.toLocaleString()}`;
+    return `??{plan.priceMonthly.toLocaleString()}`;
   };
 
   useEffect(() => {
@@ -217,8 +219,8 @@ export default function SubscriptionPage() {
     } catch (error) {
       setDialogConfig({
         type: 'error',
-        title: '등록 실패',
-        description: '결제 수단 등록 중 오류가 발생했습니다.',
+        title: '?�록 ?�패',
+        description: '결제 ?�단 ?�록 �??�류가 발생?�습?�다.',
       });
       setShowDialog(true);
     } finally {
@@ -230,8 +232,8 @@ export default function SubscriptionPage() {
     if (!user || !token) {
       setDialogConfig({
         type: 'warning',
-        title: isKorean ? '로그인 필요' : 'Login Required',
-        description: isKorean ? '로그인이 필요한 서비스입니다.' : 'Please login to continue.',
+        title: isKorean ? '로그???�요' : 'Login Required',
+        description: isKorean ? '로그?�이 ?�요???�비?�입?�다.' : 'Please login to continue.',
       });
       setShowDialog(true);
       return;
@@ -241,9 +243,9 @@ export default function SubscriptionPage() {
       setLoading(true);
       const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 
-      // Stripe 결제 (해외)
-      if (regionConfig.paymentProvider === 'stripe') {
-        // Stripe Price ID 매핑 (환경변수에서 가져오기)
+      // Stripe 결제 (?�외)
+      if (activeRegion.paymentProvider === 'stripe') {
+        // Stripe Price ID 매핑 (?�경변?�에??가?�오�?
         const stripePriceId = selectedPlan.interval === 'WEEKLY'
           ? process.env.NEXT_PUBLIC_STRIPE_PRICE_WEEKLY
           : selectedPlan.interval === 'MONTHLY'
@@ -254,7 +256,7 @@ export default function SubscriptionPage() {
           throw new Error('Stripe price ID is not configured');
         }
 
-        // 백엔드에 /api prefix 없음 - BASE_URL 사용
+        // 백엔?�에 /api prefix ?�음 - BASE_URL ?�용
         const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api').replace(/\/api$/, '');
         const currentToken = useUserStore.getState().token || token;
         const response = await axios.post(
@@ -270,19 +272,19 @@ export default function SubscriptionPage() {
           }
         );
 
-        // Stripe Checkout으로 리다이렉트
+        // Stripe Checkout?�로 리다?�렉??
         if (response.data.url) {
           window.location.href = response.data.url;
         }
         return;
       }
 
-      // 토스페이먼츠 결제 (한국)
+      // ?�스?�이먼츠 결제 (?�국)
       if (!methodRegistered && !billingKey) {
         setDialogConfig({
           type: 'warning',
-          title: '결제수단 등록 필요',
-          description: '결제수단을 먼저 등록해주세요.',
+          title: '결제?�단 ?�록 ?�요',
+          description: '결제?�단??먼�? ?�록?�주?�요.',
         });
         setShowDialog(true);
         setLoading(false);
@@ -309,8 +311,8 @@ export default function SubscriptionPage() {
       } else {
         setDialogConfig({
           type: 'error',
-          title: '구독 생성 실패',
-          description: res.data?.message ?? '구독 생성에 실패했습니다.',
+          title: '구독 ?�성 ?�패',
+          description: res.data?.message ?? '구독 ?�성???�패?�습?�다.',
         });
         setShowDialog(true);
       }
@@ -318,8 +320,8 @@ export default function SubscriptionPage() {
       if (err?.response?.status === 401) {
         const newToken = await refreshTokenIfNeeded();
         if (newToken) {
-          // 토큰 갱신 후 재시도는 토스페이먼츠만
-          if (regionConfig.paymentProvider === 'toss') {
+          // ?�큰 갱신 ???�시?�는 ?�스?�이먼츠�?
+          if (activeRegion.paymentProvider === 'toss') {
             try {
               const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
               const priceNumber = Number(getPlanPrice(selectedPlan));
@@ -352,8 +354,8 @@ export default function SubscriptionPage() {
 
       setDialogConfig({
         type: 'error',
-        title: isKorean ? '구독 요청 실패' : 'Subscription Failed',
-        description: err?.response?.data?.message ?? err?.message ?? (isKorean ? '구독 요청에 실패했습니다.' : 'Failed to create subscription.'),
+        title: isKorean ? '구독 ?�청 ?�패' : 'Subscription Failed',
+        description: err?.response?.data?.message ?? err?.message ?? (isKorean ? '구독 ?�청???�패?�습?�다.' : 'Failed to create subscription.'),
       });
       setShowDialog(true);
     } finally {
@@ -378,8 +380,8 @@ export default function SubscriptionPage() {
 
       const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 
-      // 해외: Stripe Checkout
-      if (regionConfig.paymentProvider === 'stripe') {
+      // ?�외: Stripe Checkout
+      if (activeRegion.paymentProvider === 'stripe') {
         const STRIPE_CREDIT_PRICE_IDS: Record<string, string> = {
           CREDIT_5: process.env.NEXT_PUBLIC_STRIPE_PRICE_CREDIT_5 || '',
           CREDIT_10: process.env.NEXT_PUBLIC_STRIPE_PRICE_CREDIT_10 || '',
@@ -391,20 +393,20 @@ export default function SubscriptionPage() {
           setShowDialog(true);
           return;
         }
-        // 백엔드에 /api prefix 없음 - BASE_URL 사용
+        // 백엔?�에 /api prefix ?�음 - BASE_URL ?�용
         const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api').replace(/\/api$/, '');
         const response = await fetch(`${BASE_URL}/stripe/create-checkout-session`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${currentToken}` },
           body: JSON.stringify({ priceId, credits: pkg.credits, successUrl: `${window.location.origin}/credit/success`, cancelUrl: `${window.location.origin}/subscription?tab=credit` }),
         });
-        if (!response.ok) throw new Error('Stripe session 생성 실패');
+        if (!response.ok) throw new Error('Stripe session ?�성 ?�패');
         const { url } = await response.json();
         if (url) window.location.href = url;
         return;
       }
 
-      // 한국: 토스페이먼츠
+      // ?�국: ?�스?�이먼츠
       const response = await fetch(`${API_URL}/credit/purchase`, {
         method: 'POST',
         headers: {
@@ -423,7 +425,7 @@ export default function SubscriptionPage() {
               headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${newToken}` },
               body: JSON.stringify({ packageType: pkg.id }),
             });
-            if (!retryResponse.ok) throw new Error('구매 생성 실패');
+            if (!retryResponse.ok) throw new Error('구매 ?�성 ?�패');
             const { orderId, amount, orderName } = await retryResponse.json();
             const tossPayments = await loadTossPayments(process.env.NEXT_PUBLIC_TOSS_TEST_CLIENT_KEY!);
             await tossPayments.requestPayment('카드', { amount, orderId, orderName, successUrl: `${window.location.origin}/credit/success`, failUrl: `${window.location.origin}/credit/fail` });
@@ -433,7 +435,7 @@ export default function SubscriptionPage() {
             return;
           }
         }
-        throw new Error('구매 생성 실패');
+        throw new Error('구매 ?�성 ?�패');
       }
 
       const { orderId, amount, orderName } = await response.json();
@@ -442,8 +444,8 @@ export default function SubscriptionPage() {
     } catch (error) {
       setDialogConfig({
         type: 'error',
-        title: isKorean ? '구매 실패' : 'Purchase Failed',
-        description: isKorean ? '구매 중 오류가 발생했습니다.' : 'An error occurred during purchase.',
+        title: isKorean ? '구매 ?�패' : 'Purchase Failed',
+        description: isKorean ? '구매 �??�류가 발생?�습?�다.' : 'An error occurred during purchase.',
       });
       setShowDialog(true);
     } finally {
@@ -453,13 +455,13 @@ export default function SubscriptionPage() {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* 배경 효과 */}
+      {/* 배경 ?�과 */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gold/5 rounded-full blur-3xl" />
         <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-gold/3 rounded-full blur-3xl" />
       </div>
 
-      {/* 헤더 */}
+      {/* ?�더 */}
       <div className="bg-card/50 backdrop-blur-sm border-b border-border sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center gap-4">
           <button
@@ -473,13 +475,13 @@ export default function SubscriptionPage() {
             "text-2xl font-light text-foreground tracking-wide",
             isKorean && "font-[var(--font-noto-kr)] tracking-normal"
           )}>
-            {isKorean ? '결제 방식 선택' : 'Choose Payment Type'}
+            {isKorean ? '결제 방식 ?�택' : 'Choose Payment Type'}
           </h1>
         </div>
       </div>
 
       <div className="max-w-4xl mx-auto px-4 py-12 relative z-10">
-        {/* 탭 선택 */}
+        {/* ???�택 */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -495,7 +497,7 @@ export default function SubscriptionPage() {
               isKorean && "font-[var(--font-noto-kr)]"
             )}
           >
-            {isKorean ? '🔄 정기 구독' : '🔄 Subscription'}
+            {isKorean ? '?�� ?�기 구독' : '?�� Subscription'}
           </button>
           <button
             onClick={() => setPaymentType('credit')}
@@ -507,11 +509,11 @@ export default function SubscriptionPage() {
               isKorean && "font-[var(--font-noto-kr)]"
             )}
           >
-            {isKorean ? '✨ 크레딧 충전' : '✨ Buy Credits'}
+            {isKorean ? '???�레??충전' : '??Buy Credits'}
           </button>
         </motion.div>
 
-        {/* 구독 섹션 */}
+        {/* 구독 ?�션 */}
         {paymentType === 'subscription' && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -523,12 +525,12 @@ export default function SubscriptionPage() {
                 "text-muted-foreground",
                 isKorean && "font-[var(--font-noto-kr)]"
               )}>
-                {isKorean ? '무제한으로 이용하세요' : 'Unlimited recommendations'}
+                {isKorean ? '무제?�으�??�용?�세?? : 'Unlimited recommendations'}
               </p>
             </div>
 
             <div className="bg-card border border-border rounded-xl p-8 mb-8 max-w-2xl mx-auto">
-              {/* 플랜 선택 탭 */}
+              {/* ?�랜 ?�택 ??*/}
               <div className="flex gap-3 mb-8">
                 {PLANS.map((plan, index) => (
                   <button
@@ -542,10 +544,10 @@ export default function SubscriptionPage() {
                       isKorean && "font-[var(--font-noto-kr)]"
                     )}
                   >
-                    <div className="font-semibold text-sm">{plan.interval === 'WEEKLY' ? (isKorean ? '주간' : 'Weekly') : plan.interval === 'MONTHLY' ? (isKorean ? '월간' : 'Monthly') : (isKorean ? '연간' : 'Yearly')}</div>
-                    <div className="text-sm">{regionConfig.paymentProvider === 'stripe' ? `$${plan.priceMonthlyUSD.toFixed(2)}` : `₩${plan.priceMonthly.toLocaleString()}`}</div>
+                    <div className="font-semibold text-sm">{plan.interval === 'WEEKLY' ? (isKorean ? '주간' : 'Weekly') : plan.interval === 'MONTHLY' ? (isKorean ? '?�간' : 'Monthly') : (isKorean ? '?�간' : 'Yearly')}</div>
+                    <div className="text-sm">{activeRegion.paymentProvider === 'stripe' ? `$${plan.priceMonthlyUSD.toFixed(2)}` : `??{plan.priceMonthly.toLocaleString()}`}</div>
                     {plan.interval === 'ANNUALLY' && (
-                      <div className="text-xs opacity-80">{isKorean ? '33% 할인' : '33% OFF'}</div>
+                      <div className="text-xs opacity-80">{isKorean ? '33% ?�인' : '33% OFF'}</div>
                     )}
                   </button>
                 ))}
@@ -566,7 +568,7 @@ export default function SubscriptionPage() {
                 </p>
               </div>
 
-              {/* 가격 표시 */}
+              {/* 가�??�시 */}
               <div className="text-center mb-8 p-6 bg-gold/5 rounded-xl border border-gold/20">
                 <div className="text-4xl font-bold text-gold mb-2">
                   {formatPlanPrice(selectedPlan)}
@@ -575,9 +577,9 @@ export default function SubscriptionPage() {
                   "text-sm text-muted-foreground",
                   isKorean && "font-[var(--font-noto-kr)]"
                 )}>
-                  {selectedPlan.interval === 'WEEKLY' ? (isKorean ? '주 1회 결제' : 'Billed weekly') : 
-                   selectedPlan.interval === 'MONTHLY' ? (isKorean ? '월 1회 결제' : 'Billed monthly') : 
-                   (isKorean ? '연 1회 결제' : 'Billed annually')}
+                  {selectedPlan.interval === 'WEEKLY' ? (isKorean ? '�?1??결제' : 'Billed weekly') : 
+                   selectedPlan.interval === 'MONTHLY' ? (isKorean ? '??1??결제' : 'Billed monthly') : 
+                   (isKorean ? '??1??결제' : 'Billed annually')}
                 </div>
               </div>
 
@@ -594,7 +596,7 @@ export default function SubscriptionPage() {
                 ))}
               </div>
 
-              {/* 결제 수단 */}
+              {/* 결제 ?�단 */}
               <div className="mb-8">
                 <h3 className={cn(
                   "text-sm font-semibold text-foreground mb-3",
@@ -603,8 +605,8 @@ export default function SubscriptionPage() {
                   {t('subscription.paymentMethod')}
                 </h3>
                 
-                {/* 한국: 토스페이먼츠 */}
-                {regionConfig.paymentProvider === 'toss' && (
+                {/* ?�국: ?�스?�이먼츠 */}
+                {activeRegion.paymentProvider === 'toss' && (
                   <>
                     {methodRegistered ? (
                       <PaymentMethodCard
@@ -630,8 +632,8 @@ export default function SubscriptionPage() {
                   </>
                 )}
                 
-                {/* 해외: Stripe */}
-                {regionConfig.paymentProvider === 'stripe' && (
+                {/* ?�외: Stripe */}
+                {activeRegion.paymentProvider === 'stripe' && (
                   <div className={cn(
                     "p-4 bg-secondary/50 border border-border rounded-lg",
                     isKorean && "font-[var(--font-noto-kr)]"
@@ -641,12 +643,12 @@ export default function SubscriptionPage() {
                         <path d="M59.64 14.28h-8.06c.19 1.93 1.6 2.55 3.2 2.55 1.64 0 2.96-.37 4.05-.95v3.32a8.33 8.33 0 0 1-4.56 1.1c-4.01 0-6.83-2.5-6.83-7.48 0-4.19 2.39-7.52 6.3-7.52 3.92 0 5.96 3.28 5.96 7.5 0 .4-.04 1.26-.06 1.48zm-5.92-5.62c-1.03 0-2.17.73-2.17 2.58h4.25c0-1.85-1.07-2.58-2.08-2.58zM40.95 20.3c-1.44 0-2.32-.6-2.9-1.04l-.02 4.63-4.12.87V5.57h3.76l.08 1.02a4.7 4.7 0 0 1 3.23-1.29c2.9 0 5.62 2.6 5.62 7.4 0 5.23-2.7 7.6-5.65 7.6zM40 8.95c-.95 0-1.54.34-1.97.81l.02 6.12c.4.44.98.78 1.95.78 1.52 0 2.54-1.65 2.54-3.87 0-2.15-1.04-3.84-2.54-3.84zM28.24 5.57h4.13v14.44h-4.13V5.57zm0-4.7L32.37 0v3.36l-4.13.88V.88zm-4.32 9.35v9.79H19.8V5.57h3.7l.12 1.22c1-1.77 3.07-1.41 3.62-1.22v3.79c-.52-.17-2.29-.43-3.32.86zm-8.55 4.72c0 2.43 2.6 1.68 3.12 1.46v3.36c-.55.3-1.54.54-2.89.54a4.15 4.15 0 0 1-4.27-4.24l.01-13.17 4.02-.86v3.54h3.14V9.1h-3.13v5.85zm-4.91.7c0 2.97-2.31 4.66-5.73 4.66a11.2 11.2 0 0 1-4.46-.93v-3.93c1.38.75 3.1 1.31 4.46 1.31.92 0 1.53-.24 1.53-1C6.26 13.77 0 14.51 0 9.95 0 7.04 2.28 5.3 5.62 5.3c1.36 0 2.72.2 4.09.75v3.88a9.23 9.23 0 0 0-4.1-1.06c-.86 0-1.44.25-1.44.9 0 1.85 6.29.97 6.29 5.88z" fill="#635BFF"/>
                       </svg>
                       <span className="text-sm text-muted-foreground">
-                        {isKorean ? '안전한 국제 결제' : 'Secure International Payment'}
+                        {isKorean ? '?�전??�?�� 결제' : 'Secure International Payment'}
                       </span>
                     </div>
                     <p className="text-xs text-muted-foreground">
                       {isKorean
-                        ? 'Stripe를 통해 신용카드, 체크카드, Apple Pay, Google Pay 등 다양한 결제 수단을 사용할 수 있습니다.'
+                        ? 'Stripe�??�해 ?�용카드, 체크카드, Apple Pay, Google Pay ???�양??결제 ?�단???�용?????�습?�다.'
                         : 'Pay with credit card, debit card, Apple Pay, Google Pay, and more via Stripe.'}
                     </p>
                   </div>
@@ -656,7 +658,7 @@ export default function SubscriptionPage() {
               {/* 구독 버튼 */}
               <Button
                 onClick={handleSubscribe}
-                disabled={loading || (regionConfig.paymentProvider === 'toss' && !methodRegistered)}
+                disabled={loading || (activeRegion.paymentProvider === 'toss' && !methodRegistered)}
                 className={cn(
                   "w-full bg-gold hover:bg-gold-light text-background py-3 text-lg font-semibold disabled:opacity-50",
                   isKorean && "font-[var(--font-noto-kr)]"
@@ -671,7 +673,7 @@ export default function SubscriptionPage() {
           </motion.div>
         )}
 
-        {/* 크레딧 섹션 */}
+        {/* ?�레???�션 */}
         {paymentType === 'credit' && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -683,13 +685,13 @@ export default function SubscriptionPage() {
                 "text-muted-foreground mb-2",
                 isKorean && "font-[var(--font-noto-kr)]"
               )}>
-                {isKorean ? '필요한 만큼만 충전하세요' : 'Pay as you go'}
+                {isKorean ? '?�요??만큼�?충전?�세?? : 'Pay as you go'}
               </p>
               <p className={cn(
                 "text-sm text-muted-foreground",
                 isKorean && "font-[var(--font-noto-kr)]"
               )}>
-                {isKorean ? '크레딧 1개 = 추천 1회' : '1 Credit = 1 Recommendation'}
+                {isKorean ? '?�레??1�?= 추천 1?? : '1 Credit = 1 Recommendation'}
               </p>
             </div>
 
@@ -707,7 +709,7 @@ export default function SubscriptionPage() {
                 >
                   {pkg.popular && (
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-gold text-background text-xs font-semibold rounded-full">
-                      {isKorean ? '인기' : 'POPULAR'}
+                      {isKorean ? '?�기' : 'POPULAR'}
                     </div>
                   )}
 
@@ -722,19 +724,19 @@ export default function SubscriptionPage() {
 
                   <div className="text-center mb-6">
                     <div className="text-3xl font-bold text-gold mb-1">
-                      {regionConfig.paymentProvider === 'stripe'
+                      {activeRegion.paymentProvider === 'stripe'
                         ? `$${pkg.priceUSD.toFixed(2)}`
-                        : `₩${pkg.price.toLocaleString()}`}
+                        : `??{pkg.price.toLocaleString()}`}
                     </div>
                     {pkg.discount && (
                       <div className="flex items-center justify-center gap-2">
                         <span className="text-sm text-muted-foreground line-through">
-                          {regionConfig.paymentProvider === 'stripe'
+                          {activeRegion.paymentProvider === 'stripe'
                             ? `$${(pkg.priceUSD + (pkg.savingsUSD || 0)).toFixed(2)}`
-                            : `₩${(pkg.price + (pkg.savings || 0)).toLocaleString()}`}
+                            : `??{(pkg.price + (pkg.savings || 0)).toLocaleString()}`}
                         </span>
                         <span className="text-sm text-gold font-semibold">
-                          {pkg.discount}% {isKorean ? '할인' : 'OFF'}
+                          {pkg.discount}% {isKorean ? '?�인' : 'OFF'}
                         </span>
                       </div>
                     )}
@@ -744,16 +746,16 @@ export default function SubscriptionPage() {
                     <div className="flex items-center gap-2 text-sm text-foreground">
                       <Check className="w-4 h-4 text-gold" />
                       <span className={isKorean ? "font-[var(--font-noto-kr)]" : ""}>
-                        {pkg.credits}{isKorean ? '회 추천' : ' Recommendations'}
+                        {pkg.credits}{isKorean ? '??추천' : ' Recommendations'}
                       </span>
                     </div>
                     {pkg.discount && (
                       <div className="flex items-center gap-2 text-sm text-foreground">
                         <Check className="w-4 h-4 text-gold" />
                         <span className={isKorean ? "font-[var(--font-noto-kr)]" : ""}>
-                          {regionConfig.paymentProvider === 'stripe'
+                          {activeRegion.paymentProvider === 'stripe'
                             ? `$${(pkg.savingsUSD || 0).toFixed(2)}`
-                            : `₩${pkg.savings?.toLocaleString()}`} {isKorean ? '절약' : 'saved'}
+                            : `??{pkg.savings?.toLocaleString()}`} {isKorean ? '?�약' : 'saved'}
                         </span>
                       </div>
                     )}
@@ -770,19 +772,19 @@ export default function SubscriptionPage() {
                       isKorean && "font-[var(--font-noto-kr)]"
                     )}
                   >
-                    {loading ? (isKorean ? '처리 중...' : 'Processing...') : (isKorean ? '구매하기' : 'Buy Now')}
+                    {loading ? (isKorean ? '처리 �?..' : 'Processing...') : (isKorean ? '구매?�기' : 'Buy Now')}
                   </Button>
                 </motion.div>
               ))}
             </div>
 
-            {/* 크레딧 결제 안내 */}
+            {/* ?�레??결제 ?�내 */}
             <div className="max-w-2xl mx-auto">
               <div className={cn(
                 "text-center text-sm text-muted-foreground mb-4",
                 isKorean && "font-[var(--font-noto-kr)]"
               )}>
-                {isKorean ? '💳 크레딧은 일회성 결제로 즉시 충전됩니다' : '💳 Credits are charged immediately with one-time payment'}
+                {isKorean ? '?�� ?�레?��? ?�회??결제�?즉시 충전?�니?? : '?�� Credits are charged immediately with one-time payment'}
               </div>
             </div>
           </motion.div>
@@ -796,7 +798,7 @@ export default function SubscriptionPage() {
         type={dialogConfig.type}
         title={dialogConfig.title}
         description={dialogConfig.description}
-        confirmText="확인"
+        confirmText="?�인"
       />
     </div>
   );
