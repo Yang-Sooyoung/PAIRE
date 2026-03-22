@@ -7,13 +7,11 @@
     "dev": "next dev",
     "lint": "eslint .",
     "start": "next start",
-    "build:mobile": "cross-env NEXT_EXPORT=true next build",
     "cap:sync": "npx cap sync",
-    "cap:ios": "npx cap open ios",
     "cap:android": "npx cap open android",
-    "mobile:build": "npm run build:mobile && npx cap sync",
-    "mobile:ios": "npm run mobile:build && npx cap open ios",
-    "mobile:android": "npm run mobile:build && npx cap open android"
+    "cap:ios": "npx cap open ios",
+    "cap:run:android": "npx cap run android",
+    "cap:dev:android": "cross-env CAP_LOCAL=true npx cap sync && npx cap open android"
   },
   "dependencies": {
     "@capacitor/android": "^8.1.0",
