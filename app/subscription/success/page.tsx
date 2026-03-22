@@ -24,11 +24,16 @@ function SubscriptionSuccessContent() {
         try {
           const token = useUserStore.getState().token;
           const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api').replace(/\/api$/, '');
-          await fetch(`${BASE_URL}/stripe/confirm-session`, {
+          const res = await fetch(`${BASE_URL}/stripe/confirm-session`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
             body: JSON.stringify({ sessionId }),
           });
+          const data = await res.json();
+          console.log('[subscription/success] confirm-session response:', data);
+          if (!res.ok) {
+            console.error('[subscription/success] confirm-session failed:', data);
+          }
         } catch (e) {
           console.error('Confirm session error:', e);
         }

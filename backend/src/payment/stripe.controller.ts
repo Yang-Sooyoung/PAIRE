@@ -7,6 +7,8 @@ import {
     Headers,
     RawBodyRequest,
     Req,
+    HttpException,
+    HttpStatus,
 } from '@nestjs/common';
 import { StripeService } from './stripe.service';
 import { PrismaService } from '@/prisma/prisma.service';
@@ -84,70 +86,115 @@ export class StripeController {
         const { sessionId } = body;
         const userId = req.user.sub;
 
-        if (!sessionId) throw new Error('Session ID is required');
+        console.log(`[confirm-session] userId=${userId}, sessionId=${sessionId}`);
 
-        const session = await this.stripeService.retrieveSession(sessionId);
+        if (!sessionId) {
+            throw new HttpException('Session ID is required', HttpStatus.BAD_REQUEST);
+        }
 
-        if (session.payment_status !== 'paid' && session.status !== 'complete') {
-            throw new Error('Payment not completed');
+        let session: any;
+        try {
+            session = await this.stripeService.retrieveSession(sessionId);
+        } catch (e: any) {
+            console.error('[confirm-session] retrieveSession error:', e.message);
+            throw new HttpException(`Stripe error: ${e.message}`, HttpStatus.BAD_GATEWAY);
+        }
+
+        console.log(`[confirm-session] session status=${session.status}, payment_status=${session.payment_status}, type=${session.metadata?.type}`);
+
+        // subscription 모드는 payment_status가 'no_payment_required'일 수 있음
+        const isPaid = session.payment_status === 'paid'
+            || session.payment_status === 'no_payment_required'
+            || session.status === 'complete';
+
+        if (!isPaid) {
+            console.error(`[confirm-session] Payment not completed: ${session.payment_status}`);
+            throw new HttpException('Payment not completed', HttpStatus.BAD_REQUEST);
         }
 
         const type = session.metadata?.type;
 
-        if (type === 'credit_purchase') {
-            const credits = parseInt(session.metadata?.credits || '0');
+        try {
+            if (type === 'credit_purchase') {
+                const credits = parseInt(session.metadata?.credits || '0');
+                console.log(`[confirm-session] credit_purchase: ${credits} credits for user ${userId}`);
 
-            const existing = await this.prisma.creditPurchase.findUnique({ where: { orderId: session.id } });
-            if (existing?.status === 'COMPLETED') {
-                const user = await this.prisma.user.findUnique({ where: { id: userId } });
-                return { success: true, credits: user?.credits || 0 };
+                // 중복 처리 방지
+                const existing = await this.prisma.creditPurchase.findUnique({ where: { orderId: session.id } });
+                if (existing?.status === 'COMPLETED') {
+                    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+                    console.log(`[confirm-session] Already processed, credits=${user?.credits}`);
+                    return { success: true, credits: user?.credits || 0 };
+                }
+
+                await this.prisma.user.update({ where: { id: userId }, data: { credits: { increment: credits } } });
+                await this.prisma.creditPurchase.upsert({
+                    where: { orderId: session.id },
+                    create: { userId, packageType: `CREDIT_${credits}`, credits, price: session.amount_total || 0, orderId: session.id, status: 'COMPLETED' },
+                    update: { status: 'COMPLETED' },
+                });
+
+                const updatedUser = await this.prisma.user.findUnique({ where: { id: userId } });
+                console.log(`✅ ${credits} credits added to user ${userId}, total=${updatedUser?.credits}`);
+                return { success: true, credits: updatedUser?.credits || 0 };
+
+            } else if (type === 'subscription') {
+                const planId = session.metadata?.planId || 'premium-monthly';
+
+                // subscription은 expand된 객체이거나 string ID
+                const stripeSubId = typeof session.subscription === 'object'
+                    ? session.subscription?.id
+                    : session.subscription as string | null;
+
+                console.log(`[confirm-session] subscription: planId=${planId}, stripeSubId=${stripeSubId}`);
+
+                // 중복 처리 방지
+                if (stripeSubId) {
+                    const existing = await this.prisma.subscription.findFirst({
+                        where: { stripeSubscriptionId: stripeSubId, status: 'ACTIVE' },
+                    });
+                    if (existing) {
+                        console.log(`[confirm-session] Already processed subscription`);
+                        return { success: true, membership: 'PREMIUM' };
+                    }
+                }
+
+                const interval = planId.includes('weekly') ? 'WEEKLY'
+                    : planId.includes('yearly') || planId.includes('annual') ? 'ANNUALLY'
+                    : 'MONTHLY';
+
+                const nextBillingDate = new Date();
+                if (interval === 'WEEKLY') nextBillingDate.setDate(nextBillingDate.getDate() + 7);
+                else if (interval === 'MONTHLY') nextBillingDate.setMonth(nextBillingDate.getMonth() + 1);
+                else nextBillingDate.setFullYear(nextBillingDate.getFullYear() + 1);
+
+                const stripeCustomerId = typeof session.customer === 'object'
+                    ? session.customer?.id
+                    : session.customer as string | null;
+
+                await this.prisma.subscription.updateMany({ where: { userId, status: 'ACTIVE' }, data: { status: 'CANCELLED' } });
+                await this.prisma.subscription.create({
+                    data: {
+                        userId, membership: 'PREMIUM', interval,
+                        price: session.amount_total || 0,
+                        stripeSubscriptionId: stripeSubId || null,
+                        stripeCustomerId: stripeCustomerId || null,
+                        nextBillingDate, status: 'ACTIVE',
+                    },
+                });
+                await this.prisma.user.update({ where: { id: userId }, data: { membership: 'PREMIUM' } });
+
+                console.log(`✅ User ${userId} upgraded to PREMIUM`);
+                return { success: true, membership: 'PREMIUM' };
             }
 
-            await this.prisma.user.update({ where: { id: userId }, data: { credits: { increment: credits } } });
-            await this.prisma.creditPurchase.upsert({
-                where: { orderId: session.id },
-                create: { userId, packageType: `CREDIT_${credits}`, credits, price: session.amount_total || 0, orderId: session.id, status: 'COMPLETED' },
-                update: { status: 'COMPLETED' },
-            });
+            console.warn(`[confirm-session] Unknown type: ${type}`);
+            return { success: false, message: 'Unknown payment type' };
 
-            const updatedUser = await this.prisma.user.findUnique({ where: { id: userId } });
-            console.log(`✅ ${credits} credits added to user ${userId}`);
-            return { success: true, credits: updatedUser?.credits || 0 };
-
-        } else if (type === 'subscription') {
-            const planId = session.metadata?.planId || 'premium-monthly';
-
-            const existing = await this.prisma.subscription.findFirst({
-                where: { stripeSubscriptionId: session.subscription as string, status: 'ACTIVE' },
-            });
-            if (existing) return { success: true, membership: 'PREMIUM' };
-
-            const interval = planId.includes('weekly') ? 'WEEKLY'
-                : planId.includes('yearly') || planId.includes('annual') ? 'ANNUALLY'
-                : 'MONTHLY';
-
-            const nextBillingDate = new Date();
-            if (interval === 'WEEKLY') nextBillingDate.setDate(nextBillingDate.getDate() + 7);
-            else if (interval === 'MONTHLY') nextBillingDate.setMonth(nextBillingDate.getMonth() + 1);
-            else nextBillingDate.setFullYear(nextBillingDate.getFullYear() + 1);
-
-            await this.prisma.subscription.updateMany({ where: { userId, status: 'ACTIVE' }, data: { status: 'CANCELLED' } });
-            await this.prisma.subscription.create({
-                data: {
-                    userId, membership: 'PREMIUM', interval,
-                    price: session.amount_total || 0,
-                    stripeSubscriptionId: session.subscription as string || null,
-                    stripeCustomerId: session.customer as string || null,
-                    nextBillingDate, status: 'ACTIVE',
-                },
-            });
-            await this.prisma.user.update({ where: { id: userId }, data: { membership: 'PREMIUM' } });
-
-            console.log(`✅ User ${userId} upgraded to PREMIUM`);
-            return { success: true, membership: 'PREMIUM' };
+        } catch (e: any) {
+            console.error('[confirm-session] DB error:', e.message);
+            throw new HttpException(`DB error: ${e.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        return { success: false, message: 'Unknown payment type' };
     }
 
     /**

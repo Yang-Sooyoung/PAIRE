@@ -141,11 +141,13 @@ export class StripeService {
   }
 
   /**
-   * Checkout Session 조회
+   * Checkout Session 조회 (subscription expand 포함)
    */
   async retrieveSession(sessionId: string) {
     if (!this.stripe) throw new Error('Stripe is not initialized');
-    return this.stripe.checkout.sessions.retrieve(sessionId);
+    return this.stripe.checkout.sessions.retrieve(sessionId, {
+      expand: ['subscription', 'payment_intent'],
+    });
   }
 
   /**

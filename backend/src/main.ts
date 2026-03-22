@@ -57,7 +57,7 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
-      forbidNonWhitelisted: true,
+      forbidNonWhitelisted: false, // DTO 없는 엔드포인트를 위해 false
       transform: true,
     }),
   );
