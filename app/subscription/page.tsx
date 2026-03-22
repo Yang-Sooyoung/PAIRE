@@ -550,13 +550,13 @@ export default function SubscriptionPage() {
                   "text-2xl font-light text-foreground mb-2",
                   isKorean && "font-[var(--font-noto-kr)]"
                 )}>
-                  {selectedPlan.title}
+                  {isKorean ? selectedPlan.titleKo : selectedPlan.titleEn}
                 </h2>
                 <p className={cn(
                   "text-muted-foreground",
                   isKorean && "font-[var(--font-noto-kr)]"
                 )}>
-                  {selectedPlan.description}
+                  {isKorean ? selectedPlan.descriptionKo : selectedPlan.descriptionEn}
                 </p>
               </div>
 
@@ -577,7 +577,7 @@ export default function SubscriptionPage() {
 
               {/* 기능 목록 */}
               <div className="space-y-3 mb-8">
-                {selectedPlan.features.map((feature, idx) => (
+                {(isKorean ? selectedPlan.featuresKo : selectedPlan.featuresEn).map((feature, idx) => (
                   <div key={idx} className={cn(
                     "flex items-center gap-3 text-foreground",
                     isKorean && "font-[var(--font-noto-kr)]"

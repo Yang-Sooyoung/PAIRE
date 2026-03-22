@@ -5,24 +5,33 @@ export type MembershipType = 'FREE' | 'PREMIUM';
 
 export interface Plan {
   id: string;
-  title: string;
-  description: string;
+  titleKo: string;
+  titleEn: string;
+  descriptionKo: string;
+  descriptionEn: string;
   priceWeekly?: number;
   priceMonthly: number;
   priceYearly: number;
-  priceMonthlyUSD: number;  // USD 가격
+  priceMonthlyUSD: number;
   membership: MembershipType;
   interval: 'WEEKLY' | 'MONTHLY' | 'ANNUALLY';
-  features: string[];
+  featuresKo: string[];
+  featuresEn: string[];
   badge?: string;
   popular?: boolean;
+  // 하위 호환
+  title?: string;
+  description?: string;
+  features?: string[];
 }
 
 export const PLANS: Plan[] = [
   {
     id: 'premium-weekly',
-    title: 'PREMIUM 주간',
-    description: '1주일 무제한',
+    titleKo: 'PREMIUM 주간',
+    titleEn: 'PREMIUM Weekly',
+    descriptionKo: '1주일 무제한',
+    descriptionEn: '7 days unlimited',
     priceWeekly: 4900,
     priceMonthly: 4900,
     priceYearly: 4900,
@@ -30,18 +39,27 @@ export const PLANS: Plan[] = [
     membership: 'PREMIUM',
     interval: 'WEEKLY',
     badge: '🌟',
-    features: [
+    featuresKo: [
       '7일간 무제한 추천',
       '상황별 맞춤 추천',
       '추천 히스토리 저장',
       '즐겨찾기 기능',
       '공유 기능',
     ],
+    featuresEn: [
+      'Unlimited recommendations for 7 days',
+      'Personalized pairing suggestions',
+      'Recommendation history',
+      'Favorites',
+      'Share feature',
+    ],
   },
   {
     id: 'premium-monthly',
-    title: 'PREMIUM 월간',
-    description: '1개월 무제한',
+    titleKo: 'PREMIUM 월간',
+    titleEn: 'PREMIUM Monthly',
+    descriptionKo: '1개월 무제한',
+    descriptionEn: '30 days unlimited',
     priceWeekly: 14900,
     priceMonthly: 14900,
     priceYearly: 14900,
@@ -50,7 +68,7 @@ export const PLANS: Plan[] = [
     interval: 'MONTHLY',
     badge: '⭐',
     popular: true,
-    features: [
+    featuresKo: [
       '30일간 무제한 추천',
       '상황별 맞춤 추천',
       '추천 히스토리 저장',
@@ -58,11 +76,21 @@ export const PLANS: Plan[] = [
       '공유 기능',
       '스티커 수집',
     ],
+    featuresEn: [
+      'Unlimited recommendations for 30 days',
+      'Personalized pairing suggestions',
+      'Recommendation history',
+      'Favorites',
+      'Share feature',
+      'Sticker collection',
+    ],
   },
   {
     id: 'premium-yearly',
-    title: 'PREMIUM 연간',
-    description: '1년 무제한 (33% 할인)',
+    titleKo: 'PREMIUM 연간',
+    titleEn: 'PREMIUM Yearly',
+    descriptionKo: '1년 무제한 (33% 할인)',
+    descriptionEn: '365 days unlimited (33% OFF)',
     priceWeekly: 119000,
     priceMonthly: 119000,
     priceYearly: 119000,
@@ -70,7 +98,7 @@ export const PLANS: Plan[] = [
     membership: 'PREMIUM',
     interval: 'ANNUALLY',
     badge: '✨',
-    features: [
+    featuresKo: [
       '365일간 무제한 추천',
       '상황별 맞춤 추천',
       '추천 히스토리 저장',
@@ -79,10 +107,18 @@ export const PLANS: Plan[] = [
       '스티커 수집',
       '연간 33% 할인',
     ],
+    featuresEn: [
+      'Unlimited recommendations for 365 days',
+      'Personalized pairing suggestions',
+      'Recommendation history',
+      'Favorites',
+      'Share feature',
+      'Sticker collection',
+      '33% annual discount',
+    ],
   },
 ];
 
-// ✅ ID로 빠르게 찾을 수 있게 변환
 export const PLAN_MAP = Object.fromEntries(
-    PLANS.map((plan) => [plan.id, plan])
+  PLANS.map((plan) => [plan.id, plan])
 );
