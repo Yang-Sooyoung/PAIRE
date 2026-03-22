@@ -15,7 +15,8 @@ import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { 
-  detectCountry, 
+  detectCountry,
+  detectCountryByIP,
   getRegionConfig, 
   isMobileApp,
   type CountryCode 
@@ -78,11 +79,12 @@ export default function SubscriptionPage() {
 
   // 지역 및 앱 모드 감지
   useEffect(() => {
-    const detectedCountry = detectCountry();
-    setRegionConfig(getRegionConfig(detectedCountry));
-    
-    console.log('Detected country:', detectedCountry);
-    console.log('Payment provider:', getRegionConfig(detectedCountry).paymentProvider);
+    // IP 기반 감지 (가장 정확 - VPN도 반영)
+    detectCountryByIP().then(country => {
+      setRegionConfig(getRegionConfig(country));
+      console.log('Detected country (IP):', country);
+      console.log('Payment provider:', getRegionConfig(country).paymentProvider);
+    });
     console.log('Is mobile app:', isMobileApp());
   }, []);
 

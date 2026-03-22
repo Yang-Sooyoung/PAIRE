@@ -21,6 +21,22 @@ export function isCapacitorApp(): boolean {
 }
 
 /**
+ * IP 기반 국가 감지 (비동기, 가장 정확)
+ */
+export async function detectCountryByIP(): Promise<CountryCode> {
+  try {
+    const res = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(3000) });
+    const data = await res.json();
+    const countryCode = data.country_code;
+    if (countryCode === 'KR') return 'KR';
+    if (countryCode === 'US') return 'US';
+    return 'OTHER';
+  } catch {
+    return detectCountry(); // 실패 시 언어 기반 폴백
+  }
+}
+
+/**
  * 사용자의 국가 코드 감지 (동기)
  */
 export function detectCountry(): CountryCode {
