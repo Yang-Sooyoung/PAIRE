@@ -131,7 +131,9 @@ export default function CreditPage() {
           return;
         }
 
-        const response = await fetch(`${API_URL}/stripe/create-checkout-session`, {
+        // 백엔드에 /api prefix 없음 - BASE_URL 사용
+        const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api').replace(/\/api$/, '');
+        const response = await fetch(`${BASE_URL}/stripe/create-checkout-session`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

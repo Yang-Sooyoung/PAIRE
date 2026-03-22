@@ -253,9 +253,11 @@ export default function SubscriptionPage() {
           throw new Error('Stripe price ID is not configured');
         }
 
+        // 백엔드에 /api prefix 없음 - BASE_URL 사용
+        const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api').replace(/\/api$/, '');
         const currentToken = useUserStore.getState().token || token;
         const response = await axios.post(
-          `${API_URL}/stripe/create-subscription-session`,
+          `${BASE_URL}/stripe/create-subscription-session`,
           {
             priceId: stripePriceId,
             planId: selectedPlan.id,
@@ -388,7 +390,9 @@ export default function SubscriptionPage() {
           setShowDialog(true);
           return;
         }
-        const response = await fetch(`${API_URL}/stripe/create-checkout-session`, {
+        // 백엔드에 /api prefix 없음 - BASE_URL 사용
+        const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api').replace(/\/api$/, '');
+        const response = await fetch(`${BASE_URL}/stripe/create-checkout-session`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${currentToken}` },
           body: JSON.stringify({ priceId, credits: pkg.credits, successUrl: `${window.location.origin}/credit/success`, cancelUrl: `${window.location.origin}/subscription?tab=credit` }),
