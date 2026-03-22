@@ -362,7 +362,7 @@ export default function SupportPage() {
               <span className="mr-2">💻</span> GitHub
             </Button>
             <Button
-              onClick={() => window.open('https://instagram.com/paire.app', '_blank')}
+              onClick={() => window.open('https://www.instagram.com/labs_de_luna?igsh=MXgwbmxidm84d2w5dg%3D%3D&utm_source=qr', '_blank')}
               variant="outline"
               className={cn(
                 "border-border hover:bg-gold/10",
