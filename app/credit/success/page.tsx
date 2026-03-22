@@ -25,15 +25,34 @@ function CreditSuccessContent() {
 
       console.log('Credit success page - params:', { paymentKey, orderId, amount });
 
-      // Stripe 결제 완료 (파라미터 없음 - webhook에서 처리됨)
+      // Stripe 결제 완료 (session_id 파라미터로 직접 확인)
       if (!paymentKey || !orderId || !amount) {
-        // 잠시 대기 후 유저 정보 갱신 (webhook 처리 시간)
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        const { initializeUser } = useUserStore.getState();
-        await initializeUser();
-        // 갱신된 크레딧 표시
-        const updatedUser = useUserStore.getState().user;
-        setCredits(updatedUser?.credits || 0);
+        const sessionId = searchParams.get('session_id');
+        if (sessionId) {
+          try {
+            const token = useUserStore.getState().token;
+            const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api').replace(/\/api$/, '');
+            const res = await fetch(`${BASE_URL}/stripe/confirm-session`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+              body: JSON.stringify({ sessionId }),
+            });
+            const data = await res.json();
+            if (data.success) {
+              const { initializeUser } = useUserStore.getState();
+              await initializeUser();
+              setCredits(data.credits || useUserStore.getState().user?.credits || 0);
+            }
+          } catch (e) {
+            console.error('Stripe confirm error:', e);
+          }
+        } else {
+          // session_id도 없으면 그냥 유저 정보만 갱신
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          const { initializeUser } = useUserStore.getState();
+          await initializeUser();
+          setCredits(useUserStore.getState().user?.credits || 0);
+        }
         setProcessing(false);
         return;
       }

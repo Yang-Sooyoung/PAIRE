@@ -1,35 +1,62 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Check } from 'lucide-react';
+import { Check, Sparkles } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { useUserStore } from '@/app/store/userStore';
 
-export default function SubscriptionSuccessPage() {
+function SubscriptionSuccessContent() {
   const router = useRouter();
-  const { language, t } = useI18n();
+  const searchParams = useSearchParams();
+  const { language } = useI18n();
   const isKorean = language === 'ko';
+  const [processing, setProcessing] = useState(true);
 
   useEffect(() => {
-    // webhook 처리 시간 대기 후 유저 정보 갱신
-    const refresh = async () => {
-      await new Promise(resolve => setTimeout(resolve, 2000));
+    const confirm = async () => {
+      const sessionId = searchParams.get('session_id');
+
+      if (sessionId) {
+        try {
+          const token = useUserStore.getState().token;
+          const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api').replace(/\/api$/, '');
+          await fetch(`${BASE_URL}/stripe/confirm-session`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ sessionId }),
+          });
+        } catch (e) {
+          console.error('Confirm session error:', e);
+        }
+      }
+
+      // 유저 정보 갱신
       const { initializeUser } = useUserStore.getState();
       await initializeUser();
+      setProcessing(false);
+
+      // 3초 후 이동
+      setTimeout(() => router.push('/user-info'), 3000);
     };
-    refresh();
+    confirm();
+  }, [searchParams, router]);
 
-    // 3초 후 자동으로 홈으로 이동
-    const timer = setTimeout(() => {
-      router.push('/user-info');
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, [router]);
+  if (processing) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <Sparkles className="w-12 h-12 text-gold animate-pulse mx-auto mb-4" />
+          <p className={cn("text-muted-foreground", isKorean && "font-[var(--font-noto-kr)]")}>
+            {isKorean ? '구독을 활성화하는 중...' : 'Activating subscription...'}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden flex items-center justify-center px-4">
@@ -111,5 +138,17 @@ export default function SubscriptionSuccessPage() {
         </p>
       </motion.div>
     </div>
+  );
+}
+
+export default function SubscriptionSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Sparkles className="w-12 h-12 text-gold animate-pulse mx-auto" />
+      </div>
+    }>
+      <SubscriptionSuccessContent />
+    </Suspense>
   );
 }

@@ -141,6 +141,14 @@ export class StripeService {
   }
 
   /**
+   * Checkout Session 조회
+   */
+  async retrieveSession(sessionId: string) {
+    if (!this.stripe) throw new Error('Stripe is not initialized');
+    return this.stripe.checkout.sessions.retrieve(sessionId);
+  }
+
+  /**
    * Webhook 이벤트 검증
    */
   constructWebhookEvent(payload: Buffer, signature: string) {

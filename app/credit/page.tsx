@@ -142,7 +142,7 @@ export default function CreditPage() {
           body: JSON.stringify({
             priceId,
             credits: pkg.credits,
-            successUrl: `${window.location.origin}/credit/success`,
+            successUrl: `${window.location.origin}/credit/success?session_id={CHECKOUT_SESSION_ID}`,
             cancelUrl: `${window.location.origin}/credit`,
           }),
         });

@@ -261,7 +261,7 @@ export default function SubscriptionPage() {
           {
             priceId: stripePriceId,
             planId: selectedPlan.id,
-            successUrl: `${window.location.origin}/subscription/success`,
+            successUrl: `${window.location.origin}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
             cancelUrl: `${window.location.origin}/subscription`,
           },
           {
@@ -395,7 +395,7 @@ export default function SubscriptionPage() {
         const response = await fetch(`${BASE_URL}/stripe/create-checkout-session`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${currentToken}` },
-          body: JSON.stringify({ priceId, credits: pkg.credits, successUrl: `${window.location.origin}/credit/success`, cancelUrl: `${window.location.origin}/subscription?tab=credit` }),
+          body: JSON.stringify({ priceId, credits: pkg.credits, successUrl: `${window.location.origin}/credit/success?session_id={CHECKOUT_SESSION_ID}`, cancelUrl: `${window.location.origin}/subscription?tab=credit` }),
         });
         if (!response.ok) throw new Error('Stripe session 생성 실패');
         const { url } = await response.json();

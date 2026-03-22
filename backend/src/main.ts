@@ -5,7 +5,10 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Increase payload size limit for image uploads
+  // Stripe webhook은 raw body 필요 - 먼저 등록해야 함
+  app.use('/stripe/webhook', require('express').raw({ type: 'application/json' }));
+
+  // 나머지 엔드포인트는 JSON 파싱 (payload size limit for image uploads)
   app.use(require('express').json({ limit: '50mb' }));
   app.use(require('express').urlencoded({ limit: '50mb', extended: true }));
 

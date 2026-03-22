@@ -76,6 +76,81 @@ export class StripeController {
     }
 
     /**
+     * Stripe 결제 완료 확인 (session_id로 직접 처리 - webhook 대안)
+     */
+    @Post('confirm-session')
+    @UseGuards(JwtAuthGuard)
+    async confirmSession(@Request() req: any, @Body() body: any) {
+        const { sessionId } = body;
+        const userId = req.user.sub;
+
+        if (!sessionId) throw new Error('Session ID is required');
+
+        const session = await this.stripeService.retrieveSession(sessionId);
+
+        if (session.payment_status !== 'paid' && session.status !== 'complete') {
+            throw new Error('Payment not completed');
+        }
+
+        const type = session.metadata?.type;
+
+        if (type === 'credit_purchase') {
+            const credits = parseInt(session.metadata?.credits || '0');
+
+            const existing = await this.prisma.creditPurchase.findUnique({ where: { orderId: session.id } });
+            if (existing?.status === 'COMPLETED') {
+                const user = await this.prisma.user.findUnique({ where: { id: userId } });
+                return { success: true, credits: user?.credits || 0 };
+            }
+
+            await this.prisma.user.update({ where: { id: userId }, data: { credits: { increment: credits } } });
+            await this.prisma.creditPurchase.upsert({
+                where: { orderId: session.id },
+                create: { userId, packageType: `CREDIT_${credits}`, credits, price: session.amount_total || 0, orderId: session.id, status: 'COMPLETED' },
+                update: { status: 'COMPLETED' },
+            });
+
+            const updatedUser = await this.prisma.user.findUnique({ where: { id: userId } });
+            console.log(`✅ ${credits} credits added to user ${userId}`);
+            return { success: true, credits: updatedUser?.credits || 0 };
+
+        } else if (type === 'subscription') {
+            const planId = session.metadata?.planId || 'premium-monthly';
+
+            const existing = await this.prisma.subscription.findFirst({
+                where: { stripeSubscriptionId: session.subscription as string, status: 'ACTIVE' },
+            });
+            if (existing) return { success: true, membership: 'PREMIUM' };
+
+            const interval = planId.includes('weekly') ? 'WEEKLY'
+                : planId.includes('yearly') || planId.includes('annual') ? 'ANNUALLY'
+                : 'MONTHLY';
+
+            const nextBillingDate = new Date();
+            if (interval === 'WEEKLY') nextBillingDate.setDate(nextBillingDate.getDate() + 7);
+            else if (interval === 'MONTHLY') nextBillingDate.setMonth(nextBillingDate.getMonth() + 1);
+            else nextBillingDate.setFullYear(nextBillingDate.getFullYear() + 1);
+
+            await this.prisma.subscription.updateMany({ where: { userId, status: 'ACTIVE' }, data: { status: 'CANCELLED' } });
+            await this.prisma.subscription.create({
+                data: {
+                    userId, membership: 'PREMIUM', interval,
+                    price: session.amount_total || 0,
+                    stripeSubscriptionId: session.subscription as string || null,
+                    stripeCustomerId: session.customer as string || null,
+                    nextBillingDate, status: 'ACTIVE',
+                },
+            });
+            await this.prisma.user.update({ where: { id: userId }, data: { membership: 'PREMIUM' } });
+
+            console.log(`✅ User ${userId} upgraded to PREMIUM`);
+            return { success: true, membership: 'PREMIUM' };
+        }
+
+        return { success: false, message: 'Unknown payment type' };
+    }
+
+    /**
      * Customer Portal Session 생성 (구독 관리)
      */
     @Post('create-portal-session')
@@ -105,7 +180,8 @@ export class StripeController {
         @Req() req: RawBodyRequest<Request>,
         @Headers('stripe-signature') signature: string,
     ) {
-        const rawBody = req.rawBody;
+        // express.raw()로 처리된 경우 req.body가 Buffer, 아니면 req.rawBody 사용
+        const rawBody = req.body instanceof Buffer ? req.body : req.rawBody;
 
         if (!rawBody) {
             throw new Error('Raw body is required for webhook verification');
