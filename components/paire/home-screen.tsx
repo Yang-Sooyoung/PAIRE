@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
-import { Camera, BookOpen, Coins } from "lucide-react"
+import { Camera, BookOpen, Coins, Crown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useI18n } from "@/lib/i18n/context"
-import { LanguageToggle } from "./language-toggle"
 import { cn } from "@/lib/utils"
 
 interface HomeScreenProps {
@@ -52,56 +51,33 @@ export function HomeScreen({
     fetchCredits()
   }, [user])
 
+  const isPremium = user?.membership === 'PREMIUM'
+
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 relative overflow-hidden">
-      {/* Language Toggle - Top Right */}
-      <div className="absolute top-6 right-6 z-20">
-        <LanguageToggle />
-      </div>
 
-      {/* Credits Display - Top Center (로그인 사용자만) */}
-      {user && credits > 0 && (
+      {/* 로그인 사용자 - 우상단 멤버십 + 크레딧 뱃지 */}
+      {user && (
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="absolute top-6 left-1/2 -translate-x-1/2 z-20"
+          className="absolute top-6 right-6 z-20 flex items-center gap-2"
         >
-          <div className="flex items-center gap-2 px-4 py-2 bg-gold/10 border border-gold/30 rounded-full backdrop-blur-sm">
-            <Coins className="w-4 h-4 text-gold" />
-            <span className="text-gold font-semibold">{credits}</span>
-            <span className={cn(
-              "text-gold-dim text-sm",
-              isKorean && "font-[var(--font-noto-kr)]"
-            )}>
-              {isKorean ? '크레딧' : 'Credits'}
-            </span>
-          </div>
+          {isPremium ? (
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gold/15 border border-gold/40 rounded-full backdrop-blur-sm">
+              <Crown className="w-3.5 h-3.5 text-gold" />
+              <span className="text-gold text-xs font-semibold tracking-wide">PREMIUM</span>
+            </div>
+          ) : credits > 0 ? (
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gold/10 border border-gold/30 rounded-full backdrop-blur-sm">
+              <Coins className="w-3.5 h-3.5 text-gold" />
+              <span className="text-gold text-xs font-semibold">{credits}</span>
+              <span className={cn("text-gold/60 text-xs", isKorean && "font-[var(--font-noto-kr)]")}>
+                {isKorean ? '크레딧' : 'cr'}
+              </span>
+            </div>
+          ) : null}
         </motion.div>
-      )}
-
-      {/* Login/Signup buttons - Top Left (비로그인 사용자만) */}
-      {!user && (
-        <div className="absolute top-6 left-6 z-20 flex gap-2">
-          <Button
-              onClick={onLoginClick}
-              variant="outline"
-              className={cn(
-                "border-gold/40 text-gold hover:bg-gold/10 hover:border-gold",
-                isKorean && "font-[var(--font-noto-kr)]"
-              )}
-          >
-            {t("auth.login")}
-          </Button>
-          <Button
-              onClick={onSignupClick}
-              className={cn(
-                "bg-gold hover:bg-gold-light text-background",
-                isKorean && "font-[var(--font-noto-kr)]"
-              )}
-          >
-            {t("auth.signup")}
-          </Button>
-        </div>
       )}
 
       {/* Ambient glow effects */}
@@ -195,6 +171,36 @@ export function HomeScreen({
             <BookOpen className="w-5 h-5 mr-3" />
             {t("home.menuBtn")}
           </Button>
+
+          {/* 비로그인 사용자 - CTA 아래 로그인/회원가입 */}
+          {!user && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1 }}
+              className="flex gap-3 pt-2"
+            >
+              <Button
+                onClick={onLoginClick}
+                variant="outline"
+                className={cn(
+                  "flex-1 border-gold/30 text-gold/80 hover:bg-gold/10 hover:border-gold hover:text-gold text-sm",
+                  isKorean && "font-[var(--font-noto-kr)]"
+                )}
+              >
+                {t("auth.login")}
+              </Button>
+              <Button
+                onClick={onSignupClick}
+                className={cn(
+                  "flex-1 bg-gold/20 hover:bg-gold/30 text-gold border border-gold/40 text-sm",
+                  isKorean && "font-[var(--font-noto-kr)]"
+                )}
+              >
+                {t("auth.signup")}
+              </Button>
+            </motion.div>
+          )}
         </motion.div>
       </motion.div>
     </div>
