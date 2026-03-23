@@ -92,8 +92,23 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+  }
+  html, body {
+    @apply bg-background text-foreground;
+    /* 모바일 DPI 240 대응 - 텍스트 크기 자동 조정 방지 */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    /* 스크롤 바운스 방지 */
+    overscroll-behavior: none;
+    /* 전체 화면 사용 */
+    width: 100%;
+    min-height: 100dvh;
   }
   body {
-    @apply bg-background text-foreground;
+    /* 폰트 렌더링 최적화 */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
