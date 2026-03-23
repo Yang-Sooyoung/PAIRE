@@ -1,7 +1,7 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { useUserStore } from '@/app/store/userStore';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://paire-back.up.railway.app/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://paire.onrender.com';
 
 // Axios 인스턴스 생성
 export const apiClient = axios.create({

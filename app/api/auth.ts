@@ -2,7 +2,7 @@
 // 클라이언트 사이드 API 호출 함수들
 import apiClient from './client';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://paire-back.up.railway.app/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://paire.onrender.com';
 
 export interface SignupPayload {
   email: string;

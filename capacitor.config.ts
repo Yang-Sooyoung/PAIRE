@@ -15,7 +15,7 @@ const config: CapacitorConfig = {
       }
     : {
         // 프로덕션: Vercel 배포 URL 사용 (static export 빌드 불필요)
-        url: 'https://paire-front.up.railway.app',
+        url: 'https://drinkpaire.vercel.app',
         androidScheme: 'https',
         iosScheme: 'https',
       },

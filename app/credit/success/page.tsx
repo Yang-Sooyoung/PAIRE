@@ -95,7 +95,7 @@ function CreditSuccessContent() {
           }
         }
 
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://paire-back.up.railway.app/api';
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://paire.onrender.com';
         console.log('Confirming payment with API:', API_URL);
         console.log('Using token:', currentToken ? `${currentToken.substring(0, 20)}...` : 'null');
 
