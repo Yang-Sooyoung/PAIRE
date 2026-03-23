@@ -10,7 +10,7 @@ import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { removeFavorite, getDrinkDetail } from '@/app/api/favorite';
-import { translateDrinkType, translateTastingNote, formatDrinkPrice } from '@/lib/drink-translations';
+import { translateDrinkType, translateTastingNote, formatDrinkPriceByRegion } from '@/lib/drink-translations';
 import { generateShoppingLink, detectCountryByIP, openExternalLink } from '@/lib/region-detector';
 import { generateCoupangLink } from '@/lib/coupang-partners';
 
@@ -41,6 +41,11 @@ export default function FavoriteDetailPage({ id }: { id: string }) {
   const [drink, setDrink] = useState<DrinkDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [removing, setRemoving] = useState(false);
+  const [isKoreaRegion, setIsKoreaRegion] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    detectCountryByIP().then(country => setIsKoreaRegion(country === 'KR'));
+  }, []);
 
   useEffect(() => {
     if (!user) {
@@ -197,7 +202,7 @@ export default function FavoriteDetailPage({ id }: { id: string }) {
               {isKorean ? drink.description : (drink.descriptionEn || drink.description)}
             </p>
             <div className="text-2xl font-bold text-gold">
-              {formatDrinkPrice(drink.price, language)}
+              {formatDrinkPriceByRegion(drink.price, isKoreaRegion ?? isKorean)}
             </div>
           </div>
 
@@ -331,9 +336,23 @@ export default function FavoriteDetailPage({ id }: { id: string }) {
               )}
             >
               <ShoppingCart className="w-4 h-4 mr-2" />
-              {t('favorites.purchase')}
+              {isKoreaRegion
+                ? (isKorean ? '쿠팡에서 구매' : '쿠팡에서 구매')
+                : (isKorean ? 'Amazon에서 구매' : 'Buy on Amazon')}
             </Button>
           </div>
+
+          {/* 제휴 면책 조항 */}
+          {isKoreaRegion === true && (
+            <p className="font-[var(--font-noto-kr)] text-xs text-center text-muted-foreground mt-2 px-2">
+              이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.
+            </p>
+          )}
+          {isKoreaRegion === false && (
+            <p className="text-xs text-center text-muted-foreground mt-2 px-2">
+              As an Amazon Associate, we earn from qualifying purchases.
+            </p>
+          )}
         </motion.div>
       </div>
     </div>

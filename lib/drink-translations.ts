@@ -126,3 +126,20 @@ export function formatDrinkPrice(price: string, language: 'ko' | 'en'): string {
   const usdValue = numericValue / KRW_TO_USD_RATE;
   return `$${usdValue.toFixed(2)}`;
 }
+
+/**
+ * 지역 기반 가격 포맷 (IP 국가 기준)
+ * KR → 원화, 그 외 → USD
+ */
+export function formatDrinkPriceByRegion(price: string, isKorea: boolean): string {
+  if (!price) return price;
+  if (isKorea) return price;
+
+  if (price.startsWith('$')) return price;
+
+  const numericValue = parseInt(price.replace(/[^0-9]/g, ''), 10);
+  if (isNaN(numericValue) || numericValue === 0) return price;
+
+  const usdValue = numericValue / KRW_TO_USD_RATE;
+  return `$${usdValue.toFixed(2)}`;
+}

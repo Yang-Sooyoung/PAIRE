@@ -11,7 +11,7 @@ import { useUserStore } from "@/app/store/userStore"
 import { addFavorite, removeFavorite, checkFavorite } from "@/app/api/favorite"
 import { generateShoppingLink, detectCountryByIP, openExternalLink } from "@/lib/region-detector"
 import { generateCoupangLink } from "@/lib/coupang-partners"
-import { formatDrinkPrice } from "@/lib/drink-translations"
+import { formatDrinkPrice, formatDrinkPriceByRegion } from "@/lib/drink-translations"
 
 interface DrinkDetailScreenProps {
   drink: {
@@ -53,6 +53,7 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
   const [isWishlisted, setIsWishlisted] = useState(false)
   const [isLoadingFavorite, setIsLoadingFavorite] = useState(false)
   const [showDialog, setShowDialog] = useState(false)
+  const [isKoreaRegion, setIsKoreaRegion] = useState<boolean | null>(null)
   const [dialogConfig, setDialogConfig] = useState<{
     type: 'info' | 'success' | 'warning' | 'error' | 'confirm'
     title: string
@@ -63,6 +64,11 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
     title: '',
     description: '',
   })
+
+  // IP 기반 지역 감지
+  useEffect(() => {
+    detectCountryByIP().then(country => setIsKoreaRegion(country === 'KR'))
+  }, [])
 
   // 즐겨찾기 상태 확인
   useEffect(() => {
@@ -340,7 +346,7 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
           <h1 className="text-foreground text-3xl font-bold mb-2">
             {isKorean ? drink.name : (drink.nameEn || drink.name)}
           </h1>
-          <p className="text-gold text-2xl font-semibold">{formatDrinkPrice(drink.price, language)}</p>
+          <p className="text-gold text-2xl font-semibold">{formatDrinkPriceByRegion(drink.price, isKoreaRegion ?? isKorean)}</p>
         </motion.div>
 
         {/* Tasting Notes */}
@@ -559,14 +565,21 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
             )}
           >
             <ShoppingCart className="w-5 h-5 mr-2" />
-            {isKorean ? '구매하기' : 'Buy Now'}
+            {isKoreaRegion
+              ? (isKorean ? '쿠팡에서 구매' : '쿠팡에서 구매')
+              : (isKorean ? 'Amazon에서 구매' : 'Buy on Amazon')}
           </Button>
         </div>
 
-        {/* 쿠팡 파트너스 면책 조항 - 한국만 표시 */}
-        {isKorean && (
+        {/* 제휴 면책 조항 */}
+        {isKoreaRegion === true && (
           <p className="font-[var(--font-noto-kr)] text-xs text-center text-muted-foreground mt-4 px-4">
             이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.
+          </p>
+        )}
+        {isKoreaRegion === false && (
+          <p className="text-xs text-center text-muted-foreground mt-4 px-4">
+            As an Amazon Associate, we earn from qualifying purchases.
           </p>
         )}
       </div>

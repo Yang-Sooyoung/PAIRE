@@ -111,6 +111,14 @@ export default function SettingsPage() {
             </span>
             <LanguageToggle />
           </div>
+          <p className={cn(
+            "text-xs text-muted-foreground/70 mt-2",
+            isKorean && "font-[var(--font-noto-kr)]"
+          )}>
+            {isKorean
+              ? '추천 결과는 선택한 언어로 저장됩니다. 언어를 변경하면 이후 추천부터 적용됩니다.'
+              : 'Recommendations are saved in the selected language. Changes apply to future recommendations.'}
+          </p>
         </motion.section>
 
         {/* 계정 정보 */}

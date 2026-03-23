@@ -10,7 +10,7 @@ import { ArrowLeft, Clock, Heart, Loader2, Sparkles } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { translateDrinkType, translateOccasion, formatDrinkPrice } from '@/lib/drink-translations';
+import { translateDrinkType, translateOccasion, formatDrinkPriceByRegion } from '@/lib/drink-translations';
 
 interface Drink {
     id: string;
@@ -45,6 +45,13 @@ export default function HistoryDetailPage({ id }: { id: string }) {
     const [loading, setLoading] = useState(true);
     const [favoriteStatus, setFavoriteStatus] = useState<Record<string, boolean>>({});
     const [togglingFavorite, setTogglingFavorite] = useState<string | null>(null);
+    const [isKoreaRegion, setIsKoreaRegion] = useState<boolean | null>(null);
+
+    useEffect(() => {
+        import('@/lib/region-detector').then(({ detectCountryByIP }) => {
+            detectCountryByIP().then(country => setIsKoreaRegion(country === 'KR'));
+        });
+    }, []);
 
     useEffect(() => {
         if (!user) {
@@ -299,7 +306,7 @@ export default function HistoryDetailPage({ id }: { id: string }) {
                                                 </p>
                                                 {drink.price && (
                                                     <p className="text-sm font-medium text-gold">
-                                                        {formatDrinkPrice(drink.price, language)}
+                                                        {formatDrinkPriceByRegion(drink.price, isKoreaRegion ?? isKorean)}
                                                     </p>
                                                 )}
                                             </div>

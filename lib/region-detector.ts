@@ -22,18 +22,11 @@ export function isCapacitorApp(): boolean {
 
 /**
  * IP 기반 국가 감지 (비동기, 가장 정확)
- * 언어 설정이 'en'이면 IP와 무관하게 해외로 처리
+ * 언어 설정과 무관하게 실제 IP로 판단 (VPN 사용 시 VPN 위치 기준)
  */
 export async function detectCountryByIP(): Promise<CountryCode> {
   if (typeof window === 'undefined') return 'OTHER';
 
-  // 언어 설정이 영어면 무조건 해외 처리 (한국 IP여도 영어 모드면 아마존 링크)
-  const currentLanguage = localStorage.getItem('paire-language') || 'en';
-  if (currentLanguage !== 'ko') {
-    return 'OTHER';
-  }
-
-  // 한국어 모드일 때만 IP로 정확히 확인
   try {
     const res = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(3000) });
     const data = await res.json();
@@ -42,7 +35,12 @@ export async function detectCountryByIP(): Promise<CountryCode> {
     if (countryCode === 'US') return 'US';
     return 'OTHER';
   } catch {
-    return detectCountry(); // 실패 시 언어 기반 폴백
+    // IP 조회 실패 시 타임존 기반 폴백
+    try {
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (timeZone.includes('Seoul') || timeZone === 'Asia/Seoul') return 'KR';
+    } catch { /* ignore */ }
+    return 'OTHER';
   }
 }
 
