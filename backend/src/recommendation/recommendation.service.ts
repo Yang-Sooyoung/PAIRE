@@ -253,6 +253,11 @@ export class RecommendationService {
       'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=400&h=600&fit=crop',
       'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=400&h=600&fit=crop',
     ],
+    'tea': [
+      'https://images.unsplash.com/photo-1499638673689-79a0b5115d87?w=400&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1601390395693-364c0e22031a?w=400&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400&h=600&fit=crop',
+    ],
     'sake': [
       'https://images.unsplash.com/photo-1547595628-c61a29f496f0?w=400&h=600&fit=crop',
     ],
