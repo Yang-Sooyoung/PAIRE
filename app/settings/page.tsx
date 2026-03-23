@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import { ChevronRight, LogOut, Trash2, Mail, FileText, ArrowLeft } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils';
+import { LanguageToggle } from '@/components/paire/language-toggle';
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -88,6 +89,30 @@ export default function SettingsPage() {
 
       {/* 콘텐츠 */}
       <div className="max-w-2xl mx-auto px-4 py-8 space-y-6 relative z-10">
+        {/* 언어 설정 */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="bg-card backdrop-blur-sm border border-border rounded-xl p-6"
+        >
+          <h2 className={cn(
+            "text-xs text-gold-dim uppercase tracking-widest font-light mb-4",
+            isKorean && "font-[var(--font-noto-kr)] normal-case tracking-normal"
+          )}>
+            {isKorean ? '언어 설정' : 'Language'}
+          </h2>
+          <div className="flex items-center justify-between">
+            <span className={cn(
+              "text-muted-foreground text-sm",
+              isKorean && "font-[var(--font-noto-kr)]"
+            )}>
+              {isKorean ? '표시 언어' : 'Display Language'}
+            </span>
+            <LanguageToggle />
+          </div>
+        </motion.section>
+
         {/* 계정 정보 */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}

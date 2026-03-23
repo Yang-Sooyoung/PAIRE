@@ -263,8 +263,11 @@ export class RecommendationService {
     ],
   };
 
-  // DB 이미지 무시하고 타입별 고정 이미지 반환
+  // DB 이미지가 있으면 우선 사용, 없으면 타입별 기본 이미지 반환
   private getSafeImage(image: string | null | undefined, type: string, index = 0): string {
+    if (image && image.startsWith('http')) {
+      return image;
+    }
     const typeKey = type?.toLowerCase() || 'default';
     const images = this.DRINK_TYPE_IMAGES[typeKey] || this.DRINK_TYPE_IMAGES['default'];
     return images[index % images.length];
