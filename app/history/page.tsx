@@ -35,7 +35,7 @@ export default function HistoryPage() {
       return;
     }
 
-    // FREE ?�용?�는 ?�근 불�?
+    // FREE ?ъ슜?먮뒗 ?묎렐 遺덇?
     if (user.membership === 'FREE') {
       return;
     }
@@ -54,7 +54,7 @@ export default function HistoryPage() {
     fetchHistory();
   }, [user, refreshTokenIfNeeded, router]);
 
-  // FREE ?�용???�면
+  // FREE ?ъ슜???붾㈃
   if (user && user.membership === 'FREE') {
     return (
       <div className="min-h-screen bg-background relative overflow-hidden">
@@ -75,7 +75,7 @@ export default function HistoryPage() {
               "text-lg font-medium text-foreground tracking-wide",
               isKorean && "font-[var(--font-noto-kr)] tracking-normal"
             )}>
-              {isKorean ? '추천 ?�스?�리' : 'Recommendation History'}
+              {isKorean ? '異붿쿇 ?덉뒪?좊━' : 'Recommendation History'}
             </h1>
           </div>
         </div>
@@ -93,14 +93,14 @@ export default function HistoryPage() {
               "text-2xl font-light text-foreground mb-3",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? 'PREMIUM ?�용 기능' : 'PREMIUM Feature'}
+              {isKorean ? 'PREMIUM ?꾩슜 湲곕뒫' : 'PREMIUM Feature'}
             </h2>
             <p className={cn(
               "text-muted-foreground mb-8",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
               {isKorean
-                ? '추천 ?�스?�리??PREMIUM 멤버�??�용?????�습?�다.'
+                ? '異붿쿇 ?덉뒪?좊━??PREMIUM 硫ㅻ쾭留??댁슜?????덉뒿?덈떎.'
                 : 'Recommendation history is available for PREMIUM members only.'}
             </p>
             <Button
@@ -110,7 +110,7 @@ export default function HistoryPage() {
                 isKorean && "font-[var(--font-noto-kr)]"
               )}
             >
-              {isKorean ? 'PREMIUM 구독?�기' : 'Subscribe to PREMIUM'}
+              {isKorean ? 'PREMIUM 援щ룆?섍린' : 'Subscribe to PREMIUM'}
             </Button>
           </motion.div>
         </div>
@@ -145,7 +145,7 @@ export default function HistoryPage() {
             "text-lg font-medium text-foreground tracking-wide",
             isKorean && "font-[var(--font-noto-kr)] tracking-normal"
           )}>
-            {isKorean ? '추천 ?�스?�리' : 'Recommendation History'}
+            {isKorean ? '異붿쿇 ?덉뒪?좊━' : 'Recommendation History'}
           </h1>
         </div>
       </div>
@@ -162,7 +162,7 @@ export default function HistoryPage() {
               "text-muted-foreground",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? '?�직 추천 기록???�습?�다.' : 'No recommendations yet.'}
+              {isKorean ? '?꾩쭅 異붿쿇 湲곕줉???놁뒿?덈떎.' : 'No recommendations yet.'}
             </p>
           </motion.div>
         ) : (
@@ -230,5 +230,3 @@ export default function HistoryPage() {
     </div>
   );
 }
-
-

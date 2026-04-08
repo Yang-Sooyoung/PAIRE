@@ -60,7 +60,7 @@ export default function FavoritesPage() {
       return;
     }
 
-    // FREE ?�용?�는 ?�근 불�?
+    // FREE ?ъ슜?먮뒗 ?묎렐 遺덇?
     if (user.membership === 'FREE') {
       return;
     }
@@ -105,7 +105,7 @@ export default function FavoritesPage() {
     setShowDialog(true);
   };
 
-  // FREE ?�용???�면
+  // FREE ?ъ슜???붾㈃
   if (user && user.membership === 'FREE') {
     return (
       <div className="min-h-screen bg-background relative overflow-hidden">
@@ -126,7 +126,7 @@ export default function FavoritesPage() {
               "text-lg font-medium text-foreground tracking-wide",
               isKorean && "font-[var(--font-noto-kr)] tracking-normal"
             )}>
-              {isKorean ? '즐겨찾기' : 'Favorites'}
+              {isKorean ? '利먭꺼李얘린' : 'Favorites'}
             </h1>
           </div>
         </div>
@@ -284,12 +284,10 @@ export default function FavoritesPage() {
         type={dialogConfig.type}
         title={dialogConfig.title}
         description={dialogConfig.description}
-        confirmText={isKorean ? '?�인' : 'Confirm'}
-        cancelText={isKorean ? '취소' : 'Cancel'}
+        confirmText={isKorean ? '?뺤씤' : 'Confirm'}
+        cancelText={isKorean ? '痍⑥냼' : 'Cancel'}
         onConfirm={dialogConfig.onConfirm}
       />
     </div>
   );
 }
-
-

@@ -25,82 +25,82 @@ interface Sticker {
 const STICKERS: Omit<Sticker, 'unlocked' | 'unlockedAt'>[] = [
   {
     id: 'first-recommendation',
-    name: '�?추천',
+    name: '泥?異붿쿇',
     nameEn: 'First Step',
-    description: '�?번째 추천??받았?�요',
+    description: '泥?踰덉㎏ 異붿쿇??諛쏆븯?댁슂',
     descriptionEn: 'Received your first recommendation',
-    emoji: '?��',
-    condition: '추천 1??,
+    emoji: '?럦',
+    condition: '異붿쿇 1??,
     conditionEn: '1 recommendation',
   },
   {
     id: 'wine-lover',
-    name: '?�???�버',
+    name: '????щ쾭',
     nameEn: 'Wine Lover',
-    description: '?�??추천??10�?받았?�요',
+    description: '???異붿쿇??10踰?諛쏆븯?댁슂',
     descriptionEn: 'Received 10 wine recommendations',
-    emoji: '?��',
-    condition: '?�??추천 10??,
+    emoji: '?뜼',
+    condition: '???異붿쿇 10??,
     conditionEn: '10 wine recommendations',
   },
   {
     id: 'night-owl',
-    name: '?�행??,
+    name: '?쇳뻾??,
     nameEn: 'Night Owl',
-    description: '�?11???�후 추천??5�?받았?�요',
+    description: '諛?11???댄썑 異붿쿇??5踰?諛쏆븯?댁슂',
     descriptionEn: 'Got 5 recommendations after 11 PM',
-    emoji: '?��',
-    condition: '�?11???�후 추천 5??,
+    emoji: '?뙔',
+    condition: '諛?11???댄썑 異붿쿇 5??,
     conditionEn: '5 recommendations after 11 PM',
   },
   {
     id: 'passionate',
-    name: '?�정??,
+    name: '?댁젙??,
     nameEn: 'Passionate',
-    description: '?�주???�속 추천??받았?�요',
+    description: '?쇱＜???곗냽 異붿쿇??諛쏆븯?댁슂',
     descriptionEn: 'Got recommendations for 7 days straight',
-    emoji: '?��',
-    condition: '7???�속 추천',
+    emoji: '?뵦',
+    condition: '7???곗냽 異붿쿇',
     conditionEn: '7 days streak',
   },
   {
     id: 'premium-member',
-    name: '?�리미엄 멤버',
+    name: '?꾨━誘몄뾼 硫ㅻ쾭',
     nameEn: 'Premium Member',
-    description: '?�리미엄 구독???�작?�어??,
+    description: '?꾨━誘몄뾼 援щ룆???쒖옉?덉뼱??,
     descriptionEn: 'Started premium subscription',
-    emoji: '?��',
-    condition: '?�리미엄 구독',
+    emoji: '?뭿',
+    condition: '?꾨━誘몄뾼 援щ룆',
     conditionEn: 'Premium subscription',
   },
   {
     id: 'perfectionist',
-    name: '?�벽주의??,
+    name: '?꾨꼍二쇱쓽??,
     nameEn: 'Perfectionist',
-    description: '즐겨찾기�?20�?모았?�요',
+    description: '利먭꺼李얘린瑜?20媛?紐⑥븯?댁슂',
     descriptionEn: 'Collected 20 favorites',
-    emoji: '?��',
-    condition: '즐겨찾기 20�?,
+    emoji: '?렞',
+    condition: '利먭꺼李얘린 20媛?,
     conditionEn: '20 favorites',
   },
   {
     id: 'explorer',
-    name: '?�험가',
+    name: '?먰뿕媛',
     nameEn: 'Explorer',
-    description: '5가지 ?�른 ?�료 ?�?�을 추천받았?�요',
+    description: '5媛吏 ?ㅻⅨ ?뚮즺 ??낆쓣 異붿쿇諛쏆븯?댁슂',
     descriptionEn: 'Tried 5 different drink types',
-    emoji: '?���?,
-    condition: '5가지 ?�료 ?�??,
+    emoji: '?뿺截?,
+    condition: '5媛吏 ?뚮즺 ???,
     conditionEn: '5 drink types',
   },
   {
     id: 'social-butterfly',
-    name: '?�셜 버터?�라??,
+    name: '?뚯뀥 踰꾪꽣?뚮씪??,
     nameEn: 'Social Butterfly',
-    description: '추천??10�?공유?�어??,
+    description: '異붿쿇??10踰?怨듭쑀?덉뼱??,
     descriptionEn: 'Shared 10 recommendations',
-    emoji: '?��',
-    condition: '공유 10??,
+    emoji: '?쫳',
+    condition: '怨듭쑀 10??,
     conditionEn: '10 shares',
   },
 ];
@@ -129,7 +129,7 @@ export default function StickersPage() {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      // 백엔?�는 { stickers: [{ id, unlockedAt }] } ?�식?�로 반환
+      // 諛깆뿏?쒕뒗 { stickers: [{ id, unlockedAt }] } ?뺤떇?쇰줈 諛섑솚
       const unlockedIds = new Set(response.data.stickers.map((s: any) => s.id));
       const unlockedMap = new Map(
         response.data.stickers.map((s: any) => [s.id, s.unlockedAt])
@@ -163,13 +163,13 @@ export default function StickersPage() {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* 배경 ?�과 */}
+      {/* 諛곌꼍 ?④낵 */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gold/5 rounded-full blur-3xl" />
         <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-gold/3 rounded-full blur-3xl" />
       </div>
 
-      {/* ?�더 */}
+      {/* ?ㅻ뜑 */}
       <div className="bg-card/50 backdrop-blur-sm border-b border-border sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center gap-4">
           <button
@@ -184,13 +184,13 @@ export default function StickersPage() {
               isKorean && 'font-[var(--font-noto-kr)] tracking-normal'
             )}
           >
-            {isKorean ? '?�티�?컬렉?? : 'Sticker Collection'}
+            {isKorean ? '?ㅽ떚而?而щ젆?? : 'Sticker Collection'}
           </h1>
         </div>
       </div>
 
       <div className="max-w-4xl mx-auto px-4 py-12 relative z-10">
-        {/* 진행??*/}
+        {/* 吏꾪뻾??*/}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -204,10 +204,10 @@ export default function StickersPage() {
                   isKorean && 'font-[var(--font-noto-kr)]'
                 )}
               >
-                {isKorean ? '?�집 진행?? : 'Collection Progress'}
+                {isKorean ? '?섏쭛 吏꾪뻾?? : 'Collection Progress'}
               </h2>
               <p className="text-muted-foreground text-sm">
-                {unlockedCount} / {totalCount} {isKorean ? '�??�집' : 'collected'}
+                {unlockedCount} / {totalCount} {isKorean ? '媛??섏쭛' : 'collected'}
               </p>
             </div>
             <div className="text-4xl">
@@ -215,7 +215,7 @@ export default function StickersPage() {
             </div>
           </div>
 
-          {/* 진행 �?*/}
+          {/* 吏꾪뻾 諛?*/}
           <div className="w-full h-3 bg-secondary rounded-full overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
@@ -226,7 +226,7 @@ export default function StickersPage() {
           </div>
         </motion.div>
 
-        {/* ?�티�?그리??*/}
+        {/* ?ㅽ떚而?洹몃━??*/}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {stickers.map((sticker, index) => (
             <motion.div
@@ -241,14 +241,14 @@ export default function StickersPage() {
                   : 'border-border opacity-60'
               )}
             >
-              {/* ?�금 ?�이�?*/}
+              {/* ?좉툑 ?꾩씠肄?*/}
               {!sticker.unlocked && (
                 <div className="absolute top-3 right-3">
                   <Lock className="w-4 h-4 text-muted-foreground" />
                 </div>
               )}
 
-              {/* ?�모지 */}
+              {/* ?대え吏 */}
               <div
                 className={cn(
                   'text-5xl mb-3 text-center',
@@ -258,7 +258,7 @@ export default function StickersPage() {
                 {sticker.emoji}
               </div>
 
-              {/* ?�름 */}
+              {/* ?대쫫 */}
               <h3
                 className={cn(
                   'text-center font-semibold text-foreground mb-2',
@@ -268,7 +268,7 @@ export default function StickersPage() {
                 {isKorean ? sticker.name : sticker.nameEn}
               </h3>
 
-              {/* ?�명 */}
+              {/* ?ㅻ챸 */}
               <p
                 className={cn(
                   'text-xs text-center text-muted-foreground mb-2',
@@ -278,7 +278,7 @@ export default function StickersPage() {
                 {isKorean ? sticker.description : sticker.descriptionEn}
               </p>
 
-              {/* 조건 */}
+              {/* 議곌굔 */}
               <div
                 className={cn(
                   'text-xs text-center px-2 py-1 rounded-full',
@@ -290,7 +290,7 @@ export default function StickersPage() {
                 {isKorean ? sticker.condition : sticker.conditionEn}
               </div>
 
-              {/* ?�제 ?�짜 */}
+              {/* ?댁젣 ?좎쭨 */}
               {sticker.unlocked && sticker.unlockedAt && (
                 <p className="text-xs text-center text-muted-foreground mt-2">
                   {new Date(sticker.unlockedAt).toLocaleDateString(
@@ -303,7 +303,7 @@ export default function StickersPage() {
           ))}
         </div>
 
-        {/* ?�내 메시지 */}
+        {/* ?덈궡 硫붿떆吏 */}
         {unlockedCount === 0 && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -318,7 +318,7 @@ export default function StickersPage() {
               )}
             >
               {isKorean
-                ? '추천??받고 ?�티커�? ?�집?�보?�요! ??
+                ? '異붿쿇??諛쏄퀬 ?ㅽ떚而ㅻ? ?섏쭛?대낫?몄슂! ??
                 : 'Get recommendations and collect stickers! ??}
             </p>
           </motion.div>
@@ -327,5 +327,3 @@ export default function StickersPage() {
     </div>
   );
 }
-
-

@@ -34,13 +34,13 @@ export default function SettingsPage() {
       });
 
       if (!response.ok) {
-        throw new Error('계정 ??�� ?�패');
+        throw new Error('怨꾩젙 ??젣 ?ㅽ뙣');
       }
 
       logout();
       router.push('/');
     } catch (error) {
-      alert('계정 ??�� �??�류가 발생?�습?�다.');
+      alert('怨꾩젙 ??젣 以??ㅻ쪟媛 諛쒖깮?덉뒿?덈떎.');
     }
   };
 
@@ -48,7 +48,7 @@ export default function SettingsPage() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="text-foreground text-2xl font-light mb-4">PAIRÉ</div>
+          <div className="text-foreground text-2xl font-light mb-4">PAIR횋</div>
           <div className={cn(
             "text-muted-foreground text-sm",
             isKorean && "font-[var(--font-noto-kr)]"
@@ -62,13 +62,13 @@ export default function SettingsPage() {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* 배경 ?�과 */}
+      {/* 諛곌꼍 ?④낵 */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gold/5 rounded-full blur-3xl" />
         <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-gold/3 rounded-full blur-3xl" />
       </div>
 
-      {/* ?�더 */}
+      {/* ?ㅻ뜑 */}
       <div className="bg-card/50 backdrop-blur-sm border-b border-border sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center gap-4 relative z-20">
           <button
@@ -87,9 +87,9 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {/* 콘텐�?*/}
+      {/* 肄섑뀗痢?*/}
       <div className="max-w-2xl mx-auto px-4 py-8 space-y-6 relative z-10">
-        {/* ?�어 ?�정 */}
+        {/* ?몄뼱 ?ㅼ젙 */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -100,14 +100,14 @@ export default function SettingsPage() {
             "text-xs text-gold-dim uppercase tracking-widest font-light mb-4",
             isKorean && "font-[var(--font-noto-kr)] normal-case tracking-normal"
           )}>
-            {isKorean ? '?�어 ?�정' : 'Language'}
+            {isKorean ? '?몄뼱 ?ㅼ젙' : 'Language'}
           </h2>
           <div className="flex items-center justify-between">
             <span className={cn(
               "text-muted-foreground text-sm",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? '?�시 ?�어' : 'Display Language'}
+              {isKorean ? '?쒖떆 ?몄뼱' : 'Display Language'}
             </span>
             <LanguageToggle />
           </div>
@@ -116,12 +116,12 @@ export default function SettingsPage() {
             isKorean && "font-[var(--font-noto-kr)]"
           )}>
             {isKorean
-              ? '추천 결과???�택???�어�??�?�됩?�다. ?�어�?변경하�??�후 추천부???�용?�니??'
+              ? '異붿쿇 寃곌낵???좏깮???몄뼱濡???λ맗?덈떎. ?몄뼱瑜?蹂寃쏀븯硫??댄썑 異붿쿇遺???곸슜?⑸땲??'
               : 'Recommendations are saved in the selected language. Changes apply to future recommendations.'}
           </p>
         </motion.section>
 
-        {/* 계정 ?�보 */}
+        {/* 怨꾩젙 ?뺣낫 */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -167,7 +167,7 @@ export default function SettingsPage() {
           </div>
         </motion.section>
 
-        {/* ?��? & ?�책 */}
+        {/* ?쎄? & ?뺤콉 */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -178,7 +178,7 @@ export default function SettingsPage() {
             "text-xs text-gold-dim uppercase tracking-widest font-light px-6 pt-6 pb-4",
             isKorean && "font-[var(--font-noto-kr)] normal-case tracking-normal"
           )}>
-            {isKorean ? '???�동' : 'My Activity'}
+            {isKorean ? '???쒕룞' : 'My Activity'}
           </h2>
           <div className="divide-y divide-border">
             <button
@@ -191,7 +191,7 @@ export default function SettingsPage() {
                   "text-foreground/80 group-hover:text-foreground transition",
                   isKorean && "font-[var(--font-noto-kr)]"
                 )}>
-                  {isKorean ? '?�티�?컬렉?? : 'Sticker Collection'}
+                  {isKorean ? '?ㅽ떚而?而щ젆?? : 'Sticker Collection'}
                 </span>
               </div>
               <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-gold/60 transition" />
@@ -199,7 +199,7 @@ export default function SettingsPage() {
           </div>
         </motion.section>
 
-        {/* ?��? & ?�책 */}
+        {/* ?쎄? & ?뺤콉 */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -263,7 +263,7 @@ export default function SettingsPage() {
           </div>
         </motion.section>
 
-        {/* 고객 지??*/}
+        {/* 怨좉컼 吏??*/}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -277,7 +277,7 @@ export default function SettingsPage() {
             {t('settings.customerSupport')}
           </h2>
           <button
-            onClick={() => window.location.href = 'mailto:ruckyrosie@gmail.com?subject=PAIRÉ 문의'}
+            onClick={() => window.location.href = 'mailto:ruckyrosie@gmail.com?subject=PAIR횋 臾몄쓽'}
             className="w-full px-6 py-4 flex items-center justify-between hover:bg-gold/5 transition text-left group"
           >
             <div className="flex items-center gap-3">
@@ -293,7 +293,7 @@ export default function SettingsPage() {
           </button>
         </motion.section>
 
-        {/* 개발??지??*/}
+        {/* 媛쒕컻??吏??*/}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -304,7 +304,7 @@ export default function SettingsPage() {
             "text-xs text-gold uppercase tracking-widest font-light px-6 pt-6 pb-4",
             isKorean && "font-[var(--font-noto-kr)] normal-case tracking-normal"
           )}>
-            {isKorean ? '개발??지???��' : 'Support Developer ?��'}
+            {isKorean ? '媛쒕컻??吏???뮎' : 'Support Developer ?뮎'}
           </h2>
           <button
             onClick={() => router.push('/support')}
@@ -317,13 +317,13 @@ export default function SettingsPage() {
                   "text-foreground/90 group-hover:text-foreground transition",
                   isKorean && "font-[var(--font-noto-kr)]"
                 )}>
-                  {isKorean ? '개발?�에�??????�주�? : 'Buy me a drink'}
+                  {isKorean ? '媛쒕컻?먯뿉寃??????ъ＜湲? : 'Buy me a drink'}
                 </div>
                 <div className={cn(
                   "text-xs text-muted-foreground",
                   isKorean && "font-[var(--font-noto-kr)]"
                 )}>
-                  {isKorean ? '?�원 메시지, ?�업 문의' : 'Messages, collaborations'}
+                  {isKorean ? '?묒썝 硫붿떆吏, ?묒뾽 臾몄쓽' : 'Messages, collaborations'}
                 </div>
               </div>
             </div>
@@ -331,7 +331,7 @@ export default function SettingsPage() {
           </button>
         </motion.section>
 
-        {/* ?�험 ?�역 */}
+        {/* ?꾪뿕 ?곸뿭 */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -419,7 +419,7 @@ export default function SettingsPage() {
           </div>
         </motion.section>
 
-        {/* 버전 ?�보 */}
+        {/* 踰꾩쟾 ?뺣낫 */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -433,5 +433,3 @@ export default function SettingsPage() {
     </div>
   );
 }
-
-
