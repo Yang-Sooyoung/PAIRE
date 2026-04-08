@@ -2,7 +2,7 @@ services:
   - type: web
     name: paire-backend
     runtime: node
-    buildCommand: npm install && npx prisma generate && npm run build
+    buildCommand: npm ci --omit=dev && npm install --save-dev @nestjs/cli prisma rimraf ts-loader typescript && npx prisma generate && npm run build
     startCommand: npm run start:prod
     envVars:
       - key: NODE_ENV
