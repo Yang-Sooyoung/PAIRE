@@ -52,7 +52,7 @@ export class GeminiService {
     language?: string,
   ): Promise<RecommendationResult> {
     // 캐시 키 생성
-    const cacheKey = this.generateCacheKey(foodAnalysis, occasion, tastes, priceRange);
+    const cacheKey = this.generateCacheKey(foodAnalysis, occasion, tastes, priceRange, language);
 
     // 캐시 확인
     const cached = await this.getCachedRecommendation(cacheKey);
@@ -479,6 +479,7 @@ Recommend 3 drinks from the list above. All descriptions in English. JSON format
     occasion?: string,
     tastes?: string[],
     priceRange?: string,
+    language?: string,
   ): string {
     const data = {
       keywords: foodAnalysis.keywords.sort(),
@@ -486,6 +487,7 @@ Recommend 3 drinks from the list above. All descriptions in English. JSON format
       occasion: occasion || '',
       tastes: (tastes || []).sort(),
       priceRange: priceRange || '',
+      language: language || 'en',
     };
 
     return crypto.createHash('sha256').update(JSON.stringify(data)).digest('hex');

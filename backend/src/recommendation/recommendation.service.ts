@@ -186,7 +186,8 @@ export class RecommendationService {
       dto.occasion,
       dto.tastes,
       detectedFoods,
-      ''
+      '',
+      dto.language || 'en',
     );
 
     const recommendation = {
@@ -344,9 +345,12 @@ export class RecommendationService {
     occasion: string,
     tastes: string[],
     foods: string[],
-    pairingReason: string
+    pairingReason: string,
+    language: string = 'ko',
   ): string {
-    const messages = {
+    const isKorean = language === 'ko';
+
+    const messages = isKorean ? {
       date: [
         '특별한 순간을 더욱 빛나게 해줄 한 잔이에요 ✨',
         '로맨틱한 분위기에 완벽한 페어링입니다 💕',
@@ -381,12 +385,46 @@ export class RecommendationService {
         '어떤 상황에서도 즐길 수 있는 만능 페어링이에요',
         '언제 어디서나 좋은 선택입니다',
       ],
+    } : {
+      date: [
+        'A perfect drink to make your special moment shine ✨',
+        'The ideal pairing for a romantic atmosphere 💕',
+        'This drink will make your time together even more special',
+      ],
+      solo: [
+        'The perfect choice for your own time 🌙',
+        'Just the right drink to enjoy your solitude',
+        'A drink to wash away the day\'s fatigue',
+      ],
+      friends: [
+        'A great choice to enjoy with friends 🎉',
+        'This will make your fun time even richer',
+        'Better when shared — cheers!',
+      ],
+      family: [
+        'A drink that suits a family meal 🏠',
+        'Something to make warm moments even more special',
+        'The perfect choice everyone can enjoy',
+      ],
+      business: [
+        'A sophisticated choice for business meetings 💼',
+        'A drink that completes a professional atmosphere',
+        'A pairing that leaves a great impression',
+      ],
+      celebration: [
+        'This will make your celebration even more dazzling 🎊',
+        'The perfect choice to commemorate a special day',
+        'The best drink to accompany your happiest moments',
+      ],
+      all: [
+        'A versatile pairing you can enjoy in any situation',
+        'Always a good choice, anytime, anywhere',
+      ],
     };
 
     const occasionMessages = messages[occasion] || messages.all;
     const randomMessage = occasionMessages[Math.floor(Math.random() * occasionMessages.length)];
 
-    // 페어링 이유가 있으면 추가
     if (pairingReason) {
       return `${randomMessage}\n\n${pairingReason}`;
     }
