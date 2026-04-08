@@ -60,7 +60,7 @@ export default function FavoritesPage() {
       return;
     }
 
-    // FREE ?�용?�는 ?�근 불�?
+    // FREE ?�용?�는 ?�근 불�?
     if (user.membership === 'FREE') {
       return;
     }
@@ -105,7 +105,7 @@ export default function FavoritesPage() {
     setShowDialog(true);
   };
 
-  // FREE ?�용???�면
+  // FREE ?�용???�면
   if (user && user.membership === 'FREE') {
     return (
       <div className="min-h-screen bg-background relative overflow-hidden">
@@ -284,7 +284,7 @@ export default function FavoritesPage() {
         type={dialogConfig.type}
         title={dialogConfig.title}
         description={dialogConfig.description}
-        confirmText={isKorean ? '?�인' : 'Confirm'}
+        confirmText={isKorean ? '?�인' : 'Confirm'}
         cancelText={isKorean ? '취소' : 'Cancel'}
         onConfirm={dialogConfig.onConfirm}
       />

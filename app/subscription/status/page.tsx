@@ -76,7 +76,7 @@ export default function SubscriptionStatusPage() {
       }
     } catch (error) {
       console.error('Failed to fetch subscription:', error);
-      // 구독 ?�보 ?�으�?구독 ?�이지�?
+      // 구독 ?�보 ?�으�?구독 ?�이지�?
       router.push('/subscription');
     } finally {
       setLoading(false);
@@ -100,12 +100,12 @@ export default function SubscriptionStatusPage() {
 
       console.log('Cancel subscription response:', response.data);
       
-      // 구독 ?�보 ?�시 가?�오�?
+      // 구독 ?�보 ?�시 가?�오�?
       await fetchSubscriptionStatus();
       
-      // ?�용???�보 ?�데?�트 (멤버??? ?��??��?�?구독 ?�태??CANCELLED)
+      // ?�용???�보 ?�데?�트 (멤버??? ?��??��?�?구독 ?�태??CANCELLED)
       if (user) {
-        // ?�용???�보 ?�로고침
+        // ?�용???�보 ?�로고침
         try {
           const userResponse = await axios.get(`${API_URL}/auth/me`, {
             headers: { Authorization: `Bearer ${token}` },
@@ -120,13 +120,13 @@ export default function SubscriptionStatusPage() {
       
       setShowSuccessDialog(true);
 
-      // 2�???구독 ?�이지�??�동
+      // 2�???구독 ?�이지�??�동
       setTimeout(() => {
         router.push('/subscription');
       }, 2000);
     } catch (error: any) {
       console.error('Failed to cancel subscription:', error);
-      setErrorMessage(error.response?.data?.message || (isKorean ? '구독 취소???�패?�습?�다.' : 'Failed to cancel subscription.'));
+      setErrorMessage(error.response?.data?.message || (isKorean ? '구독 취소???�패?�습?�다.' : 'Failed to cancel subscription.'));
       setShowErrorDialog(true);
     } finally {
       setCancelling(false);
@@ -142,7 +142,7 @@ export default function SubscriptionStatusPage() {
   }
 
   if (!subscription) {
-    return null; // fetchSubscriptionStatus?�서 ?��? redirect 처리
+    return null; // fetchSubscriptionStatus?�서 ?��? redirect 처리
   }
 
   const nextBillingDate = new Date(subscription.nextBillingDate);
@@ -154,13 +154,13 @@ export default function SubscriptionStatusPage() {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* 배경 ?�과 */}
+      {/* 배경 ?�과 */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gold/5 rounded-full blur-3xl" />
         <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-gold/3 rounded-full blur-3xl" />
       </div>
 
-      {/* ?�더 */}
+      {/* ?�더 */}
       <div className="bg-card/50 backdrop-blur-sm border-b border-border sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center gap-4">
           <button
@@ -173,13 +173,13 @@ export default function SubscriptionStatusPage() {
             "text-lg font-medium text-foreground tracking-wide",
             isKorean && "font-[var(--font-noto-kr)] tracking-normal"
           )}>
-            {isKorean ? '구독 관�? : 'Manage Subscription'}
+            {isKorean ? '구독 관�? : 'Manage Subscription'}
           </h1>
         </div>
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-12 relative z-10">
-        {/* 구독 ?�태 카드 */}
+        {/* 구독 ?�태 카드 */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -213,7 +213,7 @@ export default function SubscriptionStatusPage() {
                     "text-xs px-2 py-1 rounded-full bg-orange-500/20 text-orange-500",
                     isKorean && "font-[var(--font-noto-kr)]"
                   )}>
-                    {isKorean ? '?��? ?�정' : 'Cancelled'}
+                    {isKorean ? '?��? ?�정' : 'Cancelled'}
                   </span>
                 )}
               </div>
@@ -225,13 +225,13 @@ export default function SubscriptionStatusPage() {
                 {subscription.interval === 'WEEKLY'
                   ? (isKorean ? '주간 구독' : 'Weekly Subscription')
                   : subscription.interval === 'MONTHLY' 
-                  ? (isKorean ? '?�간 구독' : 'Monthly Subscription')
-                  : (isKorean ? '?�간 구독' : 'Annual Subscription')}
+                  ? (isKorean ? '?�간 구독' : 'Monthly Subscription')
+                  : (isKorean ? '?�간 구독' : 'Annual Subscription')}
               </p>
             </div>
           </div>
 
-          {/* ?��? ?�내 메시지 */}
+          {/* ?��? ?�내 메시지 */}
           {subscription.status === 'CANCELLED' && (
             <div className="mb-4 p-4 bg-orange-500/10 border border-orange-500/20 rounded-lg">
               <p className={cn(
@@ -239,14 +239,14 @@ export default function SubscriptionStatusPage() {
                 isKorean && "font-[var(--font-noto-kr)]"
               )}>
                 {isKorean
-                  ? `구독???��??�었?�니?? ${formattedDate}까�? PREMIUM ?�택??계속 ?�용?�실 ???�습?�다.`
+                  ? `구독???��??�었?�니?? ${formattedDate}까�? PREMIUM ?�택??계속 ?�용?�실 ???�습?�다.`
                   : `Your subscription has been cancelled. You can continue using PREMIUM benefits until ${formattedDate}.`}
               </p>
             </div>
           )}
 
           <div className="space-y-4">
-            {/* 만료???�음 결제??*/}
+            {/* 만료???�음 결제??*/}
             <div className="flex items-center justify-between p-4 bg-background/50 rounded-lg">
               <div className="flex items-center gap-3">
                 <Calendar className={cn(
@@ -259,7 +259,7 @@ export default function SubscriptionStatusPage() {
                 )}>
                   {subscription.status === 'CANCELLED'
                     ? (isKorean ? '만료?? : 'Expires On')
-                    : (isKorean ? '?�음 결제?? : 'Next Billing Date')}
+                    : (isKorean ? '?�음 결제?? : 'Next Billing Date')}
                 </span>
               </div>
               <span className={cn(
@@ -281,7 +281,7 @@ export default function SubscriptionStatusPage() {
                   "text-muted-foreground",
                   isKorean && "font-[var(--font-noto-kr)]"
                 )}>
-                  {isKorean ? '?�랜 금액' : 'Plan Amount'}
+                  {isKorean ? '?�랜 금액' : 'Plan Amount'}
                 </span>
               </div>
               <span className="text-foreground font-medium">
@@ -291,7 +291,7 @@ export default function SubscriptionStatusPage() {
               </span>
             </div>
 
-            {/* 결제 ?�단 */}
+            {/* 결제 ?�단 */}
             {subscription.status !== 'CANCELLED' && (
               <div className="flex items-center justify-between p-4 bg-background/50 rounded-lg">
                 <div className="flex items-center gap-3">
@@ -300,7 +300,7 @@ export default function SubscriptionStatusPage() {
                     "text-muted-foreground",
                     isKorean && "font-[var(--font-noto-kr)]"
                   )}>
-                    {isKorean ? '결제 ?�단' : 'Payment Method'}
+                    {isKorean ? '결제 ?�단' : 'Payment Method'}
                   </span>
                 </div>
                 <span className="text-foreground font-medium">
@@ -311,7 +311,7 @@ export default function SubscriptionStatusPage() {
           </div>
         </motion.div>
 
-        {/* ?�리미엄 ?�택 */}
+        {/* ?�리미엄 ?�택 */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -322,14 +322,14 @@ export default function SubscriptionStatusPage() {
             "text-lg font-medium text-foreground mb-4",
             isKorean && "font-[var(--font-noto-kr)]"
           )}>
-            {isKorean ? '?�리미엄 ?�택' : 'Premium Benefits'}
+            {isKorean ? '?�리미엄 ?�택' : 'Premium Benefits'}
           </h3>
           <ul className="space-y-3">
             {[
-              isKorean ? '무제???�료 추천' : 'Unlimited recommendations',
-              isKorean ? '추천 ?�스?�리 ?�?? : 'Save recommendation history',
+              isKorean ? '무제???�료 추천' : 'Unlimited recommendations',
+              isKorean ? '추천 ?�스?�리 ?�?? : 'Save recommendation history',
               isKorean ? '즐겨찾기 기능' : 'Favorites feature',
-              isKorean ? '?�선 고객 지?? : 'Priority support',
+              isKorean ? '?�선 고객 지?? : 'Priority support',
             ].map((benefit, index) => (
               <li key={index} className="flex items-center gap-3">
                 <div className="w-2 h-2 rounded-full bg-gold" />
@@ -344,7 +344,7 @@ export default function SubscriptionStatusPage() {
           </ul>
         </motion.div>
 
-        {/* 구독 취소/?�활?�화 버튼 */}
+        {/* 구독 취소/?�활?�화 버튼 */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -360,7 +360,7 @@ export default function SubscriptionStatusPage() {
                   isKorean && "font-[var(--font-noto-kr)]"
                 )}
               >
-                {isKorean ? '?�시 구독?�기' : 'Resubscribe'}
+                {isKorean ? '?�시 구독?�기' : 'Resubscribe'}
               </Button>
               <Button
                 onClick={() => router.push('/subscription?tab=credit')}
@@ -370,7 +370,7 @@ export default function SubscriptionStatusPage() {
                   isKorean && "font-[var(--font-noto-kr)]"
                 )}
               >
-                {isKorean ? '?�레??충전' : 'Buy Credits'}
+                {isKorean ? '?�레??충전' : 'Buy Credits'}
               </Button>
             </>
           ) : (
@@ -383,7 +383,7 @@ export default function SubscriptionStatusPage() {
                   isKorean && "font-[var(--font-noto-kr)]"
                 )}
               >
-                {isKorean ? '?�랜 변�? : 'Change Plan'}
+                {isKorean ? '?�랜 변�? : 'Change Plan'}
               </Button>
               <Button
                 onClick={() => setShowCancelDialog(true)}
@@ -400,44 +400,44 @@ export default function SubscriptionStatusPage() {
         </motion.div>
       </div>
 
-      {/* 취소 ?�인 ?�이?�로�?*/}
+      {/* 취소 ?�인 ?�이?�로�?*/}
       <CustomDialog
         isOpen={showCancelDialog}
         onClose={() => setShowCancelDialog(false)}
         onConfirm={handleCancelSubscription}
         type="confirm"
-        title={isKorean ? '구독??취소?�시겠어??' : 'Cancel Subscription?'}
+        title={isKorean ? '구독??취소?�시겠어??' : 'Cancel Subscription?'}
         description={
           isKorean
-            ? `?�음 결제??${formattedDate})부??FREE ?�랜?�로 ?�환?�니?? �??�까지??PREMIUM ?�택??계속 ?�용?????�습?�다.`
+            ? `?�음 결제??${formattedDate})부??FREE ?�랜?�로 ?�환?�니?? �??�까지??PREMIUM ?�택??계속 ?�용?????�습?�다.`
             : `Your subscription will be downgraded to FREE plan from ${formattedDate}. You can continue using PREMIUM benefits until then.`
         }
-        confirmText={cancelling ? (isKorean ? '취소 �?..' : 'Cancelling...') : (isKorean ? '구독 취소' : 'Cancel')}
-        cancelText={isKorean ? '?�아가�? : 'Go Back'}
+        confirmText={cancelling ? (isKorean ? '취소 �?..' : 'Cancelling...') : (isKorean ? '구독 취소' : 'Cancel')}
+        cancelText={isKorean ? '?�아가�? : 'Go Back'}
       />
 
-      {/* ?�공 ?�이?�로�?*/}
+      {/* ?�공 ?�이?�로�?*/}
       <CustomDialog
         isOpen={showSuccessDialog}
         onClose={() => setShowSuccessDialog(false)}
         type="success"
-        title={isKorean ? '구독??취소?�었?�니?? : 'Subscription Cancelled'}
+        title={isKorean ? '구독??취소?�었?�니?? : 'Subscription Cancelled'}
         description={
           isKorean
-            ? `${formattedDate}까�? PREMIUM ?�택???�용?????�습?�다.`
+            ? `${formattedDate}까�? PREMIUM ?�택???�용?????�습?�다.`
             : `You can use PREMIUM benefits until ${formattedDate}.`
         }
-        confirmText={isKorean ? '?�인' : 'OK'}
+        confirmText={isKorean ? '?�인' : 'OK'}
       />
 
-      {/* ?�러 ?�이?�로�?*/}
+      {/* ?�러 ?�이?�로�?*/}
       <CustomDialog
         isOpen={showErrorDialog}
         onClose={() => setShowErrorDialog(false)}
         type="error"
-        title={isKorean ? '?�류 발생' : 'Error'}
+        title={isKorean ? '?�류 발생' : 'Error'}
         description={errorMessage}
-        confirmText={isKorean ? '?�인' : 'OK'}
+        confirmText={isKorean ? '?�인' : 'OK'}
       />
     </div>
   );
