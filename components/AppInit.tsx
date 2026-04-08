@@ -3,15 +3,59 @@
 import { useEffect } from 'react';
 import { isNative, requestCameraPermission } from '@/lib/capacitor';
 import { useI18n } from '@/lib/i18n/context';
+import { useUserStore } from '@/app/store/userStore';
+import { getCurrentUser } from '@/app/api/auth';
+import { useRouter } from 'next/navigation';
 
 export default function AppInit() {
   const { setLanguage } = useI18n();
+  const { setUser, setToken, setRefreshToken } = useUserStore();
+  const router = useRouter();
 
   useEffect(() => {
     if (!isNative()) return;
 
     // 카메라 권한 요청
     requestCameraPermission();
+
+    // 딥링크 리스너 - OAuth 콜백 처리
+    const setupDeepLink = async () => {
+      try {
+        const { App } = await import('@capacitor/app');
+        const { Browser } = await import('@capacitor/browser');
+
+        App.addListener('appUrlOpen', async (event) => {
+          const url = event.url;
+          // paire://auth?accessToken=...&refreshToken=... 처리
+          if (url.startsWith('paire://auth')) {
+            const urlObj = new URL(url.replace('paire://auth', 'https://dummy.com/auth'));
+            const accessToken = urlObj.searchParams.get('accessToken');
+            const refreshToken = urlObj.searchParams.get('refreshToken');
+
+            if (accessToken && refreshToken) {
+              try {
+                localStorage.setItem('accessToken', accessToken);
+                localStorage.setItem('refreshToken', refreshToken);
+                setToken(accessToken);
+                setRefreshToken(refreshToken);
+                const userData = await getCurrentUser(accessToken);
+                setUser(userData);
+              } catch (e) {
+                console.error('OAuth token error:', e);
+              }
+            }
+
+            // 인앱 브라우저 닫기
+            await Browser.close();
+            router.push('/');
+          }
+        });
+      } catch (e) {
+        console.error('DeepLink setup error:', e);
+      }
+    };
+
+    setupDeepLink();
 
     // 첫 실행 여부 확인 (이미 언어 설정이 있으면 스킵)
     const savedLanguage = localStorage.getItem('paire-language');
@@ -31,7 +75,6 @@ export default function AppInit() {
           setLanguage('en');
         }
       } catch {
-        // 실패 시 기기 언어로 폴백
         const deviceLang = navigator.language || '';
         if (deviceLang.startsWith('ko')) {
           setLanguage('ko');

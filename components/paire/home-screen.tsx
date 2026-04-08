@@ -13,6 +13,7 @@ interface HomeScreenProps {
   user?: any
   onLoginClick?: () => void
   onSignupClick?: () => void
+  hasHeader?: boolean
 }
 
 export function HomeScreen({ 
@@ -20,7 +21,8 @@ export function HomeScreen({
   onMenuInput,
   user,
   onLoginClick,
-  onSignupClick
+  onSignupClick,
+  hasHeader = false,
 }: HomeScreenProps) {
   const { language, t } = useI18n()
   const isKorean = language === "ko"
@@ -54,23 +56,33 @@ export function HomeScreen({
   const isPremium = user?.membership === 'PREMIUM'
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 relative overflow-hidden">
-
-      {/* 로그인 사용자 - 우상단 멤버십 + 크레딧 뱃지 */}
-      {user && (
+    <div
+      className="bg-background flex flex-col items-center relative overflow-y-auto overflow-x-hidden"
+      style={{
+        minHeight: '100dvh',
+        paddingTop: hasHeader ? '16px' : '24px',
+        paddingBottom: '24px',
+        paddingLeft: '24px',
+        paddingRight: '24px',
+        justifyContent: 'center',
+      }}
+    >
+      {/* 로그인 사용자 - 우상단 멤버십 + 크레딧 뱃지 (헤더가 없을 때만) */}
+      {user && false && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="absolute top-6 right-6 z-20 flex items-center gap-2"
+          className="absolute right-5 z-10 flex items-center gap-2"
+          style={{ top: 'calc(env(safe-area-inset-top, 24px) + 12px)' }}
         >
           {isPremium ? (
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gold/15 border border-gold/40 rounded-full backdrop-blur-sm">
-              <Crown className="w-3.5 h-3.5 text-gold" />
+            <div className="flex items-center gap-1 px-2.5 py-1 bg-gold/15 border border-gold/40 rounded-full backdrop-blur-sm">
+              <Crown className="w-3 h-3 text-gold" />
               <span className="text-gold text-xs font-semibold tracking-wide">PREMIUM</span>
             </div>
           ) : credits > 0 ? (
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gold/10 border border-gold/30 rounded-full backdrop-blur-sm">
-              <Coins className="w-3.5 h-3.5 text-gold" />
+            <div className="flex items-center gap-1 px-2.5 py-1 bg-gold/10 border border-gold/30 rounded-full backdrop-blur-sm">
+              <Coins className="w-3 h-3 text-gold" />
               <span className="text-gold text-xs font-semibold">{credits}</span>
               <span className={cn("text-gold/60 text-xs", isKorean && "font-[var(--font-noto-kr)]")}>
                 {isKorean ? '크레딧' : 'cr'}
@@ -80,31 +92,21 @@ export function HomeScreen({
         </motion.div>
       )}
 
-      {/* Ambient glow effects */}
+      {/* Ambient glow */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gold/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-gold/3 rounded-full blur-3xl" />
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-gold/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/3 right-1/4 w-56 h-56 bg-gold/3 rounded-full blur-3xl" />
       </div>
 
       {/* Sparkle particles */}
       <div className="absolute inset-0 pointer-events-none">
-        {[...Array(20)].map((_, i) => (
+        {[...Array(15)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-1 h-1 bg-gold rounded-full"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              opacity: [0, 1, 0],
-              scale: [0, 1, 0],
-            }}
-            transition={{
-              duration: 2 + Math.random() * 2,
-              repeat: Infinity,
-              delay: Math.random() * 2,
-            }}
+            className="absolute w-0.5 h-0.5 bg-gold rounded-full"
+            style={{ left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%` }}
+            animate={{ opacity: [0, 1, 0], scale: [0, 1, 0] }}
+            transition={{ duration: 2 + Math.random() * 2, repeat: Infinity, delay: Math.random() * 2 }}
           />
         ))}
       </div>
@@ -113,19 +115,21 @@ export function HomeScreen({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="relative z-10 flex flex-col items-center text-center max-w-md"
+        className="relative z-10 flex flex-col items-center text-center w-full"
+        style={{ maxWidth: '360px' }}
       >
         {/* Fairy mascot image */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, delay: 0.2 }}
-          className="mb-8"
+          className="mb-3"
         >
           <img
             src="/images/pairy_main.png"
             alt="PAIRÉ Fairy Sommelier"
-            className="w-72 h-auto drop-shadow-2xl"
+            className="drop-shadow-2xl"
+            style={{ width: '200px', height: 'auto' }}
           />
         </motion.div>
 
@@ -135,9 +139,10 @@ export function HomeScreen({
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.6 }}
           className={cn(
-            "text-lg text-gold-light/80 mb-12 font-light tracking-wide",
-            isKorean && "font-[var(--font-noto-kr)] text-base tracking-normal"
+            "text-gold-light/80 font-light tracking-wide mb-5",
+            isKorean && "font-[var(--font-noto-kr)] tracking-normal"
           )}
+          style={{ fontSize: '13px', lineHeight: '1.6' }}
         >
           {t("home.tagline")}
         </motion.p>
@@ -147,55 +152,59 @@ export function HomeScreen({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.8 }}
-          className="flex flex-col gap-4 w-full max-w-xs"
+          className="flex flex-col gap-3 w-full"
         >
           <Button
             onClick={onCaptureFood}
             className={cn(
-              "w-full h-14 bg-gold hover:bg-gold-light text-background font-semibold text-lg tracking-wide transition-all duration-300 hover:shadow-lg hover:shadow-gold/20",
-              isKorean && "font-[var(--font-noto-kr)] text-base tracking-normal"
+              "w-full bg-gold hover:bg-gold-light text-background font-semibold tracking-wide transition-all duration-300",
+              isKorean && "font-[var(--font-noto-kr)] tracking-normal"
             )}
+            style={{ height: '48px', fontSize: '15px' }}
           >
-            <Camera className="w-5 h-5 mr-3" />
+            <Camera className="w-4 h-4 mr-2 shrink-0" />
             {t("home.captureBtn")}
           </Button>
-          
+
           <Button
             onClick={onMenuInput}
             variant="outline"
             className={cn(
-              "w-full h-14 border-gold/40 text-gold hover:bg-gold/10 hover:border-gold font-medium text-lg tracking-wide transition-all duration-300 bg-transparent",
-              isKorean && "font-[var(--font-noto-kr)] text-base tracking-normal"
+              "w-full border-gold/40 text-gold hover:bg-gold/10 hover:border-gold font-medium tracking-wide transition-all duration-300 bg-transparent",
+              isKorean && "font-[var(--font-noto-kr)] tracking-normal"
             )}
+            style={{ height: '48px', fontSize: '15px' }}
           >
-            <BookOpen className="w-5 h-5 mr-3" />
+            <BookOpen className="w-4 h-4 mr-2 shrink-0" />
             {t("home.menuBtn")}
           </Button>
 
-          {/* 비로그인 사용자 - CTA 아래 로그인/회원가입 */}
+          {/* 비로그인 - 로그인/회원가입 */}
           {!user && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1 }}
-              className="flex gap-3 pt-2"
+              className="flex gap-2 pt-1"
             >
               <Button
                 onClick={onLoginClick}
                 variant="outline"
                 className={cn(
-                  "flex-1 border-gold/30 text-gold/80 hover:bg-gold/10 hover:border-gold hover:text-gold text-sm",
+                  "flex-1 border-gold/30 text-gold/80 hover:bg-gold/10 hover:border-gold hover:text-gold",
                   isKorean && "font-[var(--font-noto-kr)]"
                 )}
+                style={{ height: '44px', fontSize: '14px' }}
               >
                 {t("auth.login")}
               </Button>
               <Button
                 onClick={onSignupClick}
                 className={cn(
-                  "flex-1 bg-gold/20 hover:bg-gold/30 text-gold border border-gold/40 text-sm",
+                  "flex-1 bg-gold/20 hover:bg-gold/30 text-gold border border-gold/40",
                   isKorean && "font-[var(--font-noto-kr)]"
                 )}
+                style={{ height: '44px', fontSize: '14px' }}
               >
                 {t("auth.signup")}
               </Button>

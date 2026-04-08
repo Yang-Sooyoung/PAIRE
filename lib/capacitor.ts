@@ -21,7 +21,11 @@ export async function openOAuthBrowser(url: string): Promise<void> {
     return;
   }
   const { Browser } = await import('@capacitor/browser');
-  await Browser.open({ url, presentationStyle: 'fullscreen' });
+  await Browser.open({ 
+    url, 
+    presentationStyle: 'fullscreen',
+    toolbarColor: '#0d0d11',
+  });
 }
 
 // 인앱 브라우저 닫기

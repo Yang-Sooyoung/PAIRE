@@ -14,7 +14,7 @@ const config: CapacitorConfig = {
         androidScheme: 'http',
       }
     : {
-        // 프로덕션: Vercel 배포 URL 사용 (static export 빌드 불필요)
+        // 프로덕션: Vercel 배포 URL 사용
         url: 'https://drinkpaire.vercel.app',
         androidScheme: 'https',
         iosScheme: 'https',
@@ -23,6 +23,10 @@ const config: CapacitorConfig = {
     Browser: {
       presentationStyle: 'popover',
     },
+  },
+  android: {
+    // 네비게이션 바가 WebView 콘텐츠를 가리지 않도록
+    adjustMarginsForEdgeToEdge: 'never',
   },
 };
 

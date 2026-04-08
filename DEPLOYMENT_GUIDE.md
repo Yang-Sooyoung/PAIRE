@@ -315,4 +315,4 @@ pg_dump $DATABASE_URL > backup.sql
 문제가 발생하면:
 1. Railway/Vercel 로그 확인
 2. GitHub Issues 생성
-3. 이메일: support@paire.app
+3. 이메일: ruckyrosie@gmail.com

@@ -17,22 +17,22 @@ const CREDIT_PACKAGES = [
     credits: 5,
     price: 5000,
     priceUSD: 3.99,
-    nameKo: '크레딧 5회',
+    nameKo: '?�레??5??,
     nameEn: '5 Credits',
-    descKo: '추천 5회 이용권',
+    descKo: '추천 5???�용�?,
     descEn: '5 Recommendations',
-    badge: '🌟',
+    badge: '?��',
   },
   {
     id: 'CREDIT_10',
     credits: 10,
     price: 9000,
     priceUSD: 6.99,
-    nameKo: '크레딧 10회',
+    nameKo: '?�레??10??,
     nameEn: '10 Credits',
-    descKo: '추천 10회 이용권',
+    descKo: '추천 10???�용�?,
     descEn: '10 Recommendations',
-    badge: '⭐',
+    badge: '�?,
     discount: 10,
     savings: 1000,
     savingsUSD: 0.8,
@@ -42,11 +42,11 @@ const CREDIT_PACKAGES = [
     credits: 30,
     price: 24000,
     priceUSD: 17.99,
-    nameKo: '크레딧 30회',
+    nameKo: '?�레??30??,
     nameEn: '30 Credits',
-    descKo: '추천 30회 이용권',
+    descKo: '추천 30???�용�?,
     descEn: '30 Recommendations',
-    badge: '✨',
+    badge: '??,
     discount: 20,
     savings: 6000,
     savingsUSD: 4.0,
@@ -54,7 +54,7 @@ const CREDIT_PACKAGES = [
   },
 ];
 
-// Stripe Price ID 매핑 (크레딧 패키지별)
+// Stripe Price ID 매핑 (?�레???�키지�?
 const STRIPE_CREDIT_PRICE_IDS: Record<string, string> = {
   CREDIT_5: process.env.NEXT_PUBLIC_STRIPE_PRICE_CREDIT_5 || '',
   CREDIT_10: process.env.NEXT_PUBLIC_STRIPE_PRICE_CREDIT_10 || '',
@@ -68,15 +68,15 @@ export default function CreditPage() {
   const isKorean = language === 'ko';
   const [credits, setCredits] = useState(0);
   const [loading, setLoading] = useState(false);
-  // 지역 감지 (기본값 Stripe, 한국 감지 시 Toss로 전환)
+  // 지??감�? (기본�?Stripe, ?�국 감�? ??Toss�??�환)
   const [regionConfig, setRegionConfig] = useState(getRegionConfig('OTHER'));
   const activeRegion = regionConfig;
 
   useEffect(() => {
-    // Stripe 뒤로가기 등으로 store가 초기화된 경우 복구
+    // Stripe ?�로가�??�으�?store가 초기?�된 경우 복구
     if (!user) {
       initializeUser().then(() => {
-        // initializeUser 후에도 user 없으면 login으로
+        // initializeUser ?�에??user ?�으�?login?�로
         const currentUser = useUserStore.getState().user;
         if (!currentUser) {
           router.push('/login');
@@ -85,12 +85,12 @@ export default function CreditPage() {
       return;
     }
 
-    // IP 기반 지역 감지
+    // IP 기반 지??감�?
     detectCountryByIP().then(country => {
       setRegionConfig(getRegionConfig(country));
     });
 
-    // 크레딧 잔액 조회
+    // ?�레???�액 조회
     const fetchBalance = async () => {
       try {
         const currentToken = useUserStore.getState().token;
@@ -130,15 +130,15 @@ export default function CreditPage() {
 
       const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
-      // 해외: Stripe Checkout
+      // ?�외: Stripe Checkout
       if (activeRegion.paymentProvider === 'stripe') {
         const priceId = STRIPE_CREDIT_PRICE_IDS[pkg.id];
         if (!priceId) {
-          alert(isKorean ? 'Stripe 결제가 설정되지 않았습니다.' : 'Stripe payment is not configured.');
+          alert(isKorean ? 'Stripe 결제가 ?�정?��? ?�았?�니??' : 'Stripe payment is not configured.');
           return;
         }
 
-        // 백엔드에 /api prefix 없음 - BASE_URL 사용
+        // 백엔?�에 /api prefix ?�음 - BASE_URL ?�용
         const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api').replace(/\/api$/, '');
         const response = await fetch(`${BASE_URL}/stripe/create-checkout-session`, {
           method: 'POST',
@@ -154,13 +154,13 @@ export default function CreditPage() {
           }),
         });
 
-        if (!response.ok) throw new Error('Stripe session 생성 실패');
+        if (!response.ok) throw new Error('Stripe session ?�성 ?�패');
         const { url } = await response.json();
         if (url) window.location.href = url;
         return;
       }
 
-      // 한국: 토스페이먼츠
+      // ?�국: ?�스?�이먼츠
       const response = await fetch(`${API_URL}/credit/purchase`, {
         method: 'POST',
         headers: {
@@ -170,7 +170,7 @@ export default function CreditPage() {
         body: JSON.stringify({ packageType: pkg.id }),
       });
 
-      if (!response.ok) throw new Error('구매 생성 실패');
+      if (!response.ok) throw new Error('구매 ?�성 ?�패');
 
       const { orderId, amount, orderName } = await response.json();
       const tossPayments = await loadTossPayments(process.env.NEXT_PUBLIC_TOSS_TEST_CLIENT_KEY!);
@@ -183,7 +183,7 @@ export default function CreditPage() {
       });
     } catch (error) {
       console.error('Purchase error:', error);
-      alert(isKorean ? '구매 중 오류가 발생했습니다.' : 'Purchase failed.');
+      alert(isKorean ? '구매 �??�류가 발생?�습?�다.' : 'Purchase failed.');
     } finally {
       setLoading(false);
     }
@@ -191,13 +191,13 @@ export default function CreditPage() {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* 배경 효과 */}
+      {/* 배경 ?�과 */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gold/5 rounded-full blur-3xl" />
         <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-gold/3 rounded-full blur-3xl" />
       </div>
 
-      {/* 헤더 */}
+      {/* ?�더 */}
       <div className="bg-card/50 backdrop-blur-sm border-b border-border sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -208,14 +208,14 @@ export default function CreditPage() {
               <ArrowLeft className="w-5 h-5" />
             </button>
             <h1 className={cn(
-              "text-2xl font-light text-foreground tracking-wide",
+              "text-lg font-medium text-foreground tracking-wide",
               isKorean && "font-[var(--font-noto-kr)] tracking-normal"
             )}>
-              {isKorean ? '크레딧 구매' : 'Buy Credits'}
+              {isKorean ? '?�레??구매' : 'Buy Credits'}
             </h1>
           </div>
           
-          {/* 크레딧 잔액 */}
+          {/* ?�레???�액 */}
           <div className="flex items-center gap-2 px-4 py-2 bg-gold/10 border border-gold/30 rounded-full">
             <Sparkles className="w-4 h-4 text-gold" />
             <span className="text-gold font-semibold">{credits}</span>
@@ -223,14 +223,14 @@ export default function CreditPage() {
               "text-gold-dim text-sm",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? '크레딧' : 'Credits'}
+              {isKorean ? '?�레?? : 'Credits'}
             </span>
           </div>
         </div>
       </div>
 
       <div className="max-w-4xl mx-auto px-4 py-12 relative z-10">
-        {/* 설명 */}
+        {/* ?�명 */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -241,7 +241,7 @@ export default function CreditPage() {
             isKorean && "font-[var(--font-noto-kr)]"
           )}>
             {isKorean
-              ? '크레딧으로 원하는 만큼만 이용하세요'
+              ? '?�레?�으�??�하??만큼�??�용?�세??
               : 'Use credits to get recommendations as you need'}
           </p>
           <p className={cn(
@@ -249,12 +249,12 @@ export default function CreditPage() {
             isKorean && "font-[var(--font-noto-kr)]"
           )}>
             {isKorean
-              ? '크레딧 1개 = 추천 1회'
+              ? '?�레??1�?= 추천 1??
               : '1 Credit = 1 Recommendation'}
           </p>
         </motion.div>
 
-        {/* 패키지 그리드 */}
+        {/* ?�키지 그리??*/}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {CREDIT_PACKAGES.map((pkg, index) => (
             <motion.div
@@ -267,17 +267,17 @@ export default function CreditPage() {
                 pkg.popular ? "border-gold/30 shadow-lg shadow-gold/10" : "border-border"
               )}
             >
-              {/* 인기 배지 */}
+              {/* ?�기 배�? */}
               {pkg.popular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-gold text-background text-xs font-semibold rounded-full">
-                  {isKorean ? '인기' : 'POPULAR'}
+                  {isKorean ? '?�기' : 'POPULAR'}
                 </div>
               )}
 
-              {/* 이모지 */}
+              {/* ?�모지 */}
               <div className="text-4xl mb-4 text-center">{pkg.badge}</div>
 
-              {/* 패키지 이름 */}
+              {/* ?�키지 ?�름 */}
               <h3 className={cn(
                 "text-xl font-semibold text-foreground text-center mb-2",
                 isKorean && "font-[var(--font-noto-kr)]"
@@ -285,7 +285,7 @@ export default function CreditPage() {
                 {isKorean ? pkg.nameKo : pkg.nameEn}
               </h3>
 
-              {/* 설명 */}
+              {/* ?�명 */}
               <p className={cn(
                 "text-sm text-muted-foreground text-center mb-4",
                 isKorean && "font-[var(--font-noto-kr)]"
@@ -293,33 +293,33 @@ export default function CreditPage() {
                 {isKorean ? pkg.descKo : pkg.descEn}
               </p>
 
-              {/* 가격 */}
+              {/* 가�?*/}
               <div className="text-center mb-6">
                 <div className="text-3xl font-bold text-gold mb-1">
                   {activeRegion.paymentProvider === 'stripe'
                     ? `$${pkg.priceUSD.toFixed(2)}`
-                    : `₩${pkg.price.toLocaleString()}`}
+                    : `??{pkg.price.toLocaleString()}`}
                 </div>
                 {pkg.discount && (
                   <div className="flex items-center justify-center gap-2">
                     <span className="text-sm text-muted-foreground line-through">
                       {activeRegion.paymentProvider === 'stripe'
                         ? `$${(pkg.priceUSD + (pkg.savingsUSD || 0)).toFixed(2)}`
-                        : `₩${(pkg.price + (pkg.savings || 0)).toLocaleString()}`}
+                        : `??{(pkg.price + (pkg.savings || 0)).toLocaleString()}`}
                     </span>
                     <span className="text-sm text-gold font-semibold">
-                      {pkg.discount}% {isKorean ? '할인' : 'OFF'}
+                      {pkg.discount}% {isKorean ? '?�인' : 'OFF'}
                     </span>
                   </div>
                 )}
               </div>
 
-              {/* 혜택 */}
+              {/* ?�택 */}
               <div className="space-y-2 mb-6">
                 <div className="flex items-center gap-2 text-sm text-foreground">
                   <Check className="w-4 h-4 text-gold" />
                   <span className={isKorean ? "font-[var(--font-noto-kr)]" : ""}>
-                    {pkg.credits}{isKorean ? '회 추천' : ' Recommendations'}
+                    {pkg.credits}{isKorean ? '??추천' : ' Recommendations'}
                   </span>
                 </div>
                 {pkg.discount && (
@@ -328,7 +328,7 @@ export default function CreditPage() {
                     <span className={isKorean ? "font-[var(--font-noto-kr)]" : ""}>
                       {activeRegion.paymentProvider === 'stripe'
                         ? `$${(pkg.savingsUSD || 0).toFixed(2)}`
-                        : `₩${pkg.savings?.toLocaleString()}`} {isKorean ? '절약' : 'saved'}
+                        : `??{pkg.savings?.toLocaleString()}`} {isKorean ? '?�약' : 'saved'}
                     </span>
                   </div>
                 )}
@@ -346,13 +346,13 @@ export default function CreditPage() {
                   isKorean && "font-[var(--font-noto-kr)]"
                 )}
               >
-                {loading ? (isKorean ? '처리 중...' : 'Processing...') : (isKorean ? '구매하기' : 'Buy Now')}
+                {loading ? (isKorean ? '처리 �?..' : 'Processing...') : (isKorean ? '구매?�기' : 'Buy Now')}
               </Button>
             </motion.div>
           ))}
         </div>
 
-        {/* 하단 안내 */}
+        {/* ?�단 ?�내 */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -364,8 +364,8 @@ export default function CreditPage() {
             isKorean && "font-[var(--font-noto-kr)]"
           )}>
             {isKorean
-              ? '💡 더 자주 이용하신다면 PREMIUM 구독을 추천드려요!'
-              : '💡 Use frequently? Try PREMIUM subscription!'}
+              ? '?�� ???�주 ?�용?�신?�면 PREMIUM 구독??추천?�려??'
+              : '?�� Use frequently? Try PREMIUM subscription!'}
           </p>
           <Button
             onClick={() => router.push('/subscription')}
@@ -382,3 +382,5 @@ export default function CreditPage() {
     </div>
   );
 }
+
+

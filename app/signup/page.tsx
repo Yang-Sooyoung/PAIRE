@@ -76,7 +76,20 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4 relative overflow-hidden">
+    <div
+      className="bg-background relative"
+      style={{
+        minHeight: '100dvh',
+        paddingTop: '40px',
+        paddingBottom: '40px',
+        paddingLeft: '16px',
+        paddingRight: '16px',
+        overflowY: 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}
+    >
       {/* 배경 효과 */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gold/5 rounded-full blur-3xl" />
@@ -87,19 +100,18 @@ export default function SignUpPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="w-full max-w-md relative z-10"
+        className="w-full max-w-sm relative z-10"
       >
         {/* 헤더 */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-6">
           <motion.button
             onClick={() => router.push('/')}
-            className="inline-block hover:opacity-80 transition mb-6"
-            title={isKorean ? '홈으로 이동' : 'Go to Home'}
+            className="inline-block hover:opacity-80 transition mb-3"
             whileHover={{ scale: 1.05 }}
           >
-            <h1 className="text-4xl font-light text-foreground tracking-widest">PAIRÉ</h1>
+            <h1 className="text-3xl font-light text-foreground tracking-widest">PAIRÉ</h1>
           </motion.button>
-          <p className="text-gold-dim text-sm tracking-wide font-light">Your Table's Fairy Sommelier</p>
+          <p className="text-gold-dim text-xs tracking-wide font-light">Your Table's Fairy Sommelier</p>
         </div>
 
         {/* 요정 이미지 */}
@@ -107,12 +119,13 @@ export default function SignUpPage() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="mb-8 flex justify-center"
+          className="mb-5 flex justify-center"
         >
           <img
             src="/images/pairy_main.png"
             alt="PAIRÉ Fairy"
-            className="w-48 h-auto opacity-80 drop-shadow-lg"
+            className="opacity-80 drop-shadow-lg"
+            style={{ width: '120px', height: 'auto' }}
           />
         </motion.div>
 
@@ -122,20 +135,16 @@ export default function SignUpPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="bg-card backdrop-blur-sm border border-border rounded-xl p-8 space-y-6"
+          className="bg-card backdrop-blur-sm border border-border rounded-xl p-6 space-y-4"
         >
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center justify-between mb-4">
             {step === 2 && (
-              <button
-                type="button"
-                onClick={() => setStep(1)}
-                className="text-gold hover:text-gold-light transition"
-              >
+              <button type="button" onClick={() => setStep(1)} className="text-gold hover:text-gold-light transition">
                 <ChevronLeft className="w-5 h-5" />
               </button>
             )}
             <h2 className={cn(
-              "text-2xl font-light text-foreground flex-1 text-center",
+              "text-base font-medium text-foreground flex-1 text-center",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
               {step === 1 ? t('auth.signupTitle') : t('auth.profileSetup')}
@@ -284,7 +293,7 @@ export default function SignUpPage() {
 
         {/* 하단 텍스트 */}
         <p className={cn(
-          "text-center text-muted-foreground text-xs mt-8 tracking-wide",
+          "text-center text-muted-foreground text-xs mt-4 tracking-wide",
           isKorean && "font-[var(--font-noto-kr)] tracking-normal"
         )}>
           {t('auth.hasAccount')}{' '}

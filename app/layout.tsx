@@ -1,20 +1,30 @@
 import React from "react"
 import type { Metadata, Viewport } from 'next'
-import { Cormorant_Garamond, Noto_Sans_KR } from 'next/font/google'
+import localFont from 'next/font/local'
+import { Noto_Sans_KR } from 'next/font/google'
 import { I18nProvider } from "@/lib/i18n/context"
 import AppInit from "@/components/AppInit"
 import './globals.css'
 
-const cormorant = Cormorant_Garamond({ 
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-cormorant"
-});
+const cormorant = localFont({
+  src: [
+    { path: '../public/fonts/cormorant-300.woff2', weight: '300', style: 'normal' },
+    { path: '../public/fonts/cormorant-300-italic.woff2', weight: '300', style: 'italic' },
+    { path: '../public/fonts/cormorant-400.woff2', weight: '400', style: 'normal' },
+    { path: '../public/fonts/cormorant-400-italic.woff2', weight: '400', style: 'italic' },
+    { path: '../public/fonts/cormorant-500.woff2', weight: '500', style: 'normal' },
+    { path: '../public/fonts/cormorant-600.woff2', weight: '600', style: 'normal' },
+    { path: '../public/fonts/cormorant-700.woff2', weight: '700', style: 'normal' },
+  ],
+  variable: '--font-cormorant',
+  display: 'block',
+})
 
 const notoSansKR = Noto_Sans_KR({
   subsets: ["latin"],
   weight: ["300", "400", "500", "700"],
-  variable: "--font-noto-kr"
+  variable: "--font-noto-kr",
+  display: 'swap',
 });
 
 export const viewport: Viewport = {

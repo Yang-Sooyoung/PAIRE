@@ -30,14 +30,16 @@ export function CaptureScreen({ onCapture, onBack }: CaptureScreenProps) {
   // 카메라 시작
   const startCamera = useCallback(async () => {
     // 네이티브 앱: Capacitor Camera 플러그인 사용
-    if (isNative()) {
+    const native = isNative();
+    console.log('[CaptureScreen] startCamera - isNative:', native);
+    
+    if (native) {
       try {
         const { Camera: CapCamera, CameraResultType, CameraSource } = await import('@capacitor/camera');
         const photo = await CapCamera.getPhoto({
           resultType: CameraResultType.DataUrl,
           source: CameraSource.Camera,
           quality: 90,
-          direction: facingMode === 'environment' ? 1 : 0, // REAR=1, FRONT=0
         });
         if (photo.dataUrl) {
           setPreview(photo.dataUrl);
@@ -154,9 +156,12 @@ export function CaptureScreen({ onCapture, onBack }: CaptureScreenProps) {
     }
   }, [stopCamera])
 
-  const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleGallerySelect = useCallback(async () => {
     // 네이티브 앱: Capacitor Camera 플러그인으로 갤러리 열기
-    if (isNative()) {
+    const native = isNative();
+    console.log('[CaptureScreen] handleGallerySelect - isNative:', native);
+    
+    if (native) {
       try {
         const { Camera: CapCamera, CameraResultType, CameraSource } = await import('@capacitor/camera');
         const photo = await CapCamera.getPhoto({
@@ -185,7 +190,11 @@ export function CaptureScreen({ onCapture, onBack }: CaptureScreenProps) {
       }
       return;
     }
+    // 웹: file input 클릭
+    fileInputRef.current?.click();
+  }, [])
 
+  const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
@@ -337,7 +346,6 @@ export function CaptureScreen({ onCapture, onBack }: CaptureScreenProps) {
           ref={fileInputRef}
           type="file"
           accept="image/*"
-          capture="environment"
           onChange={handleFileSelect}
           className="hidden"
         />
@@ -382,7 +390,7 @@ export function CaptureScreen({ onCapture, onBack }: CaptureScreenProps) {
             <div className="flex gap-3">
               <Button
                 variant="outline"
-                onClick={() => isNative() ? handleFileSelect({} as any) : fileInputRef.current?.click()}
+                onClick={handleGallerySelect}
                 disabled={isCompressing}
                 className={cn(
                   "flex-1 h-12 border-gold/40 text-gold hover:bg-gold/10",
@@ -419,7 +427,7 @@ export function CaptureScreen({ onCapture, onBack }: CaptureScreenProps) {
             </Button>
             <Button
               variant="outline"
-              onClick={() => isNative() ? handleFileSelect({} as any) : fileInputRef.current?.click()}
+              onClick={handleGallerySelect}
               disabled={isCompressing}
               className={cn(
                 "w-full h-12 border-gold/40 text-gold hover:bg-gold/10",

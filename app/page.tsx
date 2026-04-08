@@ -12,7 +12,7 @@ import { RecommendationScreen } from "@/components/paire/recommendation-screen"
 import { DrinkDetailScreen } from "@/components/paire/drink-detail-screen"
 import { MenuInputScreen } from "@/components/paire/menu-input-screen"
 import { CustomDialog } from "@/components/ui/custom-dialog"
-import { Settings, LogOut, User } from "lucide-react"
+import { Settings, LogOut, User, Crown } from "lucide-react"
 
 type Screen =
   | "home"
@@ -227,29 +227,25 @@ export default function PairePage() {
     <main className="min-h-screen bg-background">
       {/* 헤더 (로그인 상태일 때만) */}
       {user && screen === "home" && (
-        <div className="bg-card/50 backdrop-blur-sm border-b border-border sticky top-0 z-10">
-          <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
-            <h1 className="text-xl font-light text-foreground">PAIRÉ</h1>
+        <div className="bg-card/50 backdrop-blur-sm border-b border-border sticky top-0 z-20">
+          <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <h1 className="text-lg font-light text-foreground tracking-widest">PAIRÉ</h1>
+              {user.membership === 'PREMIUM' && (
+                <div className="flex items-center gap-1 px-2 py-0.5 bg-gold/15 border border-gold/40 rounded-full">
+                  <Crown className="w-3 h-3 text-gold" />
+                  <span className="text-gold text-xs font-semibold">PREMIUM</span>
+                </div>
+              )}
+            </div>
             <div className="flex items-center gap-3">
-              <button
-                onClick={() => router.push("/user-info")}
-                className="text-gold hover:text-gold-light transition"
-                title="내 정보"
-              >
+              <button onClick={() => router.push("/user-info")} className="text-gold hover:text-gold-light transition">
                 <User className="w-5 h-5" />
               </button>
-              <button
-                onClick={() => router.push("/settings")}
-                className="text-gold hover:text-gold-light transition"
-                title="설정"
-              >
+              <button onClick={() => router.push("/settings")} className="text-gold hover:text-gold-light transition">
                 <Settings className="w-5 h-5" />
               </button>
-              <button
-                onClick={handleLogout}
-                className="text-gold hover:text-gold-light transition"
-                title="로그아웃"
-              >
+              <button onClick={handleLogout} className="text-gold hover:text-gold-light transition">
                 <LogOut className="w-5 h-5" />
               </button>
             </div>
@@ -264,6 +260,7 @@ export default function PairePage() {
           user={user}
           onLoginClick={() => router.push("/login")}
           onSignupClick={() => router.push("/signup")}
+          hasHeader={!!(user)}
         />
       )}
 

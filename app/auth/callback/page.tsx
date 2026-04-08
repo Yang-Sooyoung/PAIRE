@@ -4,7 +4,6 @@ import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useUserStore } from '@/app/store/userStore';
 import { getCurrentUser } from '@/app/api/auth';
-import { closeOAuthBrowser } from '@/lib/capacitor';
 
 export default function AuthCallbackPage() {
   const router = useRouter();
@@ -24,26 +23,31 @@ export default function AuthCallbackPage() {
       try {
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', refreshToken);
-
         setToken(accessToken);
         setRefreshToken(refreshToken);
 
         const userData = await getCurrentUser(accessToken);
         setUser(userData);
-
-        // 인앱 브라우저 닫기 (네이티브 앱인 경우)
-        await closeOAuthBrowser();
-
-        router.push('/');
       } catch (error) {
         console.error('OAuth callback error:', error);
-        await closeOAuthBrowser();
-        router.push('/login');
       }
+
+      // 네이티브 앱이면 인앱 브라우저 닫기
+      try {
+        const { Capacitor } = await import('@capacitor/core');
+        if (Capacitor.isNativePlatform()) {
+          const { Browser } = await import('@capacitor/browser');
+          await Browser.close();
+        }
+      } catch (e) {
+        // 웹 환경에서는 무시
+      }
+
+      router.push('/');
     };
 
     handleCallback();
-  }, [searchParams, router, setUser, setToken, setRefreshToken]);
+  }, [searchParams]);
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center">

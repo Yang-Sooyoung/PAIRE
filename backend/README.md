@@ -169,7 +169,7 @@ docker run -p 3001:3001 paire-backend
 
 ## 📞 문의
 
-개발 관련 문의: support@paire.app
+개발 관련 문의: ruckyrosie@gmail.com
 
 ---
 

@@ -44,8 +44,8 @@
 }
 
 @theme inline {
-  --font-sans: 'Cormorant Garamond', 'Cormorant Garamond Fallback', serif;
-  --font-serif: 'Cormorant Garamond', 'Cormorant Garamond Fallback', serif;
+  --font-sans: 'Cormorant Garamond', Georgia, serif;
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
   --font-mono: 'Geist Mono', 'Geist Mono Fallback';
   --font-noto-kr: 'Noto Sans KR', 'Noto Sans KR Fallback', sans-serif;
   --color-gold: var(--gold);
@@ -95,20 +95,30 @@
     -webkit-tap-highlight-color: transparent;
     box-sizing: border-box;
   }
-  html, body {
-    @apply bg-background text-foreground;
-    /* 모바일 DPI 240 대응 - 텍스트 크기 자동 조정 방지 */
+  html {
+    font-size: 14px;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
-    /* 스크롤 바운스 방지 */
+  }
+  html, body {
+    @apply bg-background text-foreground;
     overscroll-behavior: none;
-    /* 전체 화면 사용 */
     width: 100%;
     min-height: 100dvh;
   }
   body {
-    /* 폰트 렌더링 최적화 */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* 전역 safe area - 상단/하단 시스템바 여백 */
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
+}
+
+/* Safe area 유틸리티 */
+.pb-safe {
+  padding-bottom: max(env(safe-area-inset-bottom), 16px);
+}
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
 }

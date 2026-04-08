@@ -347,7 +347,7 @@ NEXT_PUBLIC_TOSS_TEST_CLIENT_KEY=...
 
 ## 📞 연락처
 
-- **Email**: support@paire.app
+- **Email**: ruckyrosie@gmail.com
 - **GitHub**: https://github.com/Yang-Sooyoung/PAIRE
 - **Website**: https://paire.app (배포 예정)
 
