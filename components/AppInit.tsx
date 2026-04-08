@@ -28,6 +28,9 @@ export default function AppInit() {
           const url = event.url;
           // paire://auth?accessToken=...&refreshToken=... 처리
           if (url.startsWith('paire://auth')) {
+            // 인앱 브라우저 먼저 닫기
+            await Browser.close();
+
             const urlObj = new URL(url.replace('paire://auth', 'https://dummy.com/auth'));
             const accessToken = urlObj.searchParams.get('accessToken');
             const refreshToken = urlObj.searchParams.get('refreshToken');
@@ -40,14 +43,14 @@ export default function AppInit() {
                 setRefreshToken(refreshToken);
                 const userData = await getCurrentUser(accessToken);
                 setUser(userData);
+                router.replace('/');
               } catch (e) {
                 console.error('OAuth token error:', e);
+                router.replace('/login');
               }
+            } else {
+              router.replace('/login');
             }
-
-            // 인앱 브라우저 닫기
-            await Browser.close();
-            router.push('/');
           }
         });
       } catch (e) {

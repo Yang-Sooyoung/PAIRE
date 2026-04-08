@@ -43,10 +43,15 @@ export class AuthController {
     const result = await this.authService.oauthLogin(req.user);
     const { accessToken, refreshToken } = result;
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-    // 모바일 딥링크 + 웹 fallback 둘 다 처리
-    res.redirect(
-      `${frontendUrl}/auth/callback?accessToken=${accessToken}&refreshToken=${refreshToken}`
-    );
+    // 딥링크 시도 후 웹 fallback 처리
+    res.send(`
+      <html><body><script>
+        var deeplink = 'paire://auth?accessToken=${accessToken}&refreshToken=${refreshToken}';
+        var webUrl = '${frontendUrl}/auth/callback?accessToken=${accessToken}&refreshToken=${refreshToken}';
+        window.location.href = deeplink;
+        setTimeout(function() { window.location.href = webUrl; }, 1500);
+      </script></body></html>
+    `);
   }
 
   // Kakao OAuth
@@ -63,8 +68,14 @@ export class AuthController {
     const result = await this.authService.oauthLogin(req.user);
     const { accessToken, refreshToken } = result;
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-    res.redirect(
-      `${frontendUrl}/auth/callback?accessToken=${accessToken}&refreshToken=${refreshToken}`
-    );
+    // 딥링크 시도 후 웹 fallback 처리
+    res.send(`
+      <html><body><script>
+        var deeplink = 'paire://auth?accessToken=${accessToken}&refreshToken=${refreshToken}';
+        var webUrl = '${frontendUrl}/auth/callback?accessToken=${accessToken}&refreshToken=${refreshToken}';
+        window.location.href = deeplink;
+        setTimeout(function() { window.location.href = webUrl; }, 1500);
+      </script></body></html>
+    `);
   }
 }
