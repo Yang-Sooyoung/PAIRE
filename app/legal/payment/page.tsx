@@ -14,13 +14,13 @@ export default function PaymentPolicyPage() {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* 諛곌꼍 ?④낵 */}
+      {/* 배경 효과 */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gold/5 rounded-full blur-3xl" />
         <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-gold/3 rounded-full blur-3xl" />
       </div>
 
-      {/* ?ㅻ뜑 */}
+      {/* 헤더 */}
       <div className="bg-card/50 backdrop-blur-sm border-b border-border sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center gap-4">
           <button
@@ -39,7 +39,7 @@ export default function PaymentPolicyPage() {
         </div>
       </div>
 
-      {/* 肄섑뀗痢?*/}
+      {/* 콘텐츠 */}
       <div className="max-w-2xl mx-auto px-4 py-8 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -51,15 +51,15 @@ export default function PaymentPolicyPage() {
               "text-lg font-semibold text-foreground mb-3",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? '1. 寃곗젣 諛⑸쾿' : '1. Payment Methods'}
+              {isKorean ? '1. 결제 방법' : '1. Payment Methods'}
             </h2>
             <p className={cn(
               "text-muted-foreground",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
               {isKorean
-                ? 'PAIR횋??Toss Payments瑜??듯빐 ?덉쟾??寃곗젣瑜??쒓났?⑸땲?? ?좎슜移대뱶, 泥댄겕移대뱶 ???ㅼ뼇??寃곗젣 ?섎떒??吏?먰빀?덈떎.'
-                : 'PAIR횋 provides secure payments through Toss Payments. We support various payment methods including credit cards and debit cards.'}
+                ? 'PAIRÉ는 Toss Payments를 통해 안전한 결제를 제공합니다. 신용카드, 체크카드 등 다양한 결제 수단을 지원합니다.'
+                : 'PAIRÉ provides secure payments through Toss Payments. We support various payment methods including credit cards and debit cards.'}
             </p>
           </section>
 
@@ -68,14 +68,14 @@ export default function PaymentPolicyPage() {
               "text-lg font-semibold text-foreground mb-3",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? '2. 援щ룆 媛寃? : '2. Subscription Pricing'}
+              {isKorean ? '2. 구독 가격' : '2. Subscription Pricing'}
             </h2>
             <ul className={cn(
               "list-disc list-inside space-y-2 text-muted-foreground",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              <li>{isKorean ? 'PREMIUM ?붽컙: ??,900' : 'PREMIUM Monthly: ??,900'}</li>
-              <li>{isKorean ? 'PREMIUM ?곌컙: ??9,000' : 'PREMIUM Yearly: ??9,000'}</li>
+              <li>{isKorean ? 'PREMIUM 월간: ₩9,900' : 'PREMIUM Monthly: ₩9,900'}</li>
+              <li>{isKorean ? 'PREMIUM 연간: ₩99,000' : 'PREMIUM Yearly: ₩99,000'}</li>
             </ul>
           </section>
 
@@ -84,14 +84,14 @@ export default function PaymentPolicyPage() {
               "text-lg font-semibold text-foreground mb-3",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? '3. ?먮룞 媛깆떊' : '3. Auto-Renewal'}
+              {isKorean ? '3. 자동 갱신' : '3. Auto-Renewal'}
             </h2>
             <p className={cn(
               "text-muted-foreground",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
               {isKorean
-                ? 'PREMIUM 援щ룆? ?먮룞?쇰줈 媛깆떊?⑸땲?? 媛깆떊 ?덉젙??7???꾩뿉 ?뚮┝???쒕┰?덈떎.'
+                ? 'PREMIUM 구독은 자동으로 갱신됩니다. 갱신 예정일 7일 전에 알림을 드립니다.'
                 : 'PREMIUM subscriptions are automatically renewed. You will be notified 7 days before the renewal date.'}
             </p>
           </section>
@@ -101,14 +101,14 @@ export default function PaymentPolicyPage() {
               "text-lg font-semibold text-foreground mb-3",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? '4. 援щ룆 痍⑥냼' : '4. Subscription Cancellation'}
+              {isKorean ? '4. 구독 취소' : '4. Subscription Cancellation'}
             </h2>
             <p className={cn(
               "text-muted-foreground",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
               {isKorean
-                ? '援щ룆? ?몄젣?좎? 痍⑥냼?????덉뒿?덈떎. 痍⑥냼 ???⑥? 湲곌컙? 怨꾩냽 ?ъ슜?????덉쑝硫? ?ㅼ쓬 媛깆떊?쇰???FREE濡?蹂寃쎈맗?덈떎.'
+                ? '구독은 언제든지 취소할 수 있습니다. 취소 후 남은 기간은 계속 사용할 수 있으며, 다음 갱신일부터 FREE로 변경됩니다.'
                 : 'You can cancel your subscription at any time. After cancellation, you can continue using the service for the remaining period, and it will change to FREE from the next renewal date.'}
             </p>
           </section>
@@ -118,23 +118,23 @@ export default function PaymentPolicyPage() {
               "text-lg font-semibold text-foreground mb-3",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? '5. ?섎텋 ?뺤콉' : '5. Refund Policy'}
+              {isKorean ? '5. 환불 정책' : '5. Refund Policy'}
             </h2>
             <p className={cn(
               "text-muted-foreground mb-2",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
               {isKorean
-                ? '援щ룆 痍⑥냼 ???대? 寃곗젣??湲덉븸? ?섎텋?섏? ?딆뒿?덈떎. ?? ?ㅼ쓬??寃쎌슦???섎텋 ??곸엯?덈떎:'
+                ? '구독 취소 후 이미 결제된 금액은 환불되지 않습니다. 단, 다음의 경우는 환불 대상입니다:'
                 : 'Already paid amounts are not refunded after subscription cancellation. However, refunds are available in the following cases:'}
             </p>
             <ul className={cn(
               "list-disc list-inside space-y-2 text-muted-foreground",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              <li>{isKorean ? '寃곗젣 ?ㅻ쪟濡??명븳 以묐났 寃곗젣' : 'Duplicate payments due to payment errors'}</li>
-              <li>{isKorean ? '?쒕퉬???쒓났 遺덇? (7???댁긽)' : 'Service unavailability (7+ days)'}</li>
-              <li>{isKorean ? '?ъ슜???붿껌 (援щ룆 ??7???대궡)' : 'User request (within 7 days of subscription)'}</li>
+              <li>{isKorean ? '결제 오류로 인한 중복 결제' : 'Duplicate payments due to payment errors'}</li>
+              <li>{isKorean ? '서비스 제공 불가 (7일 이상)' : 'Service unavailability (7+ days)'}</li>
+              <li>{isKorean ? '사용자 요청 (구독 후 7일 이내)' : 'User request (within 7 days of subscription)'}</li>
             </ul>
           </section>
 
@@ -143,14 +143,14 @@ export default function PaymentPolicyPage() {
               "text-lg font-semibold text-foreground mb-3",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? '6. ?섎텋 ?좎껌' : '6. Refund Request'}
+              {isKorean ? '6. 환불 신청' : '6. Refund Request'}
             </h2>
             <p className={cn(
               "text-muted-foreground",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
               {isKorean
-                ? '?섎텋???먰븯?쒕㈃ ruckyrosie@gmail.com?쇰줈 臾몄쓽?댁＜?몄슂. ?좎껌 ??5-7 ?곸뾽???댁뿉 泥섎━?⑸땲??'
+                ? '환불을 원하시면 ruckyrosie@gmail.com으로 문의해주세요. 신청 후 5-7 영업일 내에 처리됩니다.'
                 : 'For refund requests, please contact ruckyrosie@gmail.com. Requests will be processed within 5-7 business days.'}
             </p>
           </section>
@@ -160,14 +160,14 @@ export default function PaymentPolicyPage() {
               "text-lg font-semibold text-foreground mb-3",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? '7. 寃곗젣 ?ㅽ뙣' : '7. Payment Failure'}
+              {isKorean ? '7. 결제 실패' : '7. Payment Failure'}
             </h2>
             <p className={cn(
               "text-muted-foreground",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
               {isKorean
-                ? '寃곗젣 ?ㅽ뙣 ???ㅼ쓬 ???먮룞?쇰줈 ?ъ떆?꾨맗?덈떎. 3???곗냽 ?ㅽ뙣 ??援щ룆???쇱떆 以묐떒?⑸땲??'
+                ? '결제 실패 시 다음 날 자동으로 재시도됩니다. 3회 연속 실패 시 구독이 일시 중단됩니다.'
                 : 'If payment fails, it will be automatically retried the next day. After 3 consecutive failures, the subscription will be temporarily suspended.'}
             </p>
           </section>
@@ -177,15 +177,15 @@ export default function PaymentPolicyPage() {
               "text-lg font-semibold text-foreground mb-3",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? '8. 媛寃?蹂寃? : '8. Price Changes'}
+              {isKorean ? '8. 가격 변경' : '8. Price Changes'}
             </h2>
             <p className={cn(
               "text-muted-foreground",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
               {isKorean
-                ? 'PAIR횋??媛寃⑹쓣 蹂寃쏀븷 ???덉뒿?덈떎. 媛寃?蹂寃???30???꾩뿉 怨듭??섎ŉ, 湲곗〈 援щ룆?먮뒗 蹂寃???媛寃⑹쑝濡?1????媛깆떊?⑸땲??'
-                : 'PAIR횋 may change prices. Price changes will be announced 30 days in advance, and existing subscribers will be renewed once more at the previous price.'}
+                ? 'PAIRÉ는 가격을 변경할 수 있습니다. 가격 변경 시 30일 전에 공지하며, 기존 구독자는 변경 전 가격으로 1회 더 갱신됩니다.'
+                : 'PAIRÉ may change prices. Price changes will be announced 30 days in advance, and existing subscribers will be renewed once more at the previous price.'}
             </p>
           </section>
 
@@ -194,14 +194,14 @@ export default function PaymentPolicyPage() {
               "text-lg font-semibold text-foreground mb-3",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? '9. ?멸툑' : '9. Taxes'}
+              {isKorean ? '9. 세금' : '9. Taxes'}
             </h2>
             <p className={cn(
               "text-muted-foreground",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
               {isKorean
-                ? '?쒖떆??媛寃⑹? 遺媛???ы븿 媛寃⑹엯?덈떎. 吏??뿉 ?곕씪 異붽? ?멸툑??遺怨쇰맆 ???덉뒿?덈떎.'
+                ? '표시된 가격은 부가세 포함 가격입니다. 지역에 따라 추가 세금이 부과될 수 있습니다.'
                 : 'Displayed prices include VAT. Additional taxes may apply depending on your region.'}
             </p>
           </section>
@@ -211,14 +211,14 @@ export default function PaymentPolicyPage() {
               "text-lg font-semibold text-foreground mb-3",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? '10. 遺꾩웳 ?닿껐' : '10. Dispute Resolution'}
+              {isKorean ? '10. 분쟁 해결' : '10. Dispute Resolution'}
             </h2>
             <p className={cn(
               "text-muted-foreground",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
               {isKorean
-                ? '寃곗젣 愿??遺꾩웳? ruckyrosie@gmail.com?쇰줈 臾몄쓽?댁＜?몄슂. ?깆떎?섍쾶 ?닿껐?섍쿋?듬땲??'
+                ? '결제 관련 분쟁은 ruckyrosie@gmail.com으로 문의해주세요. 성실하게 해결하겠습니다.'
                 : 'For payment-related disputes, please contact ruckyrosie@gmail.com. We will resolve them sincerely.'}
             </p>
           </section>

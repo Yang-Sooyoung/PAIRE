@@ -64,7 +64,7 @@ export default function HistoryDetailPage({ id }: { id: string }) {
                 const response = await getRecommendationDetail(id);
                 const rec = response.recommendation;
 
-                // JSON ?꾨뱶媛 string?쇰줈 ??寃쎌슦 ?뚯떛
+                // JSON 필드가 string으로 올 경우 파싱
                 if (rec && typeof rec.drinks === 'string') {
                     try { rec.drinks = JSON.parse(rec.drinks); } catch { rec.drinks = []; }
                 }
@@ -77,10 +77,10 @@ export default function HistoryDetailPage({ id }: { id: string }) {
 
                 setDetail(rec);
 
-                // drinks媛 諛곗뿴?몄? ?뺤씤
+                // drinks가 배열인지 확인
                 const drinks = rec?.drinks;
                 if (drinks && Array.isArray(drinks)) {
-                    // 媛??뚮즺??利먭꺼李얘린 ?곹깭 ?뺤씤
+                    // 각 음료의 즐겨찾기 상태 확인
                     const statusMap: Record<string, boolean> = {};
                     for (const drink of drinks) {
                         try {
@@ -94,7 +94,7 @@ export default function HistoryDetailPage({ id }: { id: string }) {
                 }
             } catch (error) {
                 console.error('Failed to fetch detail:', error);
-                toast.error(isKorean ? '?곸꽭 ?뺣낫瑜?遺덈윭?????놁뒿?덈떎.' : 'Failed to load details.');
+                toast.error(isKorean ? '상세 정보를 불러올 수 없습니다.' : 'Failed to load details.');
                 router.back();
             } finally {
                 setLoading(false);
@@ -110,14 +110,14 @@ export default function HistoryDetailPage({ id }: { id: string }) {
             const isFavorite = favoriteStatus[drinkId];
             if (isFavorite) {
                 await removeFavorite(drinkId);
-                toast.success(isKorean ? '利먭꺼李얘린?먯꽌 ?쒓굅?덉뒿?덈떎.' : 'Removed from favorites.');
+                toast.success(isKorean ? '즐겨찾기에서 제거했습니다.' : 'Removed from favorites.');
             } else {
                 await addFavorite(drinkId);
-                toast.success(isKorean ? '利먭꺼李얘린??異붽??덉뒿?덈떎.' : 'Added to favorites.');
+                toast.success(isKorean ? '즐겨찾기에 추가했습니다.' : 'Added to favorites.');
             }
             setFavoriteStatus(prev => ({ ...prev, [drinkId]: !isFavorite }));
         } catch (error: any) {
-            toast.error(error.message || (isKorean ? '?ㅻ쪟媛 諛쒖깮?덉뒿?덈떎.' : 'An error occurred.'));
+            toast.error(error.message || (isKorean ? '오류가 발생했습니다.' : 'An error occurred.'));
         } finally {
             setTogglingFavorite(null);
         }
@@ -154,13 +154,13 @@ export default function HistoryDetailPage({ id }: { id: string }) {
                         "text-lg font-medium text-foreground tracking-wide",
                         isKorean && "font-[var(--font-noto-kr)] tracking-normal"
                     )}>
-                        {isKorean ? '異붿쿇 ?곸꽭' : 'Recommendation Detail'}
+                        {isKorean ? '추천 상세' : 'Recommendation Detail'}
                     </h1>
                 </div>
             </div>
 
             <div className="max-w-2xl mx-auto px-4 py-8 relative z-10 space-y-6">
-                {/* 湲곕낯 ?뺣낫 */}
+                {/* 기본 정보 */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -202,7 +202,7 @@ export default function HistoryDetailPage({ id }: { id: string }) {
                                 "text-sm text-muted-foreground mb-2",
                                 isKorean && "font-[var(--font-noto-kr)]"
                             )}>
-                                {isKorean ? '媛먯????뚯떇' : 'Detected Foods'}
+                                {isKorean ? '감지된 음식' : 'Detected Foods'}
                             </p>
                             <div className="flex flex-wrap gap-2">
                                 {detail.detectedFoods.map((food, i) => (
@@ -223,7 +223,7 @@ export default function HistoryDetailPage({ id }: { id: string }) {
                                 "text-sm text-muted-foreground mb-2",
                                 isKorean && "font-[var(--font-noto-kr)]"
                             )}>
-                                {isKorean ? '?좏샇 留? : 'Preferred Tastes'}
+                                {isKorean ? '선호 맛' : 'Preferred Tastes'}
                             </p>
                             <div className="flex flex-wrap gap-2">
                                 {detail.tastes.map((taste, i) => (
@@ -239,7 +239,7 @@ export default function HistoryDetailPage({ id }: { id: string }) {
                     )}
                 </motion.div>
 
-                {/* ?붿젙 硫붿떆吏 */}
+                {/* 요정 메시지 */}
                 {detail.fairyMessage && (
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -259,13 +259,13 @@ export default function HistoryDetailPage({ id }: { id: string }) {
                     </motion.div>
                 )}
 
-                {/* 異붿쿇 ?뚮즺 紐⑸줉 */}
+                {/* 추천 음료 목록 */}
                 <div className="space-y-4">
                     <h3 className={cn(
                         "text-lg font-semibold text-foreground",
                         isKorean && "font-[var(--font-noto-kr)]"
                     )}>
-                        {isKorean ? '異붿쿇 ?뚮즺' : 'Recommended Drinks'}
+                        {isKorean ? '추천 음료' : 'Recommended Drinks'}
                     </h3>
 
                     {detail.drinks && detail.drinks.length > 0 ? (
@@ -287,7 +287,7 @@ export default function HistoryDetailPage({ id }: { id: string }) {
                                             />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center text-gold/30">
-                                                ?뜼
+                                                🍷
                                             </div>
                                         )}
                                     </div>
@@ -356,7 +356,7 @@ export default function HistoryDetailPage({ id }: { id: string }) {
                     ) : (
                         <div className="text-center py-8 text-muted-foreground">
                             <p className={cn(isKorean && "font-[var(--font-noto-kr)]")}>
-                                {isKorean ? '異붿쿇 ?뚮즺媛 ?놁뒿?덈떎.' : 'No drinks recommended.'}
+                                {isKorean ? '추천 음료가 없습니다.' : 'No drinks recommended.'}
                             </p>
                         </div>
                     )}

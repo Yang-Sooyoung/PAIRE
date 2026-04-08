@@ -14,7 +14,8 @@ import { translateDrinkType, translateTastingNote, formatDrinkPriceByRegion } fr
 import { generateShoppingLink, detectCountryByIP, openExternalLink } from '@/lib/region-detector';
 import { generateCoupangLink } from '@/lib/coupang-partners';
 
-// ?뚮즺 ?곸꽭 ?곗씠?????interface DrinkDetail {
+// 음료 상세 데이터 타입
+interface DrinkDetail {
   id: string;
   name: string;
   nameEn?: string;
@@ -85,10 +86,11 @@ export default function FavoriteDetailPage({ id }: { id: string }) {
     if (!drink) return;
     const country = await detectCountryByIP();
     if (country === 'KR') {
-      // ?쒓뎅: ??긽 ?쒓? ?대쫫?쇰줈 荑좏뙜 寃??      const link = generateCoupangLink(drink.name);
+      // 한국: 항상 한글 이름으로 쿠팡 검색
+      const link = generateCoupangLink(drink.name);
       await openExternalLink(link);
     } else {
-      // ?댁쇅: ?꾨쭏議?留곹겕
+      // 해외: 아마존 링크
       const drinkName = drink.nameEn || drink.name;
       const link = generateShoppingLink(drinkName, drink.type, country);
       await openExternalLink(link);
@@ -107,7 +109,7 @@ export default function FavoriteDetailPage({ id }: { id: string }) {
         });
       } else {
         await navigator.clipboard.writeText(window.location.href);
-        toast.success(isKorean ? '留곹겕媛 蹂듭궗?섏뿀?듬땲??' : 'Link copied to clipboard.');
+        toast.success(isKorean ? '링크가 복사되었습니다.' : 'Link copied to clipboard.');
       }
     } catch (error) {
       console.error('Failed to share:', error);
@@ -164,7 +166,7 @@ export default function FavoriteDetailPage({ id }: { id: string }) {
           animate={{ opacity: 1, y: 0 }}
           className="space-y-6"
         >
-          {/* ?대?吏 */}
+          {/* 이미지 */}
           <div className="relative aspect-square rounded-2xl overflow-hidden bg-secondary">
             {drink.image ? (
               <img
@@ -174,12 +176,12 @@ export default function FavoriteDetailPage({ id }: { id: string }) {
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-gold/30 text-6xl">
-                ?뜼
+                🍷
               </div>
             )}
           </div>
 
-          {/* 湲곕낯 ?뺣낫 */}
+          {/* 기본 정보 */}
           <div className="bg-card border border-border rounded-xl p-6">
             <h2 className={cn(
               "text-2xl font-bold text-foreground mb-2",
@@ -204,7 +206,7 @@ export default function FavoriteDetailPage({ id }: { id: string }) {
             </div>
           </div>
 
-          {/* ?뚯씠?ㅽ똿 ?명듃 */}
+          {/* 테이스팅 노트 */}
           {drink.tastingNotes.length > 0 && (
             <div className="bg-card border border-border rounded-xl p-6">
               <h3 className={cn(
@@ -229,7 +231,7 @@ export default function FavoriteDetailPage({ id }: { id: string }) {
             </div>
           )}
 
-          {/* ?곸꽭 ?뺣낫 */}
+          {/* 상세 정보 */}
           {(drink.alcohol || drink.origin || drink.servingTemp) && (
             <div className="bg-card border border-border rounded-xl p-6 space-y-4">
               <h3 className={cn(
@@ -285,7 +287,7 @@ export default function FavoriteDetailPage({ id }: { id: string }) {
             </div>
           )}
 
-          {/* ?섏뼱留?*/}
+          {/* 페어링 */}
           {drink.pairing && drink.pairing.length > 0 && (
             <div className="bg-card border border-border rounded-xl p-6">
               <h3 className={cn(
@@ -307,7 +309,7 @@ export default function FavoriteDetailPage({ id }: { id: string }) {
             </div>
           )}
 
-          {/* ?≪뀡 踰꾪듉 */}
+          {/* 액션 버튼 */}
           <div className="flex gap-3">
             <Button
               onClick={handleRemoveFavorite}
@@ -335,15 +337,15 @@ export default function FavoriteDetailPage({ id }: { id: string }) {
             >
               <ShoppingCart className="w-4 h-4 mr-2" />
               {isKoreaRegion
-                ? (isKorean ? '荑좏뙜?먯꽌 援щℓ' : '荑좏뙜?먯꽌 援щℓ')
-                : (isKorean ? 'Amazon?먯꽌 援щℓ' : 'Buy on Amazon')}
+                ? (isKorean ? '쿠팡에서 구매' : '쿠팡에서 구매')
+                : (isKorean ? 'Amazon에서 구매' : 'Buy on Amazon')}
             </Button>
           </div>
 
-          {/* ?쒗쑕 硫댁콉 議고빆 */}
+          {/* 제휴 면책 조항 */}
           {isKoreaRegion === true && (
             <p className="font-[var(--font-noto-kr)] text-xs text-center text-muted-foreground mt-2 px-2">
-              ???ъ뒪?낆? 荑좏뙜 ?뚰듃?덉뒪 ?쒕룞???쇳솚?쇰줈, ?댁뿉 ?곕Ⅸ ?쇱젙?≪쓽 ?섏닔猷뚮? ?쒓났諛쏆뒿?덈떎.
+              이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.
             </p>
           )}
           {isKoreaRegion === false && (

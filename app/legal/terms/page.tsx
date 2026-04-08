@@ -14,13 +14,13 @@ export default function TermsPage() {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* 諛곌꼍 ?④낵 */}
+      {/* 배경 효과 */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gold/5 rounded-full blur-3xl" />
         <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-gold/3 rounded-full blur-3xl" />
       </div>
 
-      {/* ?ㅻ뜑 */}
+      {/* 헤더 */}
       <div className="bg-card/50 backdrop-blur-sm border-b border-border sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center gap-4">
           <button
@@ -39,7 +39,7 @@ export default function TermsPage() {
         </div>
       </div>
 
-      {/* 肄섑뀗痢?*/}
+      {/* 콘텐츠 */}
       <div className="max-w-2xl mx-auto px-4 py-8 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -51,15 +51,15 @@ export default function TermsPage() {
               "text-lg font-semibold text-foreground mb-3",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? '??議?珥앹튃' : 'Article 1: General Provisions'}
+              {isKorean ? '제1조 총칙' : 'Article 1: General Provisions'}
             </h2>
             <p className={cn(
               "text-muted-foreground",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
               {isKorean 
-                ? '蹂??쎄?? PAIR횋(?댄븯 "?쒕퉬??)瑜??댁슜?섎뒗 紐⑤뱺 ?ъ슜?먯뿉寃??곸슜?⑸땲?? ?쒕퉬???댁슜 ??蹂??쎄????숈쓽??寃껋쑝濡?媛꾩＜?⑸땲??'
-                : 'These terms apply to all users of PAIR횋 (the "Service"). By using the Service, you agree to these terms.'}
+                ? '본 약관은 PAIRÉ(이하 "서비스")를 이용하는 모든 사용자에게 적용됩니다. 서비스 이용 시 본 약관에 동의한 것으로 간주됩니다.'
+                : 'These terms apply to all users of PAIRÉ (the "Service"). By using the Service, you agree to these terms.'}
             </p>
           </section>
 
@@ -68,15 +68,15 @@ export default function TermsPage() {
               "text-lg font-semibold text-foreground mb-3",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? '??議??쒕퉬???ㅻ챸' : 'Article 2: Service Description'}
+              {isKorean ? '제2조 서비스 설명' : 'Article 2: Service Description'}
             </h2>
             <p className={cn(
               "text-muted-foreground",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
               {isKorean
-                ? 'PAIR횋???뚯떇 ?ъ쭊??珥ъ쁺?섎㈃ AI媛 ?뚯떇???몄떇?섍퀬, ?ъ슜?먯쓽 ?곹솴怨?痍⑦뼢??留욌뒗 理쒖쟻???뚮즺瑜?異붿쿇?댁＜???쒕퉬?ㅼ엯?덈떎.'
-                : 'PAIR횋 is a service that uses AI to recognize food from photos and recommend the perfect drinks based on your situation and preferences.'}
+                ? 'PAIRÉ는 음식 사진을 촬영하면 AI가 음식을 인식하고, 사용자의 상황과 취향에 맞는 최적의 음료를 추천해주는 서비스입니다.'
+                : 'PAIRÉ is a service that uses AI to recognize food from photos and recommend the perfect drinks based on your situation and preferences.'}
             </p>
           </section>
 
@@ -85,14 +85,14 @@ export default function TermsPage() {
               "text-lg font-semibold text-foreground mb-3",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? '??議??뚯썝 媛?? : 'Article 3: Membership'}
+              {isKorean ? '제3조 회원 가입' : 'Article 3: Membership'}
             </h2>
             <p className={cn(
               "text-muted-foreground",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
               {isKorean
-                ? '?뚯썝? 蹂??쎄????숈쓽?섍퀬 ?꾩슂???뺣낫瑜??쒓났?섏뿬 媛?낇븷 ???덉뒿?덈떎. ?덉쐞 ?뺣낫 ?쒓났 ???쒕퉬???댁슜???쒗븳?????덉뒿?덈떎.'
+                ? '회원은 본 약관에 동의하고 필요한 정보를 제공하여 가입할 수 있습니다. 허위 정보 제공 시 서비스 이용이 제한될 수 있습니다.'
                 : 'Members can sign up by agreeing to these terms and providing required information. Providing false information may result in service restrictions.'}
             </p>
           </section>
@@ -102,15 +102,15 @@ export default function TermsPage() {
               "text-lg font-semibold text-foreground mb-3",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? '??議??쒕퉬???댁슜' : 'Article 4: Service Usage'}
+              {isKorean ? '제4조 서비스 이용' : 'Article 4: Service Usage'}
             </h2>
             <ul className={cn(
               "list-disc list-inside space-y-2 text-muted-foreground",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              <li>{isKorean ? 'FREE ?뚯썝: ?섎（ 1??異붿쿇 媛?? : 'FREE members: 1 recommendation per day'}</li>
-              <li>{isKorean ? 'PREMIUM ?뚯썝: 臾댁젣??異붿쿇 媛?? : 'PREMIUM members: Unlimited recommendations'}</li>
-              <li>{isKorean ? '鍮꾨줈洹몄씤 ?ъ슜?? ?섎（ 1??異붿쿇 媛?? : 'Non-logged-in users: 1 recommendation per day'}</li>
+              <li>{isKorean ? 'FREE 회원: 하루 1회 추천 가능' : 'FREE members: 1 recommendation per day'}</li>
+              <li>{isKorean ? 'PREMIUM 회원: 무제한 추천 가능' : 'PREMIUM members: Unlimited recommendations'}</li>
+              <li>{isKorean ? '비로그인 사용자: 하루 1회 추천 가능' : 'Non-logged-in users: 1 recommendation per day'}</li>
             </ul>
           </section>
 
@@ -119,22 +119,22 @@ export default function TermsPage() {
               "text-lg font-semibold text-foreground mb-3",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? '??議?湲덉? ?됱쐞' : 'Article 5: Prohibited Actions'}
+              {isKorean ? '제5조 금지 행위' : 'Article 5: Prohibited Actions'}
             </h2>
             <p className={cn(
               "text-muted-foreground mb-2",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? '?ㅼ쓬???됱쐞??湲덉??⑸땲??' : 'The following actions are prohibited:'}
+              {isKorean ? '다음의 행위는 금지됩니다:' : 'The following actions are prohibited:'}
             </p>
             <ul className={cn(
               "list-disc list-inside space-y-2 text-muted-foreground",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              <li>{isKorean ? '遺덈쾿?곸씤 肄섑뀗痢??낅줈?? : 'Uploading illegal content'}</li>
-              <li>{isKorean ? '?쒕퉬???쒖뒪???댄궧 ?먮뒗 遺???댁슜' : 'Hacking or unauthorized use of the service'}</li>
-              <li>{isKorean ? '??몄쓽 媛쒖씤?뺣낫 ?꾩슜' : 'Stealing others\' personal information'}</li>
-              <li>{isKorean ? '?쒕퉬??諛⑺빐 ?됱쐞' : 'Interfering with the service'}</li>
+              <li>{isKorean ? '불법적인 콘텐츠 업로드' : 'Uploading illegal content'}</li>
+              <li>{isKorean ? '서비스 시스템 해킹 또는 부정 이용' : 'Hacking or unauthorized use of the service'}</li>
+              <li>{isKorean ? '타인의 개인정보 도용' : 'Stealing others\' personal information'}</li>
+              <li>{isKorean ? '서비스 방해 행위' : 'Interfering with the service'}</li>
             </ul>
           </section>
 

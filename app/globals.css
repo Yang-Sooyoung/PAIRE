@@ -44,8 +44,8 @@
 }
 
 @theme inline {
-  --font-sans: 'Cormorant Garamond', Georgia, serif;
-  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Cormorant Garamond', 'Cormorant Garamond Fallback', serif;
+  --font-serif: 'Cormorant Garamond', 'Cormorant Garamond Fallback', serif;
   --font-mono: 'Geist Mono', 'Geist Mono Fallback';
   --font-noto-kr: 'Noto Sans KR', 'Noto Sans KR Fallback', sans-serif;
   --color-gold: var(--gold);
@@ -109,7 +109,6 @@
   body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    /* 전역 safe area - 상단/하단 시스템바 여백 */
     padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
