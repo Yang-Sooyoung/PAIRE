@@ -37,6 +37,11 @@ next-env.d.ts
 /android
 /ios
 
+# keystore / signing keys (NEVER commit these)
+*.keystore
+*.jks
+keystore
+
 # documentation (development notes)
 BACKEND_CHECKLIST.md
 COMPLETION_SUMMARY.md
