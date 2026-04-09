@@ -375,11 +375,23 @@ export default function SubscriptionStatusPage() {
             </>
           ) : (
             <>
+              {/* 플랜 변경 비활성화 안내 */}
+              {subscription.status === 'ACTIVE' && (
+                <div className={cn(
+                  "w-full p-3 mb-1 bg-secondary border border-border rounded-lg text-xs text-muted-foreground text-center",
+                  isKorean && "font-[var(--font-noto-kr)]"
+                )}>
+                  {isKorean
+                    ? '현재 구독을 취소한 후 새 플랜으로 변경할 수 있습니다.'
+                    : 'Please cancel your current subscription before switching to a new plan.'}
+                </div>
+              )}
               <Button
                 onClick={() => router.push('/subscription')}
                 variant="outline"
+                disabled={subscription.status === 'ACTIVE'}
                 className={cn(
-                  "flex-1 h-14 border-gold/40 text-gold hover:bg-gold/10",
+                  "flex-1 h-14 border-gold/40 text-gold hover:bg-gold/10 disabled:opacity-40 disabled:cursor-not-allowed",
                   isKorean && "font-[var(--font-noto-kr)]"
                 )}
               >
