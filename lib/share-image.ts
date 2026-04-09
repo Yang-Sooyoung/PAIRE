@@ -7,15 +7,18 @@ export async function captureCardAsBlob(element: HTMLElement): Promise<Blob | nu
   try {
     const domtoimage = (await import("dom-to-image-more")).default
 
-    // 요소가 실제로 렌더링될 때까지 대기
-    await new Promise(r => setTimeout(r, 200))
+    await new Promise(r => setTimeout(r, 300))
+
+    // 요소의 실제 scrollWidth/scrollHeight 사용 (잘림 방지)
+    const w = element.scrollWidth || element.offsetWidth
+    const h = element.scrollHeight || element.offsetHeight
 
     const blob = await domtoimage.toBlob(element, {
       quality: 1,
       scale: 2,
-      bgcolor: "#0c0b08",  // 카드 배경색과 동일
-      width: element.offsetWidth,
-      height: element.offsetHeight,
+      bgcolor: "#0c0b08",
+      width: w,
+      height: h,
     })
     return blob
   } catch (err) {
