@@ -301,7 +301,7 @@ JSON 형식:
       "drinkNameEn": "영어 이름 (예: Aperol Spritz, Chardonnay, Mojito)",
       "drinkType": "타입",
       "description": "음료 설명 (한글)",
-      "tastingNotes": ["맛1", "맛2", "맛3"],
+      "tastingNotes": ["한글 맛 표현1", "한글 맛 표현2", "한글 맛 표현3 (예: 쌉싸름한, 과일향, 부드러운)"],
       "price": "₩가격",
       "image": "https://images.unsplash.com/photo-...",
       "reason": "추천 이유 (3-4문장, 한글)",
