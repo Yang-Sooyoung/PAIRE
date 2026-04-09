@@ -13,6 +13,7 @@ import { removeFavorite, getDrinkDetail, getFavorites } from '@/app/api/favorite
 import { translateDrinkType, translateTastingNote, formatDrinkPriceByRegion, getDrinkDisplayName } from '@/lib/drink-translations';
 import { generateShoppingLink, detectCountryByIP, openExternalLink } from '@/lib/region-detector';
 import { generateCoupangLink } from '@/lib/coupang-partners';
+import { ShareModal } from '@/components/paire/share-modal';
 
 // 음료 상세 데이터 타입
 interface DrinkDetail {
@@ -41,6 +42,7 @@ export default function FavoriteDetailPage({ id }: { id: string }) {
   const [loading, setLoading] = useState(true);
   const [removing, setRemoving] = useState(false);
   const [isKoreaRegion, setIsKoreaRegion] = useState<boolean | null>(null);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   useEffect(() => {
     detectCountryByIP().then(country => setIsKoreaRegion(country === 'KR'));
@@ -109,23 +111,8 @@ export default function FavoriteDetailPage({ id }: { id: string }) {
     }
   };
 
-  const handleShare = async () => {
-    if (!drink) return;
-    
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: drink.name,
-          text: drink.description,
-          url: window.location.href,
-        });
-      } else {
-        await navigator.clipboard.writeText(window.location.href);
-        toast.success(isKorean ? '링크가 복사되었습니다.' : 'Link copied to clipboard.');
-      }
-    } catch (error) {
-      console.error('Failed to share:', error);
-    }
+  const handleShare = () => {
+    setShowShareModal(true);
   };
 
   if (loading) {
@@ -373,6 +360,25 @@ export default function FavoriteDetailPage({ id }: { id: string }) {
           )}
         </motion.div>
       </div>
+
+      {/* Share Modal */}
+      {drink && (
+        <ShareModal
+          isOpen={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          drink={{
+            name: drink.nameKo || drink.name,
+            nameEn: drink.name,
+            type: drink.type,
+            description: drink.description,
+            tastingNotes: drink.tastingNotes,
+            image: drink.image,
+            price: drink.price,
+          }}
+          isKorean={isKorean}
+          isKoreaRegion={isKoreaRegion}
+        />
+      )}
     </div>
   );
 }
