@@ -326,7 +326,8 @@ export default function SubscriptionPage() {
 
       if (res.data?.subscription || res.data?.success) {
         setUser({ ...user, membership: 'PREMIUM' });
-        router.push('/subscription/success');
+        const remainingDays = res.data?.remainingDays || 0;
+        router.push(`/subscription/success${remainingDays > 0 ? `?bonus=${remainingDays}` : ''}`);
       } else {
         setDialogConfig({
           type: 'error',
@@ -358,7 +359,8 @@ export default function SubscriptionPage() {
 
               if (res.data?.subscription || res.data?.success) {
                 setUser({ ...user, membership: 'PREMIUM' });
-                router.push('/subscription/success');
+                const remainingDays = res.data?.remainingDays || 0;
+                router.push(`/subscription/success${remainingDays > 0 ? `?bonus=${remainingDays}` : ''}`);
                 return;
               }
             } catch (retryErr: any) {

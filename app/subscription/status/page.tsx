@@ -353,6 +353,22 @@ export default function SubscriptionStatusPage() {
         >
           {subscription.status === 'CANCELLED' ? (
             <>
+              {/* 재구독 시 남은 기간 안내 */}
+              {(() => {
+                const remaining = Math.max(0, Math.floor(
+                  (new Date(subscription.nextBillingDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+                ));
+                return remaining > 0 ? (
+                  <div className={cn(
+                    "w-full p-3 mb-3 bg-gold/10 border border-gold/30 rounded-lg text-sm text-gold text-center",
+                    isKorean && "font-[var(--font-noto-kr)]"
+                  )}>
+                    🎁 {isKorean
+                      ? `재구독 시 남은 ${remaining}일이 다음 갱신일에 추가됩니다.`
+                      : `${remaining} remaining days will be added to your next billing date.`}
+                  </div>
+                ) : null;
+              })()}
               <Button
                 onClick={() => router.push('/subscription')}
                 className={cn(

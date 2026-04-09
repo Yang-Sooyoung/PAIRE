@@ -15,6 +15,7 @@ function SubscriptionSuccessContent() {
   const { language } = useI18n();
   const isKorean = language === 'ko';
   const [processing, setProcessing] = useState(true);
+  const bonusDays = parseInt(searchParams.get('bonus') || '0');
 
   useEffect(() => {
     const confirm = async () => {
@@ -120,6 +121,24 @@ function SubscriptionSuccessContent() {
             </>
           )}
         </p>
+
+        {bonusDays > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="mb-6 p-4 bg-gold/10 border border-gold/30 rounded-xl"
+          >
+            <p className={cn(
+              "text-gold text-sm font-medium",
+              isKorean && "font-[var(--font-noto-kr)]"
+            )}>
+              🎁 {isKorean
+                ? `이전 구독의 남은 기간 ${bonusDays}일이 추가되었습니다!`
+                : `${bonusDays} remaining days from your previous subscription have been added!`}
+            </p>
+          </motion.div>
+        )}
 
         <div className="space-y-3">
           <Button

@@ -81,14 +81,28 @@ export class SubscriptionService {
       throw new Error('이미 활성 구독이 있습니다.');
     }
 
-    // 기존 CANCELLED 구독이 있으면 만료 처리 (재구독 케이스)
-    await this.prisma.subscription.updateMany({
+    // 기존 CANCELLED 구독에서 남은 기간 계산 (재구독 보너스)
+    const cancelledSub = await this.prisma.subscription.findFirst({
       where: { userId, status: 'CANCELLED' },
-      data: { status: 'FAILED' }, // FAILED로 아카이브
+      orderBy: { createdAt: 'desc' },
     });
 
-    // 첫 결제 실행 (빌링키로 즉시 결제)
-    const orderName = dto.interval === 'MONTHLY' ? 'PAIRÉ PREMIUM 월간 구독' : 'PAIRÉ PREMIUM 연간 구독';
+    let remainingDays = 0;
+    if (cancelledSub?.nextBillingDate) {
+      const now = new Date();
+      const remaining = new Date(cancelledSub.nextBillingDate).getTime() - now.getTime();
+      remainingDays = Math.max(0, Math.floor(remaining / (1000 * 60 * 60 * 24)));
+    }
+
+    // 기존 CANCELLED 구독 아카이브
+    await this.prisma.subscription.updateMany({
+      where: { userId, status: 'CANCELLED' },
+      data: { status: 'FAILED' },
+    });
+
+    // 첫 결제 실행
+    const intervalLabel = dto.interval === 'WEEKLY' ? '주간' : dto.interval === 'MONTHLY' ? '월간' : '연간';
+    const orderName = `PAIRÉ PREMIUM ${intervalLabel} 구독`;
     const paymentResult = await this.tossService.billingPayment(
       dto.billingKey,
       dto.price,
@@ -99,7 +113,7 @@ export class SubscriptionService {
       throw new Error(`첫 결제에 실패했습니다: ${paymentResult.error || '알 수 없는 오류'}`);
     }
 
-    // 다음 갱신일 계산
+    // 다음 갱신일 계산 (기본 주기 + 남은 기간)
     const nextBillingDate = new Date();
     if (dto.interval === 'MONTHLY') {
       nextBillingDate.setMonth(nextBillingDate.getMonth() + 1);
@@ -107,6 +121,11 @@ export class SubscriptionService {
       nextBillingDate.setDate(nextBillingDate.getDate() + 7);
     } else {
       nextBillingDate.setFullYear(nextBillingDate.getFullYear() + 1);
+    }
+
+    // 남은 기간 추가
+    if (remainingDays > 0) {
+      nextBillingDate.setDate(nextBillingDate.getDate() + remainingDays);
     }
 
     // 구독 생성
@@ -128,7 +147,7 @@ export class SubscriptionService {
       data: { membership: 'PREMIUM' },
     });
 
-    return { success: true, subscription };
+    return { success: true, subscription, remainingDays };
   }
 
   async getStatus(userId: string) {
