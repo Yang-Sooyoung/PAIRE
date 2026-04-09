@@ -28,20 +28,36 @@ export async function detectCountryByIP(): Promise<CountryCode> {
   if (typeof window === 'undefined') return 'OTHER';
 
   try {
-    const res = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(3000) });
-    const data = await res.json();
-    const countryCode = data.country_code;
-    if (countryCode === 'KR') return 'KR';
-    if (countryCode === 'US') return 'US';
-    return 'OTHER';
+    // 1차: ipapi.co
+    const res = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(4000) });
+    if (res.ok) {
+      const data = await res.json();
+      const countryCode = data.country_code;
+      console.log('[detectCountryByIP] ipapi.co country:', countryCode);
+      if (countryCode === 'KR') return 'KR';
+      if (countryCode) return countryCode === 'KR' ? 'KR' : 'OTHER'; // KR 아니면 모두 Stripe
+    }
   } catch {
-    // IP 조회 실패 시 타임존 기반 폴백
-    try {
-      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      if (timeZone.includes('Seoul') || timeZone === 'Asia/Seoul') return 'KR';
-    } catch { /* ignore */ }
-    return 'OTHER';
+    // 1차 실패 시 2차 시도
   }
+
+  try {
+    // 2차: ip-api.com (무료, rate limit 없음)
+    const res2 = await fetch('http://ip-api.com/json/?fields=countryCode', { signal: AbortSignal.timeout(4000) });
+    if (res2.ok) {
+      const data2 = await res2.json();
+      const countryCode = data2.countryCode;
+      console.log('[detectCountryByIP] ip-api.com country:', countryCode);
+      if (countryCode === 'KR') return 'KR';
+      if (countryCode) return 'OTHER'; // KR 아니면 모두 Stripe
+    }
+  } catch {
+    // 2차도 실패
+  }
+
+  // 모든 IP 감지 실패 시 → Stripe 기본값 (KR 아닌 경우 안전)
+  console.warn('[detectCountryByIP] All IP detection failed, defaulting to OTHER');
+  return 'OTHER';
 }
 
 /**

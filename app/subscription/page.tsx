@@ -68,6 +68,7 @@ export default function SubscriptionPage() {
   
   // 지역 감지 (null = 감지 중, 기본값 Stripe)
   const [regionConfig, setRegionConfig] = useState(getRegionConfig('OTHER'));
+  const [regionLoading, setRegionLoading] = useState(true);
   const activeRegion = regionConfig;
   
   // URL 파라미터에서 탭 확인
@@ -96,6 +97,7 @@ export default function SubscriptionPage() {
     // IP 기반 감지 (가장 정확 - VPN도 반영)
     detectCountryByIP().then(country => {
       setRegionConfig(getRegionConfig(country));
+      setRegionLoading(false);
       console.log('Detected country (IP):', country);
       console.log('Payment provider:', getRegionConfig(country).paymentProvider);
     });
@@ -116,6 +118,7 @@ export default function SubscriptionPage() {
   };
 
   const formatPlanPrice = (plan: Plan) => {
+    if (regionLoading) return '...';
     if (activeRegion.paymentProvider === 'stripe') {
       return `$${plan.priceMonthlyUSD.toFixed(2)}`;
     }
@@ -484,7 +487,7 @@ export default function SubscriptionPage() {
                     )}
                   >
                     <div className="font-semibold text-sm">{plan.interval === 'WEEKLY' ? (isKorean ? '주간' : 'Weekly') : plan.interval === 'MONTHLY' ? (isKorean ? '월간' : 'Monthly') : (isKorean ? '연간' : 'Yearly')}</div>
-                    <div className="text-sm">{activeRegion.paymentProvider === 'stripe' ? `$${plan.priceMonthlyUSD.toFixed(2)}` : `₩${plan.priceMonthly.toLocaleString()}`}</div>
+                    <div className="text-sm">{regionLoading ? '...' : activeRegion.paymentProvider === 'stripe' ? `$${plan.priceMonthlyUSD.toFixed(2)}` : `₩${plan.priceMonthly.toLocaleString()}`}</div>
                     {plan.interval === 'ANNUALLY' && (
                       <div className="text-xs opacity-80">{isKorean ? '33% 할인' : '33% OFF'}</div>
                     )}
@@ -663,7 +666,7 @@ export default function SubscriptionPage() {
 
                   <div className="text-center mb-6">
                     <div className="text-3xl font-bold text-gold mb-1">
-                      {activeRegion.paymentProvider === 'stripe'
+                      {regionLoading ? '...' : activeRegion.paymentProvider === 'stripe'
                         ? `$${pkg.priceUSD.toFixed(2)}`
                         : `₩${pkg.price.toLocaleString()}`}
                     </div>
