@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { CustomDialog } from '@/components/ui/custom-dialog';
 import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils';
-import { translateOccasion } from '@/lib/drink-translations';
+import { translateOccasion, translateTaste } from '@/lib/drink-translations';
 
 interface HistoryItem {
   id: string;
@@ -237,7 +237,7 @@ export default function HistoryPage() {
                           key={i}
                           className="text-xs px-2 py-1 rounded-full bg-gold/10 text-gold"
                         >
-                          {isKorean ? drink.name : (drink.nameEn || drink.name)}
+                          {drink.name}
                         </span>
                       ))}
                       {item.drinks.length > 3 && (

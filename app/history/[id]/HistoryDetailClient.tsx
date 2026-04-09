@@ -10,7 +10,7 @@ import { ArrowLeft, Clock, Heart, Loader2, Sparkles } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { translateDrinkType, translateOccasion, formatDrinkPriceByRegion } from '@/lib/drink-translations';
+import { translateDrinkType, translateOccasion, translateTastingNote, translateTaste, formatDrinkPriceByRegion } from '@/lib/drink-translations';
 
 interface Drink {
     id: string;
@@ -229,9 +229,12 @@ export default function HistoryDetailPage({ id }: { id: string }) {
                                 {detail.tastes.map((taste, i) => (
                                     <span
                                         key={i}
-                                        className="text-xs px-3 py-1 rounded-full bg-gold/10 text-gold"
+                                        className={cn(
+                                            "text-xs px-3 py-1 rounded-full bg-gold/10 text-gold",
+                                            isKorean && "font-[var(--font-noto-kr)]"
+                                        )}
                                     >
-                                        {taste}
+                                        {translateTaste(taste, language)}
                                     </span>
                                 ))}
                             </div>
@@ -299,7 +302,7 @@ export default function HistoryDetailPage({ id }: { id: string }) {
                                                     "text-lg font-semibold text-foreground mb-1",
                                                     isKorean && "font-[var(--font-noto-kr)]"
                                                 )}>
-                                                    {isKorean ? drink.name : (drink.nameEn || drink.name)}
+                                                    {drink.name}
                                                 </h4>
                                                 <p className="text-sm text-muted-foreground mb-1">
                                                     {translateDrinkType(drink.type, language)}
@@ -334,7 +337,13 @@ export default function HistoryDetailPage({ id }: { id: string }) {
                                             "text-sm text-muted-foreground mb-2 line-clamp-2",
                                             isKorean && "font-[var(--font-noto-kr)]"
                                         )}>
-                                            {isKorean ? drink.description : (drink.descriptionEn || drink.description)}
+                                            {(() => {
+                                                const desc = drink.description
+                                                if (!isKorean && /[가-힣]/.test(desc)) {
+                                                    return "This drink pairs beautifully with your dish."
+                                                }
+                                                return desc
+                                            })()}
                                         </p>
 
                                         {drink.tastingNotes && drink.tastingNotes.length > 0 && (
@@ -342,9 +351,12 @@ export default function HistoryDetailPage({ id }: { id: string }) {
                                                 {drink.tastingNotes.map((note, i) => (
                                                     <span
                                                         key={i}
-                                                        className="text-xs px-2 py-0.5 rounded-full bg-gold/10 text-gold"
+                                                        className={cn(
+                                                            "text-xs px-2 py-0.5 rounded-full bg-gold/10 text-gold",
+                                                            isKorean && "font-[var(--font-noto-kr)]"
+                                                        )}
                                                     >
-                                                        {note}
+                                                        {translateTastingNote(note, language)}
                                                     </span>
                                                 ))}
                                             </div>

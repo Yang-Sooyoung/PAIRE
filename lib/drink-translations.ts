@@ -106,6 +106,44 @@ export function translateOccasion(occasion: string, language: 'ko' | 'en'): stri
   return translation ? translation[language] : occasion
 }
 
+// 취향(taste) 번역
+export const tasteTranslations: Record<string, { ko: string; en: string }> = {
+  "sweet": { ko: "달콤한", en: "Sweet" },
+  "bitter": { ko: "쓴", en: "Bitter" },
+  "sour": { ko: "새콤한", en: "Sour" },
+  "light": { ko: "가벼운", en: "Light" },
+  "medium": { ko: "중간", en: "Medium" },
+  "heavy": { ko: "진한", en: "Heavy" },
+  "alcoholic": { ko: "알코올", en: "Alcoholic" },
+  "non-alcoholic": { ko: "논알콜", en: "Non-Alcoholic" },
+  "dry": { ko: "드라이", en: "Dry" },
+  "bold": { ko: "풍부한", en: "Bold" },
+  "coffee": { ko: "커피", en: "Coffee" },
+  // 한글 키도 지원
+  "달콤한": { ko: "달콤한", en: "Sweet" },
+  "가벼운": { ko: "가벼운", en: "Light" },
+  "진한": { ko: "진한", en: "Heavy" },
+  "드라이": { ko: "드라이", en: "Dry" },
+  "알코올": { ko: "알코올", en: "Alcoholic" },
+  "논알콜": { ko: "논알콜", en: "Non-Alcoholic" },
+}
+
+export function translateTaste(taste: string, language: 'ko' | 'en'): string {
+  if (!taste) return taste
+  const translation = tasteTranslations[taste.toLowerCase()] || tasteTranslations[taste]
+  return translation ? translation[language] : taste
+}
+
+/**
+ * 음료 이름 표시: 한글 모드면 name, 영어 모드면 nameEn 또는 한글 감지 시 name 그대로
+ */
+export function getDrinkDisplayName(name: string, nameEn: string | undefined, isKorean: boolean): string {
+  if (isKorean) return name
+  if (nameEn && !/[가-힣]/.test(nameEn)) return nameEn
+  // nameEn이 없거나 한글이면 name 사용 (한글이어도 그대로 - 고유명사)
+  return name
+}
+
 // 가격 표시: 한국어 모드는 원화 그대로, 영어 모드는 USD 변환
 // DB에 "₩15,000" 또는 "15000" 형태로 저장됨
 // 환율: 1 USD ≈ 1,400 KRW (고정 근사값)
