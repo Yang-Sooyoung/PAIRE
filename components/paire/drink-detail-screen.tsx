@@ -21,7 +21,6 @@ interface DrinkDetailScreenProps {
     type: string
     typeKey?: string
     description: string
-    descriptionEn?: string
     descriptionKey?: string
     tastingNotes: string[]
     image: string | null
@@ -263,10 +262,8 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
     return items.slice(0, 3) // 최대 3개
   }
 
-  // 페어리 노트: 영어 모드면 descriptionEn 우선, 없으면 한글 감지 시 기본 영문 메시지
   const getDescription = () => {
     if (isKorean) return drink.description
-    if (drink.descriptionEn) return drink.descriptionEn
     if (/[가-힣]/.test(drink.description)) {
       return "This drink pairs perfectly with your dish, creating a harmonious balance of flavors."
     }

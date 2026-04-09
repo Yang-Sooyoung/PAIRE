@@ -87,7 +87,6 @@ export class FavoriteService {
           drink: drink ? {
             id: drink.id,
             name: drink.name,
-            nameEn: (drink as any).nameEn || drink.name,
             type: drink.type,
             description: drink.description,
             tastingNotes: drink.tastingNotes,

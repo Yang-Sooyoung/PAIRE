@@ -287,14 +287,13 @@ export class RecommendationService {
           return {
             id: rec.drinkId,
             name: rec.drinkName,
-            nameEn: rec.drinkNameEn || rec.drinkName,
+            nameEn: rec.drinkNameEn || rec.drinkName, // AI 생성 결과에서만 사용
             type: rec.drinkType || 'unknown',
             description: rec.description,
-            descriptionEn: rec.descriptionEn || rec.description,
-            tastingNotes: rec.tastingNotes || [],            image: this.getSafeImage(rec.image, rec.drinkType || 'default'),
+            tastingNotes: rec.tastingNotes || [],
+            image: this.getSafeImage(rec.image, rec.drinkType || 'default'),
             price: rec.price,
             purchaseUrl: `https://www.coupang.com/np/search?q=${encodeURIComponent(rec.drinkName)}`,
-            // AI 추천 정보
             aiReason: rec.reason,
             aiScore: rec.score,
             pairingNotes: rec.pairingNotes,
@@ -324,10 +323,9 @@ export class RecommendationService {
     return {
       id: drink.id,
       name: rec.drinkName || drink.name,
-      nameEn: rec.drinkNameEn || (drink as any).nameEn || drink.name,
+      nameEn: rec.drinkNameEn || drink.name, // AI 생성 결과 우선, 없으면 name 사용
       type: drink.type,
       description: drink.description,
-      descriptionEn: rec.descriptionEn || (drink as any).descriptionEn || drink.description,
       tastingNotes: drink.tastingNotes,
       image: this.getSafeImage(drink.image, drink.type),
       price: drink.price,
@@ -568,27 +566,12 @@ export class RecommendationService {
       throw new BadRequestException('접근 권한이 없습니다.');
     }
 
-    // drinks 이미지 재처리 + nameEn/descriptionEn 보완
+    // drinks 이미지 재처리
     let drinks = recommendation.drinks as any[];
     if (Array.isArray(drinks)) {
-      drinks = await Promise.all(drinks.map(async (drink) => {
-        const updated: any = {
-          ...drink,
-          image: this.getSafeImage(drink.image, drink.type),
-        };
-
-        // nameEn/descriptionEn이 없으면 DB에서 보완
-        if (!updated.nameEn || !updated.descriptionEn) {
-          try {
-            const dbDrink = await this.prisma.drink.findUnique({ where: { id: drink.id } });
-            if (dbDrink) {
-              if (!updated.nameEn) updated.nameEn = (dbDrink as any).nameEn || dbDrink.name;
-              if (!updated.descriptionEn) updated.descriptionEn = (dbDrink as any).descriptionEn || dbDrink.description;
-            }
-          } catch { /* ignore */ }
-        }
-
-        return updated;
+      drinks = drinks.map((drink) => ({
+        ...drink,
+        image: this.getSafeImage(drink.image, drink.type),
       }));
     }
 

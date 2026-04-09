@@ -119,10 +119,8 @@ model Recommendation {
 model Drink {
   id        String   @id @default(cuid())
   name      String
-  nameEn    String?
   type      String
   description String
-  descriptionEn String?
   tastingNotes String[]
   image     String?
   price     String

@@ -18,10 +18,8 @@ import { generateCoupangLink } from '@/lib/coupang-partners';
 interface DrinkDetail {
   id: string;
   name: string;
-  nameEn?: string;
   type: string;
   description: string;
-  descriptionEn?: string;
   tastingNotes: string[];
   image: string;
   price: string;
@@ -91,7 +89,7 @@ export default function FavoriteDetailPage({ id }: { id: string }) {
       await openExternalLink(link);
     } else {
       // 해외: 아마존 링크
-      const drinkName = drink.nameEn || drink.name;
+      const drinkName = drink.name;
       const link = generateShoppingLink(drinkName, drink.type, country);
       await openExternalLink(link);
     }
@@ -187,7 +185,7 @@ export default function FavoriteDetailPage({ id }: { id: string }) {
               "text-2xl font-bold text-foreground mb-2",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {isKorean ? drink.name : (drink.nameEn || drink.name)}
+              {drink.name}
             </h2>
             <p className={cn(
               "text-lg text-muted-foreground mb-4",
@@ -200,7 +198,7 @@ export default function FavoriteDetailPage({ id }: { id: string }) {
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
               {(() => {
-                const desc = isKorean ? drink.description : (drink.descriptionEn || drink.description)
+                const desc = drink.description
                 if (!isKorean && /[가-힣]/.test(desc)) {
                   return "This drink pairs beautifully with your selection, offering a harmonious balance of flavors."
                 }

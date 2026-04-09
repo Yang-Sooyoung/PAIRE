@@ -262,17 +262,7 @@ export default function FavoritesPage() {
                     "text-foreground font-medium mb-1 truncate",
                     isKorean && "font-[var(--font-noto-kr)] text-sm"
                   )}>
-                    {isKorean
-                      ? (favorite.drink?.name || favorite.drinkName)
-                      : (() => {
-                          const nameEn = (favorite.drink as any)?.nameEn
-                          const name = favorite.drink?.name || favorite.drinkName
-                          // nameEn이 있고 한글 아니면 사용, 아니면 drinkName 사용
-                          if (nameEn && !/[가-힣]/.test(nameEn)) return nameEn
-                          if (!/[가-힣]/.test(name)) return name
-                          return favorite.drinkName
-                        })()
-                    }
+                    {favorite.drink?.name || favorite.drinkName}
                   </h3>
                   <p className={cn(
                     "text-xs text-muted-foreground truncate",
