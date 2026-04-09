@@ -13,11 +13,9 @@ export async function captureCardAsBlob(element: HTMLElement): Promise<Blob | nu
     const blob = await domtoimage.toBlob(element, {
       quality: 1,
       scale: 2,
-      bgcolor: "#0a0a0a",
-      style: {
-        // 캡처 시 폰트 강제 적용
-        fontFamily: "'Noto Sans KR', 'Playfair Display', Georgia, serif",
-      },
+      bgcolor: "#0c0b08",  // 카드 배경색과 동일
+      width: element.offsetWidth,
+      height: element.offsetHeight,
     })
     return blob
   } catch (err) {

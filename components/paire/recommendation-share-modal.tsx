@@ -93,13 +93,12 @@ export function RecommendationShareModal({
             {/* 카드 미리보기 */}
             <div className="flex-1 overflow-y-auto mb-4 -mx-5 px-5">
               <div className="flex justify-center py-2">
-                <div ref={cardRef} style={{ display: "inline-block", maxWidth: "100%" }}>
-                  <RecommendationShareCard
-                    detail={detail}
-                    isKorean={isKorean}
-                    occasionLabel={occasionLabel}
-                  />
-                </div>
+                <RecommendationShareCard
+                  ref={cardRef}
+                  detail={detail}
+                  isKorean={isKorean}
+                  occasionLabel={occasionLabel}
+                />
               </div>
             </div>
 
