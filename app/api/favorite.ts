@@ -1,7 +1,7 @@
 import apiClient from './client';
 
-export async function addFavorite(drinkId: string) {
-  const response = await apiClient.post(`/favorite/${drinkId}`, {});
+export async function addFavorite(drinkId: string, drinkNameKo?: string) {
+  const response = await apiClient.post(`/favorite/${drinkId}`, { drinkNameKo });
   return response.data;
 }
 

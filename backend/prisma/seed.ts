@@ -1302,7 +1302,7 @@ async function main() {
       type: 'tea',
       description: '베르가못 향의 클래식 홍차',
       tastingNotes: ['floral', 'elegant', 'smooth'],
-      image: 'https://images.unsplash.com/photo-1597318281699-33b0c7d6c8b6?w=400&h=600&fit=crop',
+      image: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400&h=600&fit=crop',
       price: '₩8,000',
       foodPairings: ['dessert', 'cheese', 'light dishes'],
       occasions: ['solo-meal', 'gathering'],

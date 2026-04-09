@@ -131,7 +131,7 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
         await removeFavorite(drink.id)
         setIsWishlisted(false)
       } else {
-        await addFavorite(drink.id)
+        await addFavorite(drink.id, drink.name)
         setIsWishlisted(true)
       }
     } catch (error: any) {

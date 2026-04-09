@@ -112,7 +112,8 @@ export default function HistoryDetailPage({ id }: { id: string }) {
                 await removeFavorite(drinkId);
                 toast.success(isKorean ? '즐겨찾기에서 제거했습니다.' : 'Removed from favorites.');
             } else {
-                await addFavorite(drinkId);
+                const drink = detail?.drinks?.find((d: any) => d.id === drinkId);
+                await addFavorite(drinkId, drink?.name);
                 toast.success(isKorean ? '즐겨찾기에 추가했습니다.' : 'Added to favorites.');
             }
             setFavoriteStatus(prev => ({ ...prev, [drinkId]: !isFavorite }));

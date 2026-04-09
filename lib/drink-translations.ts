@@ -58,6 +58,14 @@ export const tastingNoteTranslations: Record<string, { ko: string; en: string }>
   "unique": { ko: "독특한", en: "Unique" },
   "dry": { ko: "드라이", en: "Dry" },
   "full-bodied": { ko: "풀바디", en: "Full-bodied" },
+  "bitter": { ko: "쌉싸름한", en: "Bitter" },
+  "astringent": { ko: "떫은", en: "Astringent" },
+  "woody": { ko: "우디", en: "Woody" },
+  "vanilla": { ko: "바닐라", en: "Vanilla" },
+  "chocolate": { ko: "초콜릿", en: "Chocolate" },
+  "caramel": { ko: "카라멜", en: "Caramel" },
+  "pepper": { ko: "후추", en: "Pepper" },
+  "oak": { ko: "오크", en: "Oak" },
 }
 
 export function translateDrinkType(type: string, language: 'ko' | 'en'): string {

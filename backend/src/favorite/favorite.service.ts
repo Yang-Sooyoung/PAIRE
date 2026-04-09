@@ -5,7 +5,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 export class FavoriteService {
   constructor(private prisma: PrismaService) { }
 
-  async addFavorite(userId: string, drinkId: string) {
+  async addFavorite(userId: string, drinkId: string, drinkNameKo?: string) {
     // PREMIUM 사용자만 가능
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (user?.membership !== 'PREMIUM') {
@@ -29,12 +29,15 @@ export class FavoriteService {
       throw new BadRequestException('이미 즐겨찾기에 추가된 음료입니다.');
     }
 
+    // 한글 이름 우선: 클라이언트 전달값 > DB nameKo > DB name
+    const savedName = drinkNameKo || (drink as any).nameKo || drink.name;
+
     // 즐겨찾기 추가
     const favorite = await this.prisma.favorite.create({
       data: {
         userId,
         drinkId,
-        drinkName: drink.name,
+        drinkName: savedName,
         drinkType: drink.type,
         drinkImage: drink.image,
       },
