@@ -435,6 +435,7 @@ export function RecommendationScreen({
           drink={currentDrink}
           foodImageUrl={imageUrl}
           isKorean={isKorean}
+          isKoreaRegion={isKoreaRegion}
         />
       )}
     </div>

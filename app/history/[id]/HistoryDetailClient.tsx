@@ -6,11 +6,12 @@ import { useUserStore } from '@/app/store/userStore';
 import { getRecommendationDetail } from '@/app/api/recommendation';
 import { addFavorite, removeFavorite, checkFavorite } from '@/app/api/favorite';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Clock, Heart, Loader2, Sparkles } from 'lucide-react';
+import { ArrowLeft, Clock, Heart, Loader2, Sparkles, Share2 } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { translateDrinkType, translateOccasion, translateTastingNote, translateTaste, formatDrinkPriceByRegion, getDrinkDisplayName } from '@/lib/drink-translations';
+import { ShareModal } from '@/components/paire/share-modal';
 
 interface Drink {
     id: string;
@@ -46,6 +47,7 @@ export default function HistoryDetailPage({ id }: { id: string }) {
     const [favoriteStatus, setFavoriteStatus] = useState<Record<string, boolean>>({});
     const [togglingFavorite, setTogglingFavorite] = useState<string | null>(null);
     const [isKoreaRegion, setIsKoreaRegion] = useState<boolean | null>(null);
+    const [shareTarget, setShareTarget] = useState<Drink | null>(null);
 
     useEffect(() => {
         import('@/lib/region-detector').then(({ detectCountryByIP }) => {
@@ -314,24 +316,32 @@ export default function HistoryDetailPage({ id }: { id: string }) {
                                                     </p>
                                                 )}
                                             </div>
-                                            <button
-                                                onClick={() => handleToggleFavorite(drink.id)}
-                                                disabled={togglingFavorite === drink.id}
-                                                className="flex-shrink-0 p-2 rounded-full hover:bg-secondary transition"
-                                            >
-                                                {togglingFavorite === drink.id ? (
-                                                    <Loader2 className="w-5 h-5 text-gold animate-spin" />
-                                                ) : (
-                                                    <Heart
-                                                        className={cn(
-                                                            "w-5 h-5 transition",
-                                                            favoriteStatus[drink.id]
-                                                                ? "fill-gold text-gold"
-                                                                : "text-muted-foreground"
-                                                        )}
-                                                    />
-                                                )}
-                                            </button>
+                                            <div className="flex gap-1 flex-shrink-0">
+                                                <button
+                                                    onClick={() => setShareTarget(drink)}
+                                                    className="p-2 rounded-full hover:bg-secondary transition"
+                                                >
+                                                    <Share2 className="w-5 h-5 text-muted-foreground hover:text-gold transition" />
+                                                </button>
+                                                <button
+                                                    onClick={() => handleToggleFavorite(drink.id)}
+                                                    disabled={togglingFavorite === drink.id}
+                                                    className="p-2 rounded-full hover:bg-secondary transition"
+                                                >
+                                                    {togglingFavorite === drink.id ? (
+                                                        <Loader2 className="w-5 h-5 text-gold animate-spin" />
+                                                    ) : (
+                                                        <Heart
+                                                            className={cn(
+                                                                "w-5 h-5 transition",
+                                                                favoriteStatus[drink.id]
+                                                                    ? "fill-gold text-gold"
+                                                                    : "text-muted-foreground"
+                                                            )}
+                                                        />
+                                                    )}
+                                                </button>
+                                            </div>
                                         </div>
 
                                         <p className={cn(
@@ -375,6 +385,26 @@ export default function HistoryDetailPage({ id }: { id: string }) {
                     )}
                 </div>
             </div>
+
+            {/* Share Modal */}
+            {shareTarget && (
+                <ShareModal
+                    isOpen={!!shareTarget}
+                    onClose={() => setShareTarget(null)}
+                    drink={{
+                        name: shareTarget.name,
+                        nameEn: shareTarget.nameEn,
+                        type: shareTarget.type,
+                        description: shareTarget.description,
+                        tastingNotes: shareTarget.tastingNotes,
+                        image: shareTarget.image,
+                        price: shareTarget.price,
+                    }}
+                    foodImageUrl={detail?.imageUrl}
+                    isKorean={isKorean}
+                    isKoreaRegion={isKoreaRegion}
+                />
+            )}
         </div>
     );
 }

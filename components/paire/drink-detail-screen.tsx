@@ -627,6 +627,7 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
         onClose={() => setShowShareModal(false)}
         drink={drink}
         isKorean={isKorean}
+        isKoreaRegion={isKoreaRegion}
       />
 
       {/* Custom Dialog */}

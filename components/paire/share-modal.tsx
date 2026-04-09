@@ -24,9 +24,10 @@ interface ShareModalProps {
   }
   foodImageUrl?: string
   isKorean: boolean
+  isKoreaRegion?: boolean | null
 }
 
-export function ShareModal({ isOpen, onClose, drink, foodImageUrl, isKorean }: ShareModalProps) {
+export function ShareModal({ isOpen, onClose, drink, foodImageUrl, isKorean, isKoreaRegion }: ShareModalProps) {
   const cardRef = useRef<HTMLDivElement>(null)
   const [status, setStatus] = useState<"idle" | "loading" | "done">("idle")
   const [toastMsg, setToastMsg] = useState("")
@@ -104,6 +105,7 @@ export function ShareModal({ isOpen, onClose, drink, foodImageUrl, isKorean }: S
                   drink={drink}
                   foodImageUrl={foodImageUrl}
                   isKorean={isKorean}
+                  isKoreaRegion={isKoreaRegion}
                 />
               </div>
             </div>

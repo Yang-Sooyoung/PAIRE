@@ -216,7 +216,8 @@ export function generateShoppingLink(
   country?: CountryCode
 ): string {
   const platform = getShoppingPlatform(country);
-  const searchQuery = encodeURIComponent(`${drinkName} ${drinkType}`);
+  // 타입 제거 - 음료 이름만 검색
+  const searchQuery = encodeURIComponent(drinkName);
 
   switch (platform) {
     case 'coupang':

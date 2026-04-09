@@ -17,12 +17,26 @@ interface ShareCardProps {
   }
   foodImageUrl?: string
   isKorean: boolean
+  isKoreaRegion?: boolean | null
   className?: string
 }
 
 export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(
-  ({ drink, foodImageUrl, isKorean, className }, ref) => {
+  ({ drink, foodImageUrl, isKorean, isKoreaRegion, className }, ref) => {
     const displayName = isKorean ? drink.name : (drink.nameEn || drink.name)
+
+    // 지역 기반 가격 포맷
+    const formatPrice = (price: string) => {
+      if (!price) return ''
+      // 이미 통화 기호가 있으면 그대로
+      if (price.startsWith('₩') || price.startsWith('$') || price.startsWith('€')) return price
+      // 숫자만 있으면 지역에 따라 포맷
+      const num = parseFloat(price.replace(/[^0-9.]/g, ''))
+      if (isNaN(num)) return price
+      if (isKoreaRegion === false) return `$${num.toFixed(2)}`
+      if (isKoreaRegion === true) return `₩${Math.round(num).toLocaleString()}`
+      return price
+    }
 
     return (
       <div
@@ -119,7 +133,7 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(
             color: "#d4af37",
             marginBottom: 14,
           }}>
-            {drink.price}
+            {formatPrice(drink.price)}
           </div>
 
           {/* AI 추천 이유 */}
