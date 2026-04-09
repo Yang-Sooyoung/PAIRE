@@ -5,9 +5,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { CreditCard, Trash2 } from 'lucide-react';
 import { CustomDialog } from '@/components/ui/custom-dialog';
-import axios from 'axios';
-import { useUserStore } from '@/app/store/userStore';
-import { useRouter } from 'next/navigation';
+import apiClient from '@/app/api/client';
 import { useI18n } from '@/lib/i18n/context';
 
 interface PaymentMethodCardProps {
@@ -22,7 +20,6 @@ export function PaymentMethodCard({ billingKey, token }: PaymentMethodCardProps)
     const [showSuccess, setShowSuccess] = useState(false);
     const [showError, setShowError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-    const { refreshTokenIfNeeded } = useUserStore();
     const router = useRouter();
     const { language } = useI18n();
     const isKorean = language === 'ko';
@@ -30,43 +27,7 @@ export function PaymentMethodCard({ billingKey, token }: PaymentMethodCardProps)
     const handleRemove = async () => {
         try {
             setLoading(true);
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
-
-            let currentToken = token;
-
-            try {
-                await axios.post(
-                    `${apiUrl}/subscription/remove-method`,
-                    {},
-                    {
-                        headers: { Authorization: `Bearer ${currentToken}` },
-                    }
-                );
-            } catch (error: any) {
-                // 401 에러면 토큰 갱신 후 재시도
-                if (error?.response?.status === 401) {
-                    console.log('Token expired, refreshing...');
-                    const newToken = await refreshTokenIfNeeded();
-
-                    if (newToken) {
-                        currentToken = newToken;
-                        await axios.post(
-                            `${apiUrl}/subscription/remove-method`,
-                            {},
-                            {
-                                headers: { Authorization: `Bearer ${currentToken}` },
-                            }
-                        );
-                    } else {
-                        console.log('Token refresh failed, redirecting to login');
-                        router.push('/login');
-                        return;
-                    }
-                } else {
-                    throw error;
-                }
-            }
-
+            await apiClient.post('/subscription/remove-method', {});
             setShowSuccess(true);
             setTimeout(() => {
                 window.location.reload();

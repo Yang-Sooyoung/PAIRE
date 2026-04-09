@@ -113,7 +113,15 @@ export class SubscriptionService {
     }
 
     if (!paymentResult.success) {
-      throw new BadRequestException(`첫 결제에 실패했습니다: ${paymentResult.error || '알 수 없는 오류'}`);
+      // 빌링키 만료 또는 유효하지 않은 경우 결제수단 재등록 안내
+      const errorMsg = paymentResult.error || '알 수 없는 오류';
+      const isBillingKeyError = errorMsg.includes('빌링키') || errorMsg.includes('billing') || errorMsg.includes('인증');
+      if (isBillingKeyError) {
+        // 만료된 결제수단 DB에서 제거
+        await this.prisma.paymentMethod.deleteMany({ where: { userId, billingKey: dto.billingKey } });
+        throw new BadRequestException('결제 수단이 만료되었습니다. 결제 수단을 다시 등록해주세요.');
+      }
+      throw new BadRequestException(`첫 결제에 실패했습니다: ${errorMsg}`);
     }
 
     // 다음 갱신일 계산 (기본 주기 + 남은 기간)

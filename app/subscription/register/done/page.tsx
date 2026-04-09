@@ -35,116 +35,16 @@ function RegisterDoneContent() {
     }
 
     const registerPaymentMethod = async () => {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
-      let token = localStorage.getItem('accessToken');
-      
-      if (!token) {
-        console.error('No access token found');
-        if (!isCancelled) {
-          setStatus('error');
-          setTimeout(() => {
-            router.push('/login');
-          }, 2000);
-        }
-        return;
-      }
-      
-      console.log('Sending register-method request...');
-      
       try {
-        let response = await fetch(`${API_URL}/subscription/register-method`, {
-          method: "POST",
-          headers: { 
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-          },
-          body: JSON.stringify({ billingAuthKey: authKey, customerKey }),
-        });
+        const apiClient = (await import('@/app/api/client')).default;
+        await apiClient.post('/subscription/register-method', { billingAuthKey: authKey, customerKey });
 
         if (isCancelled) return;
-
-        console.log('Register response status:', response.status);
-        
-        // 401 에러면 토큰 갱신 후 재시도
-        if (response.status === 401) {
-          console.log('Token expired, attempting to refresh...');
-          
-          const refreshToken = localStorage.getItem('refreshToken');
-          if (!refreshToken) {
-            console.error('No refresh token found');
-            if (!isCancelled) {
-              setStatus('error');
-              setTimeout(() => {
-                router.push('/login');
-              }, 2000);
-            }
-            return;
-          }
-
-          // 토큰 갱신
-          const refreshResponse = await fetch(`${API_URL}/auth/refresh`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ refreshToken }),
-          });
-
-          if (isCancelled) return;
-
-          if (!refreshResponse.ok) {
-            console.error('Token refresh failed');
-            if (!isCancelled) {
-              setStatus('error');
-              setTimeout(() => {
-                router.push('/login');
-              }, 2000);
-            }
-            return;
-          }
-
-          const refreshData = await refreshResponse.json();
-          token = refreshData.accessToken;
-          
-          localStorage.setItem('accessToken', refreshData.accessToken);
-          localStorage.setItem('refreshToken', refreshData.refreshToken);
-
-          console.log('Token refreshed, retrying register-method...');
-
-          // 새 토큰으로 재시도
-          response = await fetch(`${API_URL}/subscription/register-method`, {
-            method: "POST",
-            headers: { 
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${token}`,
-            },
-            body: JSON.stringify({ billingAuthKey: authKey, customerKey }),
-          });
-
-          if (isCancelled) return;
-
-          console.log('Retry response status:', response.status);
-        }
-        
-        if (response.ok) {
-          const data = await response.json();
-          console.log('Register success:', data);
-          if (!isCancelled) {
-            setStatus('success');
-            setTimeout(() => {
-              // 페이지 새로고침으로 결제수단 상태 업데이트
-              window.location.href = '/subscription';
-            }, 2000);
-          }
-        } else {
-          const error = await response.json().catch(() => ({}));
-          console.error('Register failed:', error);
-          if (!isCancelled) {
-            setStatus('error');
-            setTimeout(() => {
-              router.push('/subscription');
-            }, 3000);
-          }
-        }
-      } catch (err) {
+        setStatus('success');
+        setTimeout(() => {
+          window.location.href = '/subscription';
+        }, 2000);
+      } catch (err: any) {
         console.error('Register error:', err);
         if (!isCancelled) {
           setStatus('error');
