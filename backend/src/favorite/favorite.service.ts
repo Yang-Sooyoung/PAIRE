@@ -5,16 +5,23 @@ import { PrismaService } from '@/prisma/prisma.service';
 export class FavoriteService {
   constructor(private prisma: PrismaService) { }
 
-  async addFavorite(userId: string, drinkId: string, drinkNameKo?: string) {
+  async addFavorite(userId: string, drinkId: string, drinkNameKo?: string, drinkInfo?: {
+    type?: string;
+    image?: string;
+    description?: string;
+    price?: string;
+  }) {
     // PREMIUM 사용자만 가능
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (user?.membership !== 'PREMIUM') {
       throw new BadRequestException('즐겨찾기는 PREMIUM 멤버만 이용할 수 있습니다.');
     }
 
-    // 음료 정보 조회
+    // 음료 정보 조회 (DB에 없으면 클라이언트 전달 데이터 사용)
     const drink = await this.prisma.drink.findUnique({ where: { id: drinkId } });
-    if (!drink) {
+
+    // DB에도 없고 클라이언트 데이터도 없으면 에러
+    if (!drink && !drinkNameKo && !drinkInfo) {
       throw new BadRequestException('음료를 찾을 수 없습니다.');
     }
 
@@ -30,7 +37,9 @@ export class FavoriteService {
     }
 
     // 한글 이름 우선: 클라이언트 전달값 > DB nameKo > DB name
-    const savedName = drinkNameKo || (drink as any).nameKo || drink.name;
+    const savedName = drinkNameKo || (drink as any)?.nameKo || drink?.name || drinkId;
+    const savedType = drink?.type || drinkInfo?.type || 'unknown';
+    const savedImage = drink?.image || drinkInfo?.image || null;
 
     // 즐겨찾기 추가
     const favorite = await this.prisma.favorite.create({
@@ -38,8 +47,8 @@ export class FavoriteService {
         userId,
         drinkId,
         drinkName: savedName,
-        drinkType: drink.type,
-        drinkImage: drink.image,
+        drinkType: savedType,
+        drinkImage: savedImage,
       },
     });
 

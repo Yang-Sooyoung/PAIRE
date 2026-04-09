@@ -131,7 +131,12 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
         await removeFavorite(drink.id)
         setIsWishlisted(false)
       } else {
-        await addFavorite(drink.id, drink.name)
+        await addFavorite(drink.id, drink.name, {
+            type: drink.type,
+            image: drink.image || undefined,
+            description: drink.description,
+            price: drink.price,
+          })
         setIsWishlisted(true)
       }
     } catch (error: any) {

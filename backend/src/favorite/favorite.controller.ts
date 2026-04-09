@@ -13,7 +13,7 @@ export class FavoriteController {
   @Post(':drinkId')
   @UseGuards(JwtAuthGuard)
   async addFavorite(@Request() req: any, @Param('drinkId') drinkId: string, @Body() body: any) {
-    return this.favoriteService.addFavorite(req.user.sub, drinkId, body?.drinkNameKo);
+    return this.favoriteService.addFavorite(req.user.sub, drinkId, body?.drinkNameKo, body?.drinkInfo);
   }
 
   @Delete(':drinkId')
