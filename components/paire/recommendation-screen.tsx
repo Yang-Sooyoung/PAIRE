@@ -90,6 +90,20 @@ const tastingNoteTranslations: Record<string, { ko: string; en: string }> = {
   "refreshing": { ko: "상쾌한", en: "Refreshing" },
   "mild": { ko: "순한", en: "Mild" },
   "unique": { ko: "독특한", en: "Unique" },
+  "bitter": { ko: "쌉싸름한", en: "Bitter" },
+  "dry": { ko: "드라이", en: "Dry" },
+  "full-bodied": { ko: "풀바디", en: "Full-bodied" },
+  "astringent": { ko: "떫은", en: "Astringent" },
+  "woody": { ko: "우디", en: "Woody" },
+  "acidic": { ko: "산미", en: "Acidic" },
+  "oaky": { ko: "오크향", en: "Oaky" },
+  "vanilla": { ko: "바닐라", en: "Vanilla" },
+  "chocolate": { ko: "초콜릿", en: "Chocolate" },
+  "caramel": { ko: "카라멜", en: "Caramel" },
+  "pepper": { ko: "후추향", en: "Pepper" },
+  "fizzy": { ko: "탄산감", en: "Fizzy" },
+  "bubbly": { ko: "버블리", en: "Bubbly" },
+  "zesty": { ko: "상큼한", en: "Zesty" },
 }
 
 export function RecommendationScreen({

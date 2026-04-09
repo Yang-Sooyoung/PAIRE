@@ -66,6 +66,11 @@ export const tastingNoteTranslations: Record<string, { ko: string; en: string }>
   "caramel": { ko: "카라멜", en: "Caramel" },
   "pepper": { ko: "후추", en: "Pepper" },
   "oak": { ko: "오크", en: "Oak" },
+  "oaky": { ko: "오크향", en: "Oaky" },
+  "acidic": { ko: "산미", en: "Acidic" },
+  "fizzy": { ko: "탄산감", en: "Fizzy" },
+  "bubbly": { ko: "버블리", en: "Bubbly" },
+  "zesty": { ko: "상큼한", en: "Zesty" },
 }
 
 export function translateDrinkType(type: string, language: 'ko' | 'en'): string {
