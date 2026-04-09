@@ -97,20 +97,21 @@ export function ShareModal({ isOpen, onClose, drink, foodImageUrl, isKorean, isK
               </button>
             </div>
 
-            {/* 카드 미리보기 - 실제 크기로 숨겨서 캡처, 축소본은 미리보기용 */}
+            {/* 카드 미리보기 */}
             <div className="flex justify-center mb-6 overflow-hidden">
-              {/* 캡처용 원본 (화면 밖) */}
+              {/* 캡처용 원본 - body에 직접 렌더링 (overflow 영향 없음) */}
               <div
+                ref={cardRef}
                 style={{
                   position: "fixed",
                   left: -9999,
-                  top: -9999,
-                  zIndex: -1,
+                  top: 0,
+                  zIndex: -9999,
+                  opacity: 0,
                   pointerEvents: "none",
                 }}
               >
                 <ShareCard
-                  ref={cardRef}
                   drink={drink}
                   foodImageUrl={foodImageUrl}
                   isKorean={isKorean}
