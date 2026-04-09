@@ -84,12 +84,6 @@ export class SubscriptionService {
       remainingDays = Math.max(0, Math.floor(remaining / (1000 * 60 * 60 * 24)));
     }
 
-    // 기존 CANCELLED 구독 아카이브
-    await this.prisma.subscription.updateMany({
-      where: { userId, status: 'CANCELLED' },
-      data: { status: 'FAILED' },
-    });
-
     // 첫 결제 실행 (customerKey 조회)
     const paymentMethod = await this.prisma.paymentMethod.findFirst({
       where: { userId, billingKey: dto.billingKey },
@@ -123,6 +117,12 @@ export class SubscriptionService {
       }
       throw new BadRequestException(`첫 결제에 실패했습니다: ${errorMsg}`);
     }
+
+    // 결제 성공 후에만 기존 CANCELLED 구독 아카이브
+    await this.prisma.subscription.updateMany({
+      where: { userId, status: 'CANCELLED' },
+      data: { status: 'FAILED' },
+    });
 
     // 다음 갱신일 계산 (기본 주기 + 남은 기간)
     const nextBillingDate = new Date();
@@ -164,27 +164,28 @@ export class SubscriptionService {
   }
 
   async getStatus(userId: string) {
-    // ACTIVE 또는 CANCELLED 구독 조회 (만료 전까지)
+    // ACTIVE 우선, 없으면 유효기간 남은 CANCELLED 조회
     const subscription = await this.prisma.subscription.findFirst({
       where: { 
         userId, 
         status: { in: ['ACTIVE', 'CANCELLED'] },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: [
+        // ACTIVE를 먼저, 그 다음 최신순
+        { status: 'asc' },
+        { createdAt: 'desc' },
+      ],
     });
 
     if (!subscription) {
       return { subscription: null };
     }
 
-    // CANCELLED 구독이 만료되었는지 확인
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // CANCELLED 구독이 만료되었는지 확인 (오늘 자정 이후 = 오늘은 아직 유효)
+    const now = new Date();
     const nextBillingDate = new Date(subscription.nextBillingDate);
-    nextBillingDate.setHours(0, 0, 0, 0);
 
-    if (subscription.status === 'CANCELLED' && nextBillingDate <= today) {
-      // 만료된 CANCELLED 구독
+    if (subscription.status === 'CANCELLED' && nextBillingDate < now) {
       return { subscription: null };
     }
 
@@ -197,7 +198,7 @@ export class SubscriptionService {
         nextBillingDate: subscription.nextBillingDate,
         status: subscription.status,
         paymentMethod: subscription.stripeSubscriptionId || subscription.stripeCustomerId ? 'Card ****' : '카드 ****',
-        willExpire: subscription.status === 'CANCELLED', // 취소 예정 플래그
+        willExpire: subscription.status === 'CANCELLED',
         isStripe: !!subscription.stripeSubscriptionId || !!subscription.stripeCustomerId,
       },
     };
