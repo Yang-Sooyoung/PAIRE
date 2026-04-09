@@ -293,7 +293,7 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
     const country = await detectCountryByIP();
     
     if (country === 'KR') {
-      // 한국: 항상 한글 이름으로 쿠팡 검색 (purchaseUrl 무시 - 영문 검색어 방지)
+      // 한국: name(한글) 우선, 영문만 있으면 name 그대로 사용
       const coupangLink = generateCoupangLink(drink.name);
       await openExternalLink(coupangLink);
     } else {

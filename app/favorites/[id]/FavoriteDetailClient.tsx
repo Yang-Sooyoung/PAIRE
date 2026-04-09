@@ -96,8 +96,10 @@ export default function FavoriteDetailPage({ id }: { id: string }) {
     if (!drink) return;
     const country = await detectCountryByIP();
     if (country === 'KR') {
-      // 한국: 항상 한글 이름으로 쿠팡 검색
-      const link = generateCoupangLink(drink.name);
+      // 한국: 한글 이름 우선 (nameKo → name 순서, 영문이면 타입 기반 키워드 사용)
+      const koreanName = drink.nameKo || (/[가-힣]/.test(drink.name) ? drink.name : null);
+      const searchKeyword = koreanName || drink.name;
+      const link = generateCoupangLink(searchKeyword);
       await openExternalLink(link);
     } else {
       // 해외: 아마존 링크
