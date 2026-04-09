@@ -297,8 +297,8 @@ JSON 형식:
   "recommendations": [
     {
       "drinkId": "생성된 고유 ID (예: wine_001)",
-      "drinkName": "한글 이름",
-      "drinkNameEn": "영어 이름",
+      "drinkName": "한글 이름 (예: 아페롤 스프리츠, 샤르도네, 모히또 - 외래어도 반드시 한글 표기)",
+      "drinkNameEn": "영어 이름 (예: Aperol Spritz, Chardonnay, Mojito)",
       "drinkType": "타입",
       "description": "음료 설명 (한글)",
       "tastingNotes": ["맛1", "맛2", "맛3"],

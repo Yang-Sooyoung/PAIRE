@@ -302,7 +302,9 @@ export function RecommendationScreen({
                 {translateDrinkType(currentDrink.type)}
               </p>
               <h2 className="text-foreground text-2xl font-semibold mb-3">
-                {isKorean ? currentDrink.name : (currentDrink.nameEn || currentDrink.name)}
+                {isKorean
+                  ? (currentDrink.name || currentDrink.nameEn)
+                  : (currentDrink.nameEn || currentDrink.name)}
               </h2>
 
               {/* AI 추천 이유 */}

@@ -373,7 +373,7 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
           className="mb-6"
         >
           <h1 className="text-foreground text-3xl font-bold mb-2">
-            {isKorean ? drink.name : (drink.nameEn || drink.name)}
+            {isKorean ? (drink.name || drink.nameEn) : (drink.nameEn || drink.name)}
           </h1>
           <p className="text-gold text-2xl font-semibold">{formatDrinkPriceByRegion(drink.price, isKoreaRegion ?? isKorean)}</p>
         </motion.div>

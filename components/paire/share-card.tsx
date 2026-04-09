@@ -23,7 +23,7 @@ interface ShareCardProps {
 
 export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(
   ({ drink, foodImageUrl, isKorean, isKoreaRegion, className }, ref) => {
-    const displayName = isKorean ? drink.name : (drink.nameEn || drink.name)
+    const displayName = isKorean ? (drink.name || drink.nameEn) : (drink.nameEn || drink.name)
 
     // 지역 기반 가격 포맷
     const formatPrice = (price: string) => {
