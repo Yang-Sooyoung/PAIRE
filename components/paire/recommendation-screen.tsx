@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ArrowLeft, ChevronLeft, ChevronRight, ShoppingBag, RefreshCw, Share2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -8,6 +8,8 @@ import { useI18n } from "@/lib/i18n/context"
 import { cn } from "@/lib/utils"
 import { shareViaWebAPI, copyToClipboard, generateShareText } from "@/lib/share"
 import { LoadingFairy } from "./loading-fairy"
+import { detectCountryByIP } from "@/lib/region-detector"
+import { formatDrinkPriceByRegion } from "@/lib/drink-translations"
 
 interface RecommendationScreenProps {
   imageUrl: string
@@ -103,6 +105,11 @@ export function RecommendationScreen({
   const [currentIndex, setCurrentIndex] = useState(0)
   const [direction, setDirection] = useState(0)
   const [showShareToast, setShowShareToast] = useState(false)
+  const [isKoreaRegion, setIsKoreaRegion] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    detectCountryByIP().then(country => setIsKoreaRegion(country === 'KR'))
+  }, [])
 
   // 공유 기능
   const handleShare = async () => {
@@ -271,7 +278,11 @@ export function RecommendationScreen({
             "text-foreground text-sm leading-relaxed",
             isKorean && "font-[var(--font-noto-kr)] text-xs leading-relaxed"
           )}>
-            {fairyMessage || randomFairyMessage}
+            {(() => {
+              const msg = fairyMessage || randomFairyMessage
+              if (!isKorean && /[가-힣]/.test(msg)) return randomFairyMessage
+              return msg
+            })()}
           </p>
         </div>
       </motion.div>
@@ -318,7 +329,13 @@ export function RecommendationScreen({
                     "text-sm text-foreground leading-relaxed",
                     isKorean && "font-[var(--font-noto-kr)] text-xs"
                   )}>
-                    {currentDrink.aiReason}
+                    {(() => {
+                      const reason = currentDrink.aiReason!
+                      if (!isKorean && /[가-힣]/.test(reason)) {
+                        return "This drink was selected for its exceptional compatibility with your dish, offering a perfectly balanced pairing experience."
+                      }
+                      return reason
+                    })()}
                   </p>
                 </div>
               )}
@@ -330,7 +347,13 @@ export function RecommendationScreen({
                     "text-xs text-muted-foreground leading-relaxed",
                     isKorean && "font-[var(--font-noto-kr)]"
                   )}>
-                    {currentDrink.pairingNotes}
+                    {(() => {
+                      const notes = currentDrink.pairingNotes!
+                      if (!isKorean && /[가-힣]/.test(notes)) {
+                        return "The flavors complement each other beautifully, enhancing both the food and the drink in perfect harmony."
+                      }
+                      return notes
+                    })()}
                   </p>
                 </div>
               )}
@@ -351,7 +374,9 @@ export function RecommendationScreen({
               </div>
 
               <div className="flex items-center justify-between">
-                <p className="text-gold text-2xl font-bold">{currentDrink.price}</p>
+                <p className="text-gold text-2xl font-bold">
+                  {formatDrinkPriceByRegion(currentDrink.price, isKoreaRegion ?? isKorean)}
+                </p>
                 {currentDrink.aiScore && (
                   <div className="flex items-center gap-1">
                     <span className="text-gold text-sm">★</span>
