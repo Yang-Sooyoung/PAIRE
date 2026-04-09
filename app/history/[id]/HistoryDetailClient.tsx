@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { translateDrinkType, translateOccasion, translateTastingNote, translateTaste, formatDrinkPriceByRegion, getDrinkDisplayName } from '@/lib/drink-translations';
 import { ShareModal } from '@/components/paire/share-modal';
+import { RecommendationShareModal } from '@/components/paire/recommendation-share-modal';
 
 interface Drink {
     id: string;
@@ -48,6 +49,7 @@ export default function HistoryDetailPage({ id }: { id: string }) {
     const [togglingFavorite, setTogglingFavorite] = useState<string | null>(null);
     const [isKoreaRegion, setIsKoreaRegion] = useState<boolean | null>(null);
     const [shareTarget, setShareTarget] = useState<Drink | null>(null);
+    const [showRecommendationShare, setShowRecommendationShare] = useState(false);
 
     useEffect(() => {
         import('@/lib/region-detector').then(({ detectCountryByIP }) => {
@@ -154,11 +156,17 @@ export default function HistoryDetailPage({ id }: { id: string }) {
                         <ArrowLeft className="w-5 h-5" />
                     </button>
                     <h1 className={cn(
-                        "text-lg font-medium text-foreground tracking-wide",
+                        "text-lg font-medium text-foreground tracking-wide flex-1",
                         isKorean && "font-[var(--font-noto-kr)] tracking-normal"
                     )}>
                         {isKorean ? '추천 상세' : 'Recommendation Detail'}
                     </h1>
+                    <button
+                        onClick={() => setShowRecommendationShare(true)}
+                        className="text-gold hover:text-gold-light transition p-1"
+                    >
+                        <Share2 className="w-5 h-5" />
+                    </button>
                 </div>
             </div>
 
@@ -386,7 +394,7 @@ export default function HistoryDetailPage({ id }: { id: string }) {
                 </div>
             </div>
 
-            {/* Share Modal */}
+            {/* Share Modal - 개별 음료 */}
             {shareTarget && (
                 <ShareModal
                     isOpen={!!shareTarget}
@@ -403,6 +411,17 @@ export default function HistoryDetailPage({ id }: { id: string }) {
                     foodImageUrl={detail?.imageUrl}
                     isKorean={isKorean}
                     isKoreaRegion={isKoreaRegion}
+                />
+            )}
+
+            {/* Share Modal - 전체 추천 */}
+            {detail && (
+                <RecommendationShareModal
+                    isOpen={showRecommendationShare}
+                    onClose={() => setShowRecommendationShare(false)}
+                    detail={detail}
+                    isKorean={isKorean}
+                    occasionLabel={translateOccasion(detail.occasion, language)}
                 />
             )}
         </div>
