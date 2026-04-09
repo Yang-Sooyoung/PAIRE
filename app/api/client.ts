@@ -3,9 +3,12 @@ import { useUserStore } from '@/app/store/userStore';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://paire.onrender.com';
 
+// baseURL에 /api가 없으면 추가 (백엔드 컨트롤러가 모두 api/ prefix 사용)
+const BASE_URL = API_URL.endsWith('/api') ? API_URL : `${API_URL.replace(/\/$/, '')}/api`;
+
 // Axios 인스턴스 생성
 export const apiClient = axios.create({
-  baseURL: API_URL,
+  baseURL: BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
