@@ -333,10 +333,9 @@ export default function SubscriptionStatusPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="flex gap-3"
         >
           {subscription.status === 'CANCELLED' ? (
-            <>
+            <div className="flex flex-col gap-3">
               {/* 재구독 시 남은 기간 안내 */}
               {(() => {
                 const remaining = Math.max(0, Math.floor(
@@ -344,7 +343,7 @@ export default function SubscriptionStatusPage() {
                 ));
                 return remaining > 0 ? (
                   <div className={cn(
-                    "w-full p-3 mb-3 bg-gold/10 border border-gold/30 rounded-lg text-sm text-gold text-center",
+                    "p-3 bg-gold/10 border border-gold/30 rounded-lg text-sm text-gold text-center",
                     isKorean && "font-[var(--font-noto-kr)]"
                   )}>
                     🎁 {isKorean
@@ -353,61 +352,66 @@ export default function SubscriptionStatusPage() {
                   </div>
                 ) : null;
               })()}
-              <Button
-                onClick={() => router.push('/subscription')}
-                className={cn(
-                  "flex-1 h-14 bg-gold hover:bg-gold-light text-background font-semibold",
-                  isKorean && "font-[var(--font-noto-kr)]"
-                )}
-              >
-                {isKorean ? '다시 구독하기' : 'Resubscribe'}
-              </Button>
-              <Button
-                onClick={() => router.push('/subscription?tab=credit')}
-                variant="outline"
-                className={cn(
-                  "flex-1 h-14 border-gold/40 text-gold hover:bg-gold/10",
-                  isKorean && "font-[var(--font-noto-kr)]"
-                )}
-              >
-                {isKorean ? '크레딧 충전' : 'Buy Credits'}
-              </Button>
-            </>
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => router.push('/subscription')}
+                  className={cn(
+                    "flex-1 h-14 bg-gold hover:bg-gold-light text-background font-semibold",
+                    isKorean && "font-[var(--font-noto-kr)]"
+                  )}
+                >
+                  {isKorean ? '다시 구독하기' : 'Resubscribe'}
+                </Button>
+                <Button
+                  onClick={() => router.push('/subscription?tab=credit')}
+                  variant="outline"
+                  className={cn(
+                    "flex-1 h-14 border-gold/40 text-gold hover:bg-gold/10",
+                    isKorean && "font-[var(--font-noto-kr)]"
+                  )}
+                >
+                  {isKorean ? '크레딧 충전' : 'Buy Credits'}
+                </Button>
+              </div>
+            </div>
           ) : (
-            <>
-              {/* 플랜 변경 비활성화 안내 */}
-              {subscription.status === 'ACTIVE' && (
-                <div className={cn(
-                  "w-full p-3 mb-1 bg-secondary border border-border rounded-lg text-xs text-muted-foreground text-center",
-                  isKorean && "font-[var(--font-noto-kr)]"
-                )}>
+            <div className="flex flex-col gap-3">
+              {/* 안내 문구 + 버튼 인라인 블록 */}
+              <div className={cn(
+                "inline-flex items-center gap-2 px-4 py-2 bg-secondary border border-border rounded-lg text-xs text-muted-foreground self-start",
+                isKorean && "font-[var(--font-noto-kr)]"
+              )}>
+                <span>ℹ️</span>
+                <span>
                   {isKorean
-                    ? '현재 구독을 취소한 후 새 플랜으로 변경할 수 있습니다.'
-                    : 'Please cancel your current subscription before switching to a new plan.'}
-                </div>
-              )}
-              <Button
-                onClick={() => router.push('/subscription')}
-                variant="outline"
-                disabled={subscription.status === 'ACTIVE'}
-                className={cn(
-                  "flex-1 h-14 border-gold/40 text-gold hover:bg-gold/10 disabled:opacity-40 disabled:cursor-not-allowed",
-                  isKorean && "font-[var(--font-noto-kr)]"
-                )}
-              >
-                {isKorean ? '플랜 변경' : 'Change Plan'}
-              </Button>
-              <Button
-                onClick={() => setShowCancelDialog(true)}
-                variant="outline"
-                className={cn(
-                  "flex-1 h-14 border-destructive/30 text-destructive hover:bg-destructive/10",
-                  isKorean && "font-[var(--font-noto-kr)]"
-                )}
-              >
-                {isKorean ? '구독 취소' : 'Cancel Subscription'}
-              </Button>
-            </>
+                    ? '플랜 변경은 현재 구독 취소 후 가능합니다.'
+                    : 'Cancel your current plan to switch to a new one.'}
+                </span>
+              </div>
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => router.push('/subscription')}
+                  variant="outline"
+                  disabled={subscription.status === 'ACTIVE'}
+                  className={cn(
+                    "flex-1 h-14 border-gold/40 text-gold hover:bg-gold/10 disabled:opacity-40 disabled:cursor-not-allowed",
+                    isKorean && "font-[var(--font-noto-kr)]"
+                  )}
+                >
+                  {isKorean ? '플랜 변경' : 'Change Plan'}
+                </Button>
+                <Button
+                  onClick={() => setShowCancelDialog(true)}
+                  variant="outline"
+                  className={cn(
+                    "flex-1 h-14 border-destructive/30 text-destructive hover:bg-destructive/10",
+                    isKorean && "font-[var(--font-noto-kr)]"
+                  )}
+                >
+                  {isKorean ? '구독 취소' : 'Cancel Subscription'}
+                </Button>
+              </div>
+            </div>
           )}
         </motion.div>
       </div>
