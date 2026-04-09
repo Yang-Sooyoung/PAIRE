@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, UseGuards, Request, Query, Param } from '@nestjs/common';
+import { Controller, Post, Get, Delete, Body, UseGuards, Request, Query, Param } from '@nestjs/common';
 import { RecommendationService } from './recommendation.service';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import { OptionalJwtAuthGuard } from '@/auth/guards/optional-jwt-auth.guard';
@@ -43,5 +43,11 @@ export class RecommendationController {
   async getDetail(@Request() req: any, @Param('id') id: string) {
     const userId = req.user?.sub || null;
     return this.recommendationService.getDetail(id, userId);
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  async deleteRecommendation(@Request() req: any, @Param('id') id: string) {
+    return this.recommendationService.deleteRecommendation(id, req.user.sub);
   }
 }

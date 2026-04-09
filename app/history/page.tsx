@@ -3,10 +3,11 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUserStore } from '@/app/store/userStore';
-import { getRecommendationHistory } from '@/app/api/recommendation';
+import { getRecommendationHistory, deleteRecommendation } from '@/app/api/recommendation';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Clock, Wine, Loader2, Lock } from 'lucide-react';
+import { ArrowLeft, Clock, Wine, Loader2, Lock, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { CustomDialog } from '@/components/ui/custom-dialog';
 import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils';
 import { translateOccasion } from '@/lib/drink-translations';
@@ -28,6 +29,9 @@ export default function HistoryPage() {
   const isKorean = language === 'ko';
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [showDialog, setShowDialog] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) {
@@ -53,6 +57,26 @@ export default function HistoryPage() {
 
     fetchHistory();
   }, [user, refreshTokenIfNeeded, router]);
+
+  const handleDelete = async (id: string) => {
+    setPendingDeleteId(id);
+    setShowDialog(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!pendingDeleteId) return;
+    setShowDialog(false);
+    setDeletingId(pendingDeleteId);
+    try {
+      await deleteRecommendation(pendingDeleteId);
+      setHistory(prev => prev.filter(item => item.id !== pendingDeleteId));
+    } catch (e) {
+      console.error('Failed to delete:', e);
+    } finally {
+      setDeletingId(null);
+      setPendingDeleteId(null);
+    }
+  };
 
   // FREE 사용자 화면
   if (user && user.membership === 'FREE') {
@@ -173,10 +197,12 @@ export default function HistoryPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                onClick={() => router.push(`/history/${item.id}`)}
-                className="bg-card border border-border rounded-xl p-4 hover:border-gold/30 transition cursor-pointer"
+                className="bg-card border border-border rounded-xl p-4 hover:border-gold/30 transition"
               >
-                <div className="flex gap-4">
+                <div
+                  className="flex gap-4 cursor-pointer"
+                  onClick={() => router.push(`/history/${item.id}`)}
+                >
                   {item.imageUrl && (
                     <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-secondary">
                       <img
@@ -222,11 +248,35 @@ export default function HistoryPage() {
                     </div>
                   </div>
                 </div>
+                <div className="flex justify-end mt-3 pt-3 border-t border-border/50">
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleDelete(item.id); }}
+                    disabled={deletingId === item.id}
+                    className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-destructive transition px-2 py-1 rounded"
+                  >
+                    {deletingId === item.id
+                      ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      : <Trash2 className="w-3.5 h-3.5" />
+                    }
+                    {isKorean ? '삭제' : 'Delete'}
+                  </button>
+                </div>
               </motion.div>
             ))}
           </div>
         )}
       </div>
+
+      <CustomDialog
+        isOpen={showDialog}
+        onClose={() => { setShowDialog(false); setPendingDeleteId(null); }}
+        type="confirm"
+        title={isKorean ? '기록 삭제' : 'Delete Record'}
+        description={isKorean ? '이 추천 기록을 삭제하시겠어요?' : 'Delete this recommendation?'}
+        confirmText={isKorean ? '삭제' : 'Delete'}
+        cancelText={isKorean ? '취소' : 'Cancel'}
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 }

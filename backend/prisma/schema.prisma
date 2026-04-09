@@ -111,53 +111,31 @@ model Recommendation {
   
   createdAt DateTime @default(now())
   
+  @@index([userId, createdAt(sort: Desc)])
   @@map("recommendations")
-}
-
-// ============ Payments ============
-model Payment {
-  id        String   @id @default(cuid())
-  userId    String
-  
-  paymentKey String @unique
-  orderId   String @unique
-  amount    Int
-  status    PaymentStatus
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  @@map("payments")
-}
-
-enum PaymentStatus {
-  PENDING
-  COMPLETED
-  FAILED
-  CANCELLED
 }
 
 // ============ Drinks ============
 model Drink {
   id        String   @id @default(cuid())
   name      String
-  nameEn    String?  // English name
-  type      String   // sparkling, red wine, white wine, tea, non-alcoholic, etc.
+  nameEn    String?
+  type      String
   description String
-  descriptionEn String? // English description
-  tastingNotes String[] // fruity, elegant, light, etc.
+  descriptionEn String?
+  tastingNotes String[]
   image     String?
   price     String
-  purchaseUrl String? // 쿠팡 구매 링크
+  purchaseUrl String?
   
-  // Pairing info
-  foodPairings String[] // seafood, meat, pasta, cheese, etc.
-  occasions String[]   // date, solo-drinking, camping, gathering, solo-meal
-  tastes    String[]   // sweet, bitter, sour, light, medium, heavy
+  foodPairings String[]
+  occasions String[]
+  tastes    String[]
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
+  @@index([type])
   @@map("drinks")
 }
 
@@ -190,7 +168,31 @@ model SupportMessage {
   @@map("support_messages")
 }
 
-// ============ Credit Purchases (크레딧 구매 내역) ============
+// ============ Credit Purchases ============
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+// 후원/일반 결제 내역
+model Payment {
+  id        String   @id @default(cuid())
+  userId    String
+
+  paymentKey String @unique
+  orderId   String @unique
+  amount    Int
+  status    PaymentStatus
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("payments")
+}
+
 model CreditPurchase {
   id        String   @id @default(cuid())
   userId    String
@@ -222,68 +224,7 @@ model UserSticker {
   @@map("user_stickers")
 }
 
-// ============ Standard Menu (정규화 테이블) ============
-model StandardMenu {
-  id        String   @id @default(cuid())
-  
-  // 표시 이름
-  displayName String
-  displayNameEn String?
-  
-  // 카테고리
-  category  String   // meat, seafood, pasta, dessert, etc.
-  subcategory String? // beef, pork, cream, tomato, etc.
-  cuisine   String?  // korean, italian, japanese, etc.
-  
-  // 특성
-  fatLevel  String?  // low, medium, high
-  sweetness String?  // low, medium, high
-  spiciness String?  // low, medium, high
-  
-  // 매칭 키워드 (OCR 결과 매핑용)
-  keywords  String[] // ["스테이크", "steak", "ribeye", "등심"]
-  
-  // 추천 가중치
-  weight    Float @default(1.0)
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  @@map("standard_menus")
-}
-
-// ============ Pairing Rules (추천 룰) ============
-model PairingRule {
-  id        String   @id @default(cuid())
-  
-  // 음식 조건
-  menuCategory String
-  menuSubcategory String?
-  
-  // 상황 조건 (optional)
-  occasion  String?
-  
-  // 추천 음료
-  drinkTypes String[] // ["wine-red", "whiskey"]
-  drinkTastes String[] // ["bold", "rich"]
-  
-  // 점수 가중치
-  score     Float @default(1.0)
-  
-  // 추천 이유
-  reason    String
-  reasonEn  String?
-  
-  // 활성화 여부
-  isActive  Boolean @default(true)
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  @@map("pairing_rules")
-}
-
-// ============ AI Recommendation Cache (AI 추천 캐시) ============
+// ============ AI Recommendation Cache ============
 model AiRecommendationCache {
   id        String   @id @default(cuid())
   

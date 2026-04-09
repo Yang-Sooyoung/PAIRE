@@ -6,26 +6,11 @@ export class UserService {
   constructor(private prisma: PrismaService) {}
 
   async deleteUser(userId: string) {
-    // Delete all user data
     await this.prisma.$transaction([
-      // Delete recommendations
-      this.prisma.recommendation.deleteMany({
-        where: { userId },
-      }),
-      // Delete subscriptions
-      this.prisma.subscription.deleteMany({
-        where: { userId },
-      }),
-      // Delete payments
-      this.prisma.payment.deleteMany({
-        where: { userId },
-      }),
-      // Delete user
-      this.prisma.user.delete({
-        where: { id: userId },
-      }),
+      this.prisma.recommendation.deleteMany({ where: { userId } }),
+      this.prisma.subscription.deleteMany({ where: { userId } }),
+      this.prisma.user.delete({ where: { id: userId } }),
     ]);
-
     return { success: true, message: '계정이 삭제되었습니다.' };
   }
 

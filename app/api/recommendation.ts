@@ -64,3 +64,11 @@ export async function getRecommendationDetail(id: string) {
   const response = await apiClient.get(`/recommendation/${id}`);
   return response.data;
 }
+
+/**
+ * 추천 삭제
+ */
+export async function deleteRecommendation(id: string) {
+  const response = await apiClient.delete(`/recommendation/${id}`);
+  return response.data;
+}

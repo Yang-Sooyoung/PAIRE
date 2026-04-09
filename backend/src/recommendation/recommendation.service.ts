@@ -594,4 +594,21 @@ export class RecommendationService {
 
     return { recommendation: { ...recommendation, drinks } };
   }
+
+  async deleteRecommendation(id: string, userId: string) {
+    const recommendation = await this.prisma.recommendation.findUnique({
+      where: { id },
+    });
+
+    if (!recommendation) {
+      throw new BadRequestException('추천을 찾을 수 없습니다.');
+    }
+
+    if (recommendation.userId !== userId) {
+      throw new BadRequestException('삭제 권한이 없습니다.');
+    }
+
+    await this.prisma.recommendation.delete({ where: { id } });
+    return { success: true };
+  }
 }
