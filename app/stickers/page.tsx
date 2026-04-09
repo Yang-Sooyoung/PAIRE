@@ -278,17 +278,14 @@ export default function StickersPage() {
                 {isKorean ? sticker.description : sticker.descriptionEn}
               </p>
 
-              {/* 조건 */}
-              <div
-                className={cn(
-                  'text-xs text-center px-2 py-1 rounded-full',
-                  sticker.unlocked
-                    ? 'bg-gold/10 text-gold'
-                    : 'bg-secondary text-muted-foreground'
-                )}
-              >
-                {isKorean ? sticker.condition : sticker.conditionEn}
-              </div>
+              {/* 조건 - 달성한 경우에만 표시 */}
+              {sticker.unlocked && (
+                <div
+                  className="text-xs text-center px-2 py-1 rounded-full bg-gold/10 text-gold"
+                >
+                  {isKorean ? sticker.condition : sticker.conditionEn}
+                </div>
+              )}
 
               {/* 해제 날짜 */}
               {sticker.unlocked && sticker.unlockedAt && (

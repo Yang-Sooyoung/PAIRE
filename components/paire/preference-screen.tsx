@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ArrowLeft, Heart, Users, Tent, Home, User, Wine, Leaf, Droplets, Sparkles, Coffee, GlassWater, Martini, DollarSign } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -38,6 +38,13 @@ export function PreferenceScreen({ onSubmit, onBack, isLoading }: PreferenceScre
   const [selectedOccasion, setSelectedOccasion] = useState<string | null>(null)
   const [selectedTastes, setSelectedTastes] = useState<string[]>([])
   const [selectedPriceRange, setSelectedPriceRange] = useState<string | null>(null)
+  const [isKoreaRegion, setIsKoreaRegion] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    import('@/lib/region-detector').then(({ detectCountryByIP }) => {
+      detectCountryByIP().then(country => setIsKoreaRegion(country === 'KR'))
+    })
+  }, [])
 
   const occasions = [
     { id: "date", label: t("preference.occasions.date"), icon: occasionIcons.date },
@@ -57,12 +64,19 @@ export function PreferenceScreen({ onSubmit, onBack, isLoading }: PreferenceScre
     { id: "coffee", label: t("preference.tastes.coffee"), icon: tasteIcons.coffee },
   ]
 
-  const priceRanges = [
-    { id: "budget", label: isKorean ? "₩10,000 이하" : "Under ₩10,000", range: [0, 10000] },
-    { id: "moderate", label: isKorean ? "₩10,000 - ₩30,000" : "₩10,000 - ₩30,000", range: [10000, 30000] },
-    { id: "premium", label: isKorean ? "₩30,000 - ₩50,000" : "₩30,000 - ₩50,000", range: [30000, 50000] },
-    { id: "luxury", label: isKorean ? "₩50,000 이상" : "Over ₩50,000", range: [50000, 999999] },
-  ]
+  const priceRanges = isKoreaRegion === false
+    ? [
+        { id: "budget", label: "Under $10", range: [0, 10] },
+        { id: "moderate", label: "$10 - $30", range: [10, 30] },
+        { id: "premium", label: "$30 - $50", range: [30, 50] },
+        { id: "luxury", label: "Over $50", range: [50, 999] },
+      ]
+    : [
+        { id: "budget", label: isKorean ? "₩10,000 이하" : "Under ₩10,000", range: [0, 10000] },
+        { id: "moderate", label: isKorean ? "₩10,000 - ₩30,000" : "₩10,000 - ₩30,000", range: [10000, 30000] },
+        { id: "premium", label: isKorean ? "₩30,000 - ₩50,000" : "₩30,000 - ₩50,000", range: [30000, 50000] },
+        { id: "luxury", label: isKorean ? "₩50,000 이상" : "Over ₩50,000", range: [50000, 999999] },
+      ]
 
   const toggleTaste = (tasteId: string) => {
     setSelectedTastes((prev) =>
@@ -202,7 +216,7 @@ export function PreferenceScreen({ onSubmit, onBack, isLoading }: PreferenceScre
             "text-gold-light text-xl font-medium mb-4",
             isKorean && "font-[var(--font-noto-kr)] text-lg"
           )}>
-            {isKorean ? "가격 범위" : "Price Range"}
+            {isKoreaRegion === false ? "Price Range" : (isKorean ? "가격 범위" : "Price Range")}
             <span className="text-muted-foreground text-sm ml-2">
               {isKorean ? "(선택사항)" : "(Optional)"}
             </span>
