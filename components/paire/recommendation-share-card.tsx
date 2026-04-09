@@ -31,8 +31,8 @@ const CARD_W = 420
 
 export const RecommendationShareCard = forwardRef<HTMLDivElement, RecommendationShareCardProps>(
   ({ detail, isKorean, occasionLabel }, ref) => {
-    const drinks = detail.drinks.slice(0, 3)
-    const foods = detail.detectedFoods.slice(0, 3)
+    const drinks = (detail.drinks || []).slice(0, 3)
+    const foods = (detail.detectedFoods || []).slice(0, 3)
     const fairy = detail.fairyMessage
       ? detail.fairyMessage.slice(0, isKorean ? 60 : 80) + (detail.fairyMessage.length > (isKorean ? 60 : 80) ? "…" : "")
       : ""
@@ -45,12 +45,9 @@ export const RecommendationShareCard = forwardRef<HTMLDivElement, Recommendation
         ref={ref}
         style={{
           width: CARD_W,
+          boxSizing: "border-box",
           background: BG,
-          borderRadius: 20,
-          overflow: "hidden",
           fontFamily: isKorean ? "'Noto Sans KR', sans-serif" : "Georgia, serif",
-          boxShadow: "0 0 0 1px rgba(212,175,55,0.15)",
-          position: "relative",
         }}
       >
         {/* 배경 글로우 */}
@@ -61,7 +58,7 @@ export const RecommendationShareCard = forwardRef<HTMLDivElement, Recommendation
         }} />
 
         {/* ── 헤더 이미지 영역 ── */}
-        <div style={{ position: "relative", height: 220, zIndex: 1 }}>
+        <div style={{ position: "relative", height: 220, zIndex: 1, overflow: "hidden", background: "#111" }}>
           {detail.imageUrl ? (
             /* eslint-disable-next-line @next/next/no-img-element */
             <img
@@ -145,7 +142,7 @@ export const RecommendationShareCard = forwardRef<HTMLDivElement, Recommendation
         )}
 
         {/* ── 추천 음료 목록 ── */}
-        <div style={{ padding: "16px 22px 0", position: "relative", zIndex: 1 }}>
+        <div style={{ padding: "16px 22px 0", position: "relative", zIndex: 1, background: BG }}>
           <div style={{
             color: GOLD, fontSize: 10, letterSpacing: 1.5,
             textTransform: "uppercase", marginBottom: 10,
@@ -230,6 +227,7 @@ export const RecommendationShareCard = forwardRef<HTMLDivElement, Recommendation
           padding: "14px 22px 18px",
           display: "flex", alignItems: "center", justifyContent: "space-between",
           position: "relative", zIndex: 1,
+          background: BG,
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
             <div style={{ width: 4, height: 4, borderRadius: "50%", background: GOLD, opacity: 0.5 }} />

@@ -19,15 +19,15 @@ interface ShareCardProps {
   isKoreaRegion?: boolean | null
 }
 
-const CARD_W = 420
 const GOLD = "#d4af37"
-const GOLD_DIM = "rgba(212,175,55,0.25)"
+const GOLD_DIM = "rgba(212,175,55,0.22)"
 const BG = "#0c0b08"
-const BG2 = "#1a1500"
+const CARD_W = 420
 
 export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(
   ({ drink, foodImageUrl, isKorean, isKoreaRegion }, ref) => {
-    const displayName = isKorean ? (drink.name || drink.nameEn) : (drink.nameEn || drink.name)
+    const displayName = isKorean ? (drink.name || drink.nameEn || "") : (drink.nameEn || drink.name || "")
+    const notes = (drink.tastingNotes || []).slice(0, 3)
 
     const formatPrice = (price: string) => {
       if (!price) return ""
@@ -39,31 +39,23 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(
       return price
     }
 
-    const notes = drink.tastingNotes.slice(0, 3)
+    const imgH = foodImageUrl ? 260 : 240
 
     return (
       <div
         ref={ref}
         style={{
           width: CARD_W,
+          boxSizing: "border-box",
           background: BG,
-          borderRadius: 20,
-          overflow: "hidden",
           fontFamily: isKorean ? "'Noto Sans KR', sans-serif" : "Georgia, serif",
-          boxShadow: "0 0 0 1px rgba(212,175,55,0.15)",
-          position: "relative",
+          // borderRadius는 캡처 후 이미지에서 보이지 않으므로 제거
+          // overflow hidden 대신 각 자식에서 처리
         }}
       >
-        {/* ── 배경 글로우 ── */}
-        <div style={{
-          position: "absolute", inset: 0, pointerEvents: "none", zIndex: 0,
-          background: `radial-gradient(ellipse 70% 50% at 30% 10%, rgba(212,175,55,0.10) 0%, transparent 70%),
-                       radial-gradient(ellipse 60% 40% at 80% 90%, rgba(212,175,55,0.06) 0%, transparent 70%)`,
-        }} />
-
         {/* ── 이미지 영역 ── */}
-        <div style={{ position: "relative", height: foodImageUrl ? 280 : 260, zIndex: 1 }}>
-          {/* 음식 이미지 (배경) */}
+        <div style={{ position: "relative", width: CARD_W, height: imgH, overflow: "hidden", background: "#111" }}>
+          {/* 음식 이미지 배경 */}
           {foodImageUrl && (
             /* eslint-disable-next-line @next/next/no-img-element */
             <img
@@ -72,7 +64,7 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(
               style={{
                 position: "absolute", inset: 0,
                 width: "100%", height: "100%", objectFit: "cover",
-                filter: "brightness(0.45) saturate(0.8)",
+                filter: "brightness(0.4) saturate(0.7)",
               }}
             />
           )}
@@ -80,45 +72,45 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={drink.image || ""}
-            alt={displayName || ""}
+            alt=""
             style={{
               position: "absolute", inset: 0,
               width: "100%", height: "100%", objectFit: "cover",
-              opacity: foodImageUrl ? 0.75 : 1,
+              opacity: foodImageUrl ? 0.7 : 1,
             }}
           />
-          {/* 그라디언트 오버레이 */}
+          {/* 그라디언트 */}
           <div style={{
             position: "absolute", inset: 0,
             background: `linear-gradient(to bottom,
-              rgba(12,11,8,0.1) 0%,
-              rgba(12,11,8,0.0) 30%,
-              rgba(12,11,8,0.55) 70%,
-              rgba(12,11,8,1) 100%)`,
+              rgba(12,11,8,0.15) 0%,
+              rgba(12,11,8,0.0) 25%,
+              rgba(12,11,8,0.5) 65%,
+              ${BG} 100%)`,
+          }} />
+          {/* 배경 글로우 */}
+          <div style={{
+            position: "absolute", inset: 0, pointerEvents: "none",
+            background: "radial-gradient(ellipse 70% 50% at 30% 10%, rgba(212,175,55,0.09) 0%, transparent 65%)",
           }} />
 
           {/* 상단 브랜드 */}
           <div style={{
             position: "absolute", top: 18, left: 22,
-            display: "flex", alignItems: "center", gap: 6,
+            display: "flex", alignItems: "center", gap: 7,
           }}>
             <div style={{
               width: 6, height: 6, borderRadius: "50%",
               background: GOLD, boxShadow: `0 0 8px ${GOLD}`,
             }} />
-            <span style={{
-              color: GOLD, fontSize: 13, fontWeight: 700,
-              letterSpacing: 3, textTransform: "uppercase",
-            }}>
-              PAIRÉ
-            </span>
+            <span style={{ color: GOLD, fontSize: 13, fontWeight: 700, letterSpacing: 3 }}>PAIRÉ</span>
           </div>
 
           {/* 점수 배지 */}
           {drink.aiScore && (
             <div style={{
               position: "absolute", top: 14, right: 18,
-              background: "rgba(12,11,8,0.7)",
+              background: "rgba(12,11,8,0.75)",
               border: `1px solid ${GOLD_DIM}`,
               borderRadius: 999,
               padding: "3px 10px",
@@ -129,12 +121,11 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(
             </div>
           )}
 
-          {/* 이미지 하단 음료 이름 오버레이 */}
+          {/* 이미지 하단 텍스트 */}
           <div style={{
             position: "absolute", bottom: 0, left: 0, right: 0,
             padding: "0 22px 18px",
           }}>
-            {/* 타입 뱃지 */}
             <div style={{
               display: "inline-block",
               padding: "3px 10px",
@@ -149,15 +140,15 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(
             }}>
               {drink.type}
             </div>
-            {/* 음료 이름 */}
             <div style={{
               color: "#f5f0e8",
               fontSize: isKorean ? 22 : 24,
               fontWeight: 700,
               lineHeight: 1.2,
-              textShadow: "0 2px 12px rgba(0,0,0,0.8)",
-              whiteSpace: "nowrap",
+              textShadow: "0 2px 12px rgba(0,0,0,0.9)",
+              maxWidth: CARD_W - 44,
               overflow: "hidden",
+              whiteSpace: "nowrap",
               textOverflow: "ellipsis",
             }}>
               {displayName}
@@ -166,18 +157,19 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(
         </div>
 
         {/* ── 콘텐츠 영역 ── */}
-        <div style={{ padding: "18px 22px 22px", position: "relative", zIndex: 1 }}>
+        <div style={{ padding: "18px 22px 22px", background: BG }}>
 
-          {/* 가격 + 테이스팅 노트 한 줄 */}
+          {/* 가격 + 테이스팅 노트 */}
           <div style={{
             display: "flex", alignItems: "center",
             justifyContent: "space-between",
             marginBottom: 16,
+            gap: 8,
           }}>
-            <span style={{ color: GOLD, fontSize: 20, fontWeight: 700 }}>
+            <span style={{ color: GOLD, fontSize: 20, fontWeight: 700, flexShrink: 0 }}>
               {formatPrice(drink.price)}
             </span>
-            <div style={{ display: "flex", gap: 5 }}>
+            <div style={{ display: "flex", gap: 5, flexWrap: "nowrap", overflow: "hidden" }}>
               {notes.map((note) => (
                 <span key={note} style={{
                   padding: "3px 9px",
@@ -187,6 +179,7 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(
                   color: GOLD,
                   fontSize: 10,
                   whiteSpace: "nowrap",
+                  flexShrink: 0,
                 }}>
                   {note}
                 </span>
@@ -198,7 +191,7 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(
           {drink.aiReason && (
             <div style={{
               background: "rgba(212,175,55,0.06)",
-              border: `1px solid rgba(212,175,55,0.15)`,
+              border: `1px solid rgba(212,175,55,0.14)`,
               borderRadius: 12,
               padding: "12px 14px",
               marginBottom: 18,
@@ -215,12 +208,11 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(
                 color: "#c8bfa8",
                 fontSize: isKorean ? 11 : 12,
                 lineHeight: 1.65,
+                maxHeight: isKorean ? 55 : 60,
                 overflow: "hidden",
-                display: "-webkit-box",
-                WebkitLineClamp: 3,
-                WebkitBoxOrient: "vertical",
-              } as React.CSSProperties}>
-                {drink.aiReason}
+              }}>
+                {drink.aiReason.slice(0, isKorean ? 80 : 120)}
+                {drink.aiReason.length > (isKorean ? 80 : 120) ? "…" : ""}
               </div>
             </div>
           )}
@@ -232,16 +224,13 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(
             marginBottom: 14,
           }} />
 
-          {/* 하단 푸터 */}
+          {/* 푸터 */}
           <div style={{
             display: "flex", alignItems: "center", justifyContent: "space-between",
           }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <div style={{
-                width: 4, height: 4, borderRadius: "50%",
-                background: GOLD, opacity: 0.6,
-              }} />
-              <span style={{ color: "#6b6050", fontSize: 10, letterSpacing: 0.5 }}>
+              <div style={{ width: 4, height: 4, borderRadius: "50%", background: GOLD, opacity: 0.5 }} />
+              <span style={{ color: "#6b6050", fontSize: 10 }}>
                 {isKorean ? "나만의 음료 페어링" : "Your Personal Drink Pairing"}
               </span>
             </div>
