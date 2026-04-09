@@ -47,8 +47,8 @@ export function ShareModal({ isOpen, onClose, drink, foodImageUrl, isKorean, isK
 
     const result = await shareCardImage(cardRef.current, fallback, fallback)
     if (result === "shared") showToast(isKorean ? "공유 완료!" : "Shared!")
+    else if (result === "clipboard") showToast(isKorean ? "이미지가 클립보드에 복사됐어요!" : "Image copied to clipboard!")
     else if (result === "downloaded") showToast(isKorean ? "이미지 저장됨!" : "Image saved!")
-    else if (result === "copied") showToast(isKorean ? "클립보드에 복사됨!" : "Copied!")
     else setStatus("idle")
   }
 
@@ -150,8 +150,8 @@ export function ShareModal({ isOpen, onClose, drink, foodImageUrl, isKorean, isK
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
               {isKorean
-                ? "카드 이미지를 저장하거나 바로 공유할 수 있어요"
-                : "Save the card image or share it directly"}
+                ? "모바일: 앱으로 바로 공유 · 데스크탑: 이미지 클립보드 복사"
+                : "Mobile: share to apps · Desktop: copy image to clipboard"}
             </p>
           </motion.div>
         </>
