@@ -2,11 +2,30 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+async function updateImages() {
+  const imageUpdates = [
+    { name: 'Shiraz Australia', image: 'https://images.unsplash.com/photo-1568213816046-0ee1c42bd559?w=400&h=600&fit=crop' },
+    { name: 'Pinotage South Africa', image: 'https://images.unsplash.com/photo-1543418219-44e30b057fea?w=400&h=600&fit=crop' },
+    { name: 'Douro Red Portugal', image: 'https://images.unsplash.com/photo-1504279577054-acfeccf8fc52?w=400&h=600&fit=crop' },
+    { name: 'Earl Grey', image: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400&h=600&fit=crop' },
+  ];
+
+  for (const update of imageUpdates) {
+    const result = await prisma.drink.updateMany({
+      where: { name: update.name },
+      data: { image: update.image },
+    });
+    console.log(`  Updated image for "${update.name}": ${result.count} record(s)`);
+  }
+  console.log('✅ Image update complete');
+}
+
 async function main() {
-  // 이미 데이터가 있으면 스킵 (배포 환경에서 중복 실행 방지)
+  // 이미 데이터가 있으면 이미지만 업데이트
   const existingCount = await prisma.drink.count();
   if (existingCount > 0) {
-    console.log(`⏭️  Seed skipped: ${existingCount} drinks already exist.`);
+    console.log(`🔄 ${existingCount} drinks exist. Updating images only...`);
+    await updateImages();
     return;
   }
 
@@ -416,7 +435,7 @@ async function main() {
       type: 'red wine',
       description: '호주의 강렬한 시라즈',
       tastingNotes: ['bold', 'spicy', 'heavy'],
-      image: 'https://images.unsplash.com/photo-1586370434639-0fe43b2d32d6?w=400&h=600&fit=crop',
+      image: 'https://images.unsplash.com/photo-1568213816046-0ee1c42bd559?w=400&h=600&fit=crop',
       price: '₩48,000',
       foodPairings: ['meat', 'bbq', 'cheese'],
       occasions: ['gathering', 'camping'],
@@ -464,7 +483,7 @@ async function main() {
       type: 'red wine',
       description: '남아공의 독특한 와인',
       tastingNotes: ['bold', 'smoky', 'medium'],
-      image: 'https://images.unsplash.com/photo-1597329428431-e3a0c7b0f3f3?w=400&h=600&fit=crop',
+      image: 'https://images.unsplash.com/photo-1543418219-44e30b057fea?w=400&h=600&fit=crop',
       price: '₩42,000',
       foodPairings: ['meat', 'bbq', 'cheese'],
       occasions: ['gathering', 'camping'],
@@ -512,7 +531,7 @@ async function main() {
       type: 'red wine',
       description: '포르투갈의 풍부한 레드',
       tastingNotes: ['rich', 'bold', 'heavy'],
-      image: 'https://images.unsplash.com/photo-1558346490-a72e53ae2d4f?w=400&h=600&fit=crop',
+      image: 'https://images.unsplash.com/photo-1504279577054-acfeccf8fc52?w=400&h=600&fit=crop',
       price: '₩45,000',
       foodPairings: ['meat', 'stew', 'cheese'],
       occasions: ['gathering', 'solo-drinking'],

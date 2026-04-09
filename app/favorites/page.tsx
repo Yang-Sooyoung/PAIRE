@@ -262,11 +262,9 @@ export default function FavoritesPage() {
                     "text-foreground font-medium mb-1 truncate",
                     isKorean && "font-[var(--font-noto-kr)] text-sm"
                   )}>
-                    {getDrinkDisplayName(
-                      favorite.drink?.name || favorite.drinkName,
-                      undefined,
-                      isKorean
-                    )}
+                    {isKorean
+                      ? (favorite.drinkName || favorite.drink?.name || '')
+                      : (favorite.drink?.name || favorite.drinkName || '')}
                   </h3>
                   <p className={cn(
                     "text-xs text-muted-foreground truncate",
