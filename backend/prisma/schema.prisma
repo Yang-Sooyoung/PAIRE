@@ -92,7 +92,8 @@ model PaymentMethod {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
-  billingKey String
+  billingKey  String
+  customerKey String?  // 토스 customerKey (user_${userId} 형식)
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

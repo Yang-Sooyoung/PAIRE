@@ -141,9 +141,10 @@ export class TossService {
   /**
    * 자동 결제 (빌링키 사용)
    */
-  async billingPayment(billingKey: string, amount: number, orderName: string, customOrderId?: string) {
+  async billingPayment(billingKey: string, amount: number, orderName: string, customOrderId?: string, customerKey?: string) {
     try {
       const orderId = customOrderId || `billing_${Date.now()}`;
+      const resolvedCustomerKey = customerKey || billingKey; // fallback
       
       const response = await fetch(`${this.baseUrl}/billing/${billingKey}`, {
         method: 'POST',
@@ -152,7 +153,7 @@ export class TossService {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          customerKey: billingKey,
+          customerKey: resolvedCustomerKey,
           amount,
           orderId,
           orderName,

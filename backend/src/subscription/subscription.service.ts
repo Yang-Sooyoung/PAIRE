@@ -40,32 +40,22 @@ export class SubscriptionService {
     return result;
   }
 
-  async registerPaymentMethod(userId: string, billingAuthKey: string) {
-    console.log('registerPaymentMethod called:', { userId, billingAuthKey });
-
-    // 기존 결제 수단 확인
+  async registerPaymentMethod(userId: string, billingAuthKey: string, customerKey?: string) {
     const existingMethod = await this.prisma.paymentMethod.findFirst({
       where: { userId },
     });
 
-    console.log('Existing payment method:', existingMethod);
+    const resolvedCustomerKey = customerKey || `user_${userId}`;
 
     if (existingMethod) {
-      // 기존 결제 수단 업데이트
-      const updated = await this.prisma.paymentMethod.update({
+      await this.prisma.paymentMethod.update({
         where: { id: existingMethod.id },
-        data: { billingKey: billingAuthKey },
+        data: { billingKey: billingAuthKey, customerKey: resolvedCustomerKey },
       });
-      console.log('Updated payment method:', updated);
     } else {
-      // 새 결제 수단 생성
-      const created = await this.prisma.paymentMethod.create({
-        data: {
-          userId,
-          billingKey: billingAuthKey,
-        },
+      await this.prisma.paymentMethod.create({
+        data: { userId, billingKey: billingAuthKey, customerKey: resolvedCustomerKey },
       });
-      console.log('Created payment method:', created);
     }
 
     return { success: true, message: '결제 수단이 등록되었습니다.' };
@@ -100,13 +90,20 @@ export class SubscriptionService {
       data: { status: 'FAILED' },
     });
 
-    // 첫 결제 실행
+    // 첫 결제 실행 (customerKey 조회)
+    const paymentMethod = await this.prisma.paymentMethod.findFirst({
+      where: { userId, billingKey: dto.billingKey },
+    });
+    const customerKey = paymentMethod?.customerKey || `user_${userId}`;
+
     const intervalLabel = dto.interval === 'WEEKLY' ? '주간' : dto.interval === 'MONTHLY' ? '월간' : '연간';
     const orderName = `PAIRÉ PREMIUM ${intervalLabel} 구독`;
     const paymentResult = await this.tossService.billingPayment(
       dto.billingKey,
       dto.price,
       orderName,
+      undefined,
+      customerKey,
     );
 
     if (!paymentResult.success) {
@@ -292,11 +289,19 @@ export class SubscriptionService {
 
     for (const subscription of subscriptions) {
       try {
-        // Toss에서 결제 승인
-        const paymentResult = await this.tossService.authorizePayment(
+        // customerKey 조회
+        const paymentMethod = await this.prisma.paymentMethod.findFirst({
+          where: { userId: subscription.userId, billingKey: subscription.billingKey },
+        });
+        const customerKey = paymentMethod?.customerKey || `user_${subscription.userId}`;
+
+        const orderId = `renewal_${subscription.id}_${Date.now()}`;
+        const paymentResult = await this.tossService.billingPayment(
           subscription.billingKey,
-          `renewal_${subscription.id}_${Date.now()}`,
           subscription.price,
+          'PAIRÉ PREMIUM 구독 갱신',
+          orderId,
+          customerKey,
         );
 
         if (paymentResult.success) {

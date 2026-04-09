@@ -41,6 +41,6 @@ export class SubscriptionController {
   @Post('register-method')
   @UseGuards(JwtAuthGuard)
   async registerPaymentMethod(@Request() req: any, @Body() dto: { billingAuthKey: string; customerKey: string }) {
-    return this.subscriptionService.registerPaymentMethod(req.user.sub, dto.billingAuthKey);
+    return this.subscriptionService.registerPaymentMethod(req.user.sub, dto.billingAuthKey, dto.customerKey);
   }
 }
