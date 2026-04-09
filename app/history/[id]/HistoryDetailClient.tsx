@@ -10,7 +10,7 @@ import { ArrowLeft, Clock, Heart, Loader2, Sparkles } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { translateDrinkType, translateOccasion, translateTastingNote, translateTaste, formatDrinkPriceByRegion } from '@/lib/drink-translations';
+import { translateDrinkType, translateOccasion, translateTastingNote, translateTaste, formatDrinkPriceByRegion, getDrinkDisplayName } from '@/lib/drink-translations';
 
 interface Drink {
     id: string;
@@ -302,7 +302,7 @@ export default function HistoryDetailPage({ id }: { id: string }) {
                                                     "text-lg font-semibold text-foreground mb-1",
                                                     isKorean && "font-[var(--font-noto-kr)]"
                                                 )}>
-                                                    {drink.name}
+                                                    {getDrinkDisplayName(drink.name, drink.nameEn, isKorean)}
                                                 </h4>
                                                 <p className="text-sm text-muted-foreground mb-1">
                                                     {translateDrinkType(drink.type, language)}

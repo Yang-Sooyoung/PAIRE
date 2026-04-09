@@ -112,7 +112,7 @@ export const useUserStore = create<UserState>((set, get) => ({
       
       console.log('🔑 Token loaded from localStorage:', storedToken ? storedToken.substring(0, 20) + '...' : 'NONE');
 
-      // 토큰으로 사용자 정보 조회 (apiClient가 자동으로 토큰 추가 및 갱신 처리)
+      // 토큰으로 사용자 정보 조회
       try {
         const userData = await getCurrentUser();
         set({
@@ -120,9 +120,32 @@ export const useUserStore = create<UserState>((set, get) => ({
           initialized: true,
           loading: false,
         });
-      } catch (error) {
-        // apiClient가 자동으로 토큰 갱신을 시도하므로 여기서는 실패 시 로그아웃만
-        console.error('Failed to get user data:', error);
+      } catch (error: any) {
+        console.error('Failed to get user data, attempting token refresh...', error);
+
+        // 401이면 refresh token으로 갱신 시도
+        if (error?.response?.status === 401 || error?.message?.includes('401')) {
+          if (storedRefreshToken) {
+            try {
+              const response = await refreshTokenAPI(storedRefreshToken);
+              localStorage.setItem('accessToken', response.accessToken);
+              localStorage.setItem('refreshToken', response.refreshToken);
+              set({
+                user: response.user,
+                token: response.accessToken,
+                refreshToken: response.refreshToken,
+                initialized: true,
+                loading: false,
+              });
+              console.log('✅ Token refreshed during initialization');
+              return;
+            } catch (refreshError) {
+              console.error('Token refresh failed during initialization:', refreshError);
+            }
+          }
+        }
+
+        // refresh도 실패하면 로그아웃
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         set({ 

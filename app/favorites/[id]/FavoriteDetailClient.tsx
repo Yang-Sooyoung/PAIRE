@@ -9,8 +9,8 @@ import { Button } from '@/components/ui/button';
 import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { removeFavorite, getDrinkDetail } from '@/app/api/favorite';
-import { translateDrinkType, translateTastingNote, formatDrinkPriceByRegion } from '@/lib/drink-translations';
+import { removeFavorite, getDrinkDetail, getFavorites } from '@/app/api/favorite';
+import { translateDrinkType, translateTastingNote, formatDrinkPriceByRegion, getDrinkDisplayName } from '@/lib/drink-translations';
 import { generateShoppingLink, detectCountryByIP, openExternalLink } from '@/lib/region-detector';
 import { generateCoupangLink } from '@/lib/coupang-partners';
 
@@ -18,6 +18,7 @@ import { generateCoupangLink } from '@/lib/coupang-partners';
 interface DrinkDetail {
   id: string;
   name: string;
+  nameKo?: string; // 즐겨찾기에 저장된 한글 이름
   type: string;
   description: string;
   tastingNotes: string[];
@@ -53,8 +54,19 @@ export default function FavoriteDetailPage({ id }: { id: string }) {
 
     const fetchDrinkDetail = async () => {
       try {
-        const response = await getDrinkDetail(id);
-        setDrink(response.drink);
+        const [detailResponse, favoritesResponse] = await Promise.all([
+          getDrinkDetail(id),
+          getFavorites(),
+        ]);
+        const drinkData = detailResponse.drink;
+        // 즐겨찾기에 저장된 한글 이름 찾기
+        const favoriteEntry = favoritesResponse.favorites?.find(
+          (f: any) => f.drinkId === id
+        );
+        if (drinkData && favoriteEntry?.drinkName) {
+          drinkData.nameKo = favoriteEntry.drinkName;
+        }
+        setDrink(drinkData);
       } catch (error) {
         console.error('Failed to fetch drink detail:', error);
         toast.error(t('favorites.failedToLoad'));
@@ -185,7 +197,7 @@ export default function FavoriteDetailPage({ id }: { id: string }) {
               "text-2xl font-bold text-foreground mb-2",
               isKorean && "font-[var(--font-noto-kr)]"
             )}>
-              {drink.name}
+              {getDrinkDisplayName(drink.nameKo || drink.name, drink.name, isKorean)}
             </h2>
             <p className={cn(
               "text-lg text-muted-foreground mb-4",

@@ -9,8 +9,14 @@ import { useRouter } from 'next/navigation';
 
 export default function AppInit() {
   const { setLanguage } = useI18n();
-  const { setUser, setToken, setRefreshToken } = useUserStore();
+  const { setUser, setToken, setRefreshToken, initializeUser } = useUserStore();
   const router = useRouter();
+
+  // 사용자 정보 초기화 (세션 복구)
+  useEffect(() => {
+    console.log('🔄 AppInit: Initializing user session...');
+    initializeUser();
+  }, [initializeUser]);
 
   useEffect(() => {
     if (!isNative()) return;

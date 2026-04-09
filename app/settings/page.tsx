@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { motion } from 'framer-motion';
-import { ChevronRight, LogOut, Trash2, Mail, FileText, ArrowLeft, Pencil, Check, X } from 'lucide-react';
+import { ChevronRight, LogOut, Trash2, Mail, FileText, ArrowLeft, Pencil, Check, X, Crown, CreditCard } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils';
 import { LanguageToggle } from '@/components/paire/language-toggle';

@@ -76,8 +76,7 @@ export default function SubscriptionStatusPage() {
       }
     } catch (error) {
       console.error('Failed to fetch subscription:', error);
-      // 구독 정보 없으면 구독 페이지로
-      router.push('/subscription');
+      // 구독 정보 없어도 페이지는 유지 (redirect 제거)
     } finally {
       setLoading(false);
     }
@@ -142,7 +141,28 @@ export default function SubscriptionStatusPage() {
   }
 
   if (!subscription) {
-    return null; // fetchSubscriptionStatus에서 이미 redirect 처리
+    return (
+      <div className="min-h-screen bg-background relative">
+        <div className="bg-card/50 backdrop-blur-sm border-b border-border sticky-header">
+          <div className="max-w-2xl mx-auto px-4 py-4 flex items-center gap-4">
+            <button onClick={() => router.back()} className="text-gold hover:text-gold-light transition">
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <h1 className="text-lg font-medium text-foreground tracking-wide">
+              {language === 'ko' ? '구독 관리' : 'Manage Subscription'}
+            </h1>
+          </div>
+        </div>
+        <div className="max-w-2xl mx-auto px-4 py-12 text-center">
+          <p className="text-muted-foreground mb-6">
+            {language === 'ko' ? '활성 구독이 없습니다.' : 'No active subscription found.'}
+          </p>
+          <Button onClick={() => router.push('/subscription')} className="bg-gold hover:bg-gold-light text-background">
+            {language === 'ko' ? '구독하기' : 'Subscribe'}
+          </Button>
+        </div>
+      </div>
+    );
   }
 
   const nextBillingDate = new Date(subscription.nextBillingDate);
