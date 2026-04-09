@@ -6,10 +6,10 @@ import { ArrowLeft, ChevronLeft, ChevronRight, ShoppingBag, RefreshCw, Share2 } 
 import { Button } from "@/components/ui/button"
 import { useI18n } from "@/lib/i18n/context"
 import { cn } from "@/lib/utils"
-import { shareViaWebAPI, copyToClipboard, generateShareText } from "@/lib/share"
 import { LoadingFairy } from "./loading-fairy"
 import { detectCountryByIP } from "@/lib/region-detector"
 import { formatDrinkPriceByRegion } from "@/lib/drink-translations"
+import { ShareModal } from "./share-modal"
 
 interface RecommendationScreenProps {
   imageUrl: string
@@ -105,35 +105,18 @@ export function RecommendationScreen({
   const [currentIndex, setCurrentIndex] = useState(0)
   const [direction, setDirection] = useState(0)
   const [showShareToast, setShowShareToast] = useState(false)
+  const [showShareModal, setShowShareModal] = useState(false)
   const [isKoreaRegion, setIsKoreaRegion] = useState<boolean | null>(null)
 
   useEffect(() => {
     detectCountryByIP().then(country => setIsKoreaRegion(country === 'KR'))
   }, [])
 
-  // 공유 기능
-  const handleShare = async () => {
-    if (!drinks || drinks.length === 0) return;
-
-    const shareText = generateShareText(drinks, isKorean);
-    const shareData = {
-      title: 'PAIRÉ',
-      text: shareText,
-      url: window.location.origin,
-    };
-
-    // 웹 공유 API 시도
-    const shared = await shareViaWebAPI(shareData);
-
-    if (!shared) {
-      // 웹 공유 API가 없으면 클립보드에 복사
-      const copied = await copyToClipboard(`${shareText}\n\n${window.location.origin}`);
-      if (copied) {
-        setShowShareToast(true);
-        setTimeout(() => setShowShareToast(false), 2000);
-      }
-    }
-  };
+  // 공유 기능 - 카드 모달 열기
+  const handleShare = () => {
+    if (!drinks || drinks.length === 0) return
+    setShowShareModal(true)
+  }
 
   // 랜덤 fairy 이미지 선택 (새로고침할 때마다 변경)
   const fairyImage = useMemo(() => {
@@ -444,21 +427,15 @@ export function RecommendationScreen({
         </Button>
       </div>
 
-      {/* 공유 토스트 */}
-      {showShareToast && (
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 50 }}
-          className="fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-gold text-background px-6 py-3 rounded-full shadow-lg z-50"
-        >
-          <p className={cn(
-            "font-medium",
-            isKorean && "font-[var(--font-noto-kr)] text-sm"
-          )}>
-            {isKorean ? '클립보드에 복사되었습니다!' : 'Copied to clipboard!'}
-          </p>
-        </motion.div>
+      {/* Share Modal */}
+      {currentDrink && (
+        <ShareModal
+          isOpen={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          drink={currentDrink}
+          foodImageUrl={imageUrl}
+          isKorean={isKorean}
+        />
       )}
     </div>
   )

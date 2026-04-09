@@ -253,7 +253,9 @@ export default function StickersPage() {
                 {sticker.unlocked ? (
                   sticker.emoji
                 ) : (
-                  <span className="inline-block w-12 h-12 rounded-full bg-secondary/80 blur-sm" />
+                  <span className="inline-block grayscale opacity-25 select-none">
+                    {sticker.emoji}
+                  </span>
                 )}
               </div>
 

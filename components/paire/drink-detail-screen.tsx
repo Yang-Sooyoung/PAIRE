@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { ArrowLeft, Wine, Droplet, Sparkles, ShoppingCart, Heart } from "lucide-react"
+import { ArrowLeft, Wine, Droplet, Sparkles, ShoppingCart, Heart, Share2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { CustomDialog } from "@/components/ui/custom-dialog"
 import { useState, useEffect } from "react"
@@ -12,6 +12,7 @@ import { addFavorite, removeFavorite, checkFavorite } from "@/app/api/favorite"
 import { generateShoppingLink, detectCountryByIP, openExternalLink } from "@/lib/region-detector"
 import { generateCoupangLink } from "@/lib/coupang-partners"
 import { formatDrinkPrice, formatDrinkPriceByRegion } from "@/lib/drink-translations"
+import { ShareModal } from "./share-modal"
 
 interface DrinkDetailScreenProps {
   drink: {
@@ -52,6 +53,7 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
   const [isWishlisted, setIsWishlisted] = useState(false)
   const [isLoadingFavorite, setIsLoadingFavorite] = useState(false)
   const [showDialog, setShowDialog] = useState(false)
+  const [showShareModal, setShowShareModal] = useState(false)
   const [isKoreaRegion, setIsKoreaRegion] = useState<boolean | null>(null)
   const [dialogConfig, setDialogConfig] = useState<{
     type: 'info' | 'success' | 'warning' | 'error' | 'confirm'
@@ -330,15 +332,25 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
           >
             <ArrowLeft className="w-5 h-5" />
           </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleToggleFavorite}
-            disabled={isLoadingFavorite}
-            className="bg-background/30 backdrop-blur-sm text-foreground hover:bg-background/50"
-          >
-            <Heart className={`w-5 h-5 ${isWishlisted ? "fill-gold text-gold" : ""}`} />
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowShareModal(true)}
+              className="bg-background/30 backdrop-blur-sm text-foreground hover:bg-background/50"
+            >
+              <Share2 className="w-5 h-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleToggleFavorite}
+              disabled={isLoadingFavorite}
+              className="bg-background/30 backdrop-blur-sm text-foreground hover:bg-background/50"
+            >
+              <Heart className={`w-5 h-5 ${isWishlisted ? "fill-gold text-gold" : ""}`} />
+            </Button>
+          </div>
         </div>
 
         {/* Drink Type Badge */}
@@ -575,6 +587,14 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
             <Heart className={`w-5 h-5 ${isWishlisted ? "fill-gold" : ""}`} />
           </Button>
           <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setShowShareModal(true)}
+            className="h-14 w-14 border-gold/40 text-gold hover:bg-gold/10 shrink-0"
+          >
+            <Share2 className="w-5 h-5" />
+          </Button>
+          <Button
             onClick={handlePurchase}
             className={cn(
               "flex-1 h-14 bg-gold hover:bg-gold-light text-background font-semibold text-lg",
@@ -600,6 +620,14 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
           </p>
         )}
       </div>
+
+      {/* Share Modal */}
+      <ShareModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        drink={drink}
+        isKorean={isKorean}
+      />
 
       {/* Custom Dialog */}
       <CustomDialog
