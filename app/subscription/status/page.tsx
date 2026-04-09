@@ -9,7 +9,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Crown, Calendar, CreditCard, Loader2 } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils';
-import axios from 'axios';
+import apiClient from '@/app/api/client';
 
 interface Subscription {
   id: string;
@@ -24,7 +24,7 @@ interface Subscription {
 
 export default function SubscriptionStatusPage() {
   const router = useRouter();
-  const { user, token, setUser, refreshTokenIfNeeded } = useUserStore();
+  const { user, token, setUser } = useUserStore();
   const { language, t } = useI18n();
   const isKorean = language === 'ko';
   const [subscription, setSubscription] = useState<Subscription | null>(null);
@@ -46,37 +46,12 @@ export default function SubscriptionStatusPage() {
 
   const fetchSubscriptionStatus = async () => {
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
-      let currentToken = token;
-
-      try {
-        const response = await axios.get(`${API_URL}/subscription/status`, {
-          headers: { Authorization: `Bearer ${currentToken}` },
-        });
-
-        if (response.data?.subscription) {
-          setSubscription(response.data.subscription);
-        }
-      } catch (error: any) {
-        if (error?.response?.status === 401) {
-          const newToken = await refreshTokenIfNeeded();
-          if (newToken) {
-            const response = await axios.get(`${API_URL}/subscription/status`, {
-              headers: { Authorization: `Bearer ${newToken}` },
-            });
-            if (response.data?.subscription) {
-              setSubscription(response.data.subscription);
-            }
-          } else {
-            router.push('/login');
-          }
-        } else {
-          throw error;
-        }
+      const response = await apiClient.get('/subscription/status');
+      if (response.data?.subscription) {
+        setSubscription(response.data.subscription);
       }
     } catch (error) {
       console.error('Failed to fetch subscription:', error);
-      // 구독 정보 없어도 페이지는 유지 (redirect 제거)
     } finally {
       setLoading(false);
     }
@@ -89,26 +64,15 @@ export default function SubscriptionStatusPage() {
     setShowCancelDialog(false);
     
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
-      
-      const response = await axios.post(
-        `${API_URL}/subscription/cancel`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const response = await apiClient.post('/subscription/cancel', {});
 
       console.log('Cancel subscription response:', response.data);
       
-      // 구독 정보 다시 가져오기
       await fetchSubscriptionStatus();
       
-      // 사용자 정보 업데이트 (멤버십은 유지되지만 구독 상태는 CANCELLED)
       if (user) {
-        // 사용자 정보 새로고침
         try {
-          const userResponse = await axios.get(`${API_URL}/auth/me`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+          const userResponse = await apiClient.get('/auth/me');
           if (userResponse.data) {
             setUser(userResponse.data);
           }

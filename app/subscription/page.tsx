@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import apiClient from '@/app/api/client';
 import { useUserStore } from '@/app/store/userStore';
 import { PLANS, type Plan } from './constants/subscriptionPlans';
 import { loadTossPayments } from '@tosspayments/sdk';
@@ -131,30 +132,9 @@ export default function SubscriptionPage() {
 
     const fetchPaymentMethods = async () => {
       try {
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
-
-        let currentToken = token;
-        let response = await axios.get(`${API_URL}/subscription/methods`, {
-          headers: { Authorization: `Bearer ${currentToken}` },
-        });
+        let response = await apiClient.get('/subscription/methods');
 
         if (isCancelled) return;
-
-        if (response.status === 401) {
-          const newToken = await refreshTokenIfNeeded();
-          if (isCancelled) return;
-
-          if (newToken) {
-            currentToken = newToken;
-            response = await axios.get(`${API_URL}/subscription/methods`, {
-              headers: { Authorization: `Bearer ${currentToken}` },
-            });
-            if (isCancelled) return;
-          } else {
-            router.push('/login');
-            return;
-          }
-        }
 
         if (!isCancelled) {
           if (response.data?.success && response.data.methods?.length > 0) {
@@ -169,33 +149,7 @@ export default function SubscriptionPage() {
         if (isCancelled) return;
 
         if (err?.response?.status === 401) {
-          const newToken = await refreshTokenIfNeeded();
-          if (isCancelled) return;
-
-          if (newToken) {
-            try {
-              const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
-              const response = await axios.get(`${API_URL}/subscription/methods`, {
-                headers: { Authorization: `Bearer ${newToken}` },
-              });
-
-              if (!isCancelled) {
-                if (response.data?.success && response.data.methods?.length > 0) {
-                  const m = response.data.methods[0];
-                  setMethodRegistered(true);
-                  setBillingKey(m.billingKey ?? '');
-                } else {
-                  setMethodRegistered(false);
-                }
-              }
-            } catch (retryErr) {
-              if (!isCancelled) {
-                setMethodRegistered(false);
-              }
-            }
-          } else {
-            router.push('/login');
-          }
+          router.push('/login');
         } else {
           setMethodRegistered(false);
         }
@@ -319,10 +273,7 @@ export default function SubscriptionPage() {
         billingKey,
       };
 
-      let currentToken = useUserStore.getState().token || token;
-      let res = await axios.post(`${API_URL}/subscription/create`, payload, {
-        headers: { Authorization: `Bearer ${currentToken}` },
-      });
+      let res = await apiClient.post('/subscription/create', payload);
 
       if (res.data?.subscription || res.data?.success) {
         setUser({ ...user, membership: 'PREMIUM' });
@@ -343,7 +294,6 @@ export default function SubscriptionPage() {
           // 토큰 갱신 후 재시도는 토스페이먼츠만
           if (activeRegion.paymentProvider === 'toss') {
             try {
-              const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
               const priceNumber = Number(getPlanPrice(selectedPlan));
               const payload = {
                 planId: selectedPlan.id,
@@ -353,9 +303,7 @@ export default function SubscriptionPage() {
                 billingKey,
               };
 
-              const res = await axios.post(`${API_URL}/subscription/create`, payload, {
-                headers: { Authorization: `Bearer ${newToken}` },
-              });
+              const res = await apiClient.post('/subscription/create', payload);
 
               if (res.data?.subscription || res.data?.success) {
                 setUser({ ...user, membership: 'PREMIUM' });
@@ -428,38 +376,8 @@ export default function SubscriptionPage() {
       }
 
       // 한국: 토스페이먼츠
-      const response = await fetch(`${API_URL}/credit/purchase`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${currentToken}`,
-        },
-        body: JSON.stringify({ packageType: pkg.id }),
-      });
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          const newToken = await refreshTokenIfNeeded();
-          if (newToken) {
-            const retryResponse = await fetch(`${API_URL}/credit/purchase`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${newToken}` },
-              body: JSON.stringify({ packageType: pkg.id }),
-            });
-            if (!retryResponse.ok) throw new Error('구매 생성 실패');
-            const { orderId, amount, orderName } = await retryResponse.json();
-            const tossPayments = await loadTossPayments(process.env.NEXT_PUBLIC_TOSS_TEST_CLIENT_KEY!);
-            await tossPayments.requestPayment('카드', { amount, orderId, orderName, successUrl: `${window.location.origin}/credit/success`, failUrl: `${window.location.origin}/credit/fail` });
-            return;
-          } else {
-            router.push('/login');
-            return;
-          }
-        }
-        throw new Error('구매 생성 실패');
-      }
-
-      const { orderId, amount, orderName } = await response.json();
+      const creditRes = await apiClient.post('/credit/purchase', { packageType: pkg.id });
+      const { orderId, amount, orderName } = creditRes.data;
       const tossPayments = await loadTossPayments(process.env.NEXT_PUBLIC_TOSS_TEST_CLIENT_KEY!);
       await tossPayments.requestPayment('카드', { amount, orderId, orderName, successUrl: `${window.location.origin}/credit/success`, failUrl: `${window.location.origin}/credit/fail` });
     } catch (error) {
