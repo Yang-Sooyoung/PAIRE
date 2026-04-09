@@ -224,10 +224,10 @@ export default function PairePage() {
   }
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background overflow-hidden">
       {/* 헤더 (로그인 상태일 때만) */}
       {user && screen === "home" && (
-        <div className="bg-card/50 backdrop-blur-sm border-b border-border sticky top-0 z-20">
+        <div className="bg-card/50 backdrop-blur-sm border-b border-border sticky-header">
           <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <h1 className="text-lg font-light text-foreground tracking-widest">PAIRÉ</h1>

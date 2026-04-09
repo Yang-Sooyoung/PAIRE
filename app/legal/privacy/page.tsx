@@ -13,7 +13,7 @@ export default function PrivacyPage() {
   const isKorean = language === 'ko';
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
+    <div className="min-h-screen bg-background relative">
       {/* 배경 효과 */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gold/5 rounded-full blur-3xl" />
@@ -21,7 +21,7 @@ export default function PrivacyPage() {
       </div>
 
       {/* 헤더 */}
-      <div className="bg-card/50 backdrop-blur-sm border-b border-border sticky top-0 z-10">
+      <div className="bg-card/50 backdrop-blur-sm border-b border-border sticky-header">
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center gap-4">
           <button
             onClick={() => router.back()}

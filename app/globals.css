@@ -109,9 +109,16 @@
   body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    padding-top: env(safe-area-inset-top, 0px);
-    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
+}
+
+/* 네이티브 앱 safe area - sticky 헤더 */
+.sticky-header {
+  position: sticky;
+  top: 0;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 10;
+  padding-top: env(safe-area-inset-top, 0px);
 }
 
 /* Safe area 유틸리티 */
