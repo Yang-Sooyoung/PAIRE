@@ -93,13 +93,10 @@ export function ShareModal({ isOpen, onClose, drink, foodImageUrl, isKorean, isK
             </div>
 
             {/* 카드 미리보기 - 스크롤 가능 */}
-            <div className="flex-1 overflow-y-auto mb-4">
-              <div className="flex justify-center">
-                {/* 실제 캡처 대상 - 원본 크기로 렌더링 */}
-                <div
-                  ref={cardRef}
-                  style={{ display: "inline-block" }}
-                >
+            <div className="flex-1 overflow-y-auto mb-4 -mx-5 px-5">
+              <div className="flex justify-center py-2">
+                {/* 실제 캡처 대상 */}
+                <div ref={cardRef} style={{ display: "inline-block", maxWidth: "100%" }}>
                   <ShareCard
                     drink={drink}
                     foodImageUrl={foodImageUrl}

@@ -1,7 +1,6 @@
 "use client"
 
 import { forwardRef } from "react"
-import { cn } from "@/lib/utils"
 
 interface ShareCardProps {
   drink: {
@@ -18,187 +17,235 @@ interface ShareCardProps {
   foodImageUrl?: string
   isKorean: boolean
   isKoreaRegion?: boolean | null
-  className?: string
 }
 
+const CARD_W = 420
+const GOLD = "#d4af37"
+const GOLD_DIM = "rgba(212,175,55,0.25)"
+const BG = "#0c0b08"
+const BG2 = "#1a1500"
+
 export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(
-  ({ drink, foodImageUrl, isKorean, isKoreaRegion, className }, ref) => {
+  ({ drink, foodImageUrl, isKorean, isKoreaRegion }, ref) => {
     const displayName = isKorean ? (drink.name || drink.nameEn) : (drink.nameEn || drink.name)
 
-    // 지역 기반 가격 포맷
     const formatPrice = (price: string) => {
-      if (!price) return ''
-      // 이미 통화 기호가 있으면 그대로
-      if (price.startsWith('₩') || price.startsWith('$') || price.startsWith('€')) return price
-      // 숫자만 있으면 지역에 따라 포맷
-      const num = parseFloat(price.replace(/[^0-9.]/g, ''))
+      if (!price) return ""
+      if (price.startsWith("\u20A9") || price.startsWith("$") || price.startsWith("\u20AC")) return price
+      const num = parseFloat(price.replace(/[^0-9.]/g, ""))
       if (isNaN(num)) return price
       if (isKoreaRegion === false) return `$${num.toFixed(2)}`
-      if (isKoreaRegion === true) return `₩${Math.round(num).toLocaleString()}`
+      if (isKoreaRegion === true) return `\u20A9${Math.round(num).toLocaleString()}`
       return price
     }
+
+    const notes = drink.tastingNotes.slice(0, 3)
 
     return (
       <div
         ref={ref}
-        className={cn("relative overflow-hidden", className)}
         style={{
-          width: 400,
-          background: "linear-gradient(135deg, #0a0a0a 0%, #1a1400 50%, #0a0a0a 100%)",
-          fontFamily: isKorean
-            ? "'Noto Sans KR', sans-serif"
-            : "'Playfair Display', 'Georgia', serif",
+          width: CARD_W,
+          background: BG,
+          borderRadius: 20,
+          overflow: "hidden",
+          fontFamily: isKorean ? "'Noto Sans KR', sans-serif" : "Georgia, serif",
+          boxShadow: "0 0 0 1px rgba(212,175,55,0.15)",
+          position: "relative",
         }}
       >
-        {/* 배경 장식 */}
+        {/* ── 배경 글로우 ── */}
         <div style={{
-          position: "absolute", inset: 0, pointerEvents: "none",
-          background: "radial-gradient(ellipse at 20% 20%, rgba(212,175,55,0.08) 0%, transparent 60%)",
-        }} />
-        <div style={{
-          position: "absolute", inset: 0, pointerEvents: "none",
-          background: "radial-gradient(ellipse at 80% 80%, rgba(212,175,55,0.05) 0%, transparent 60%)",
+          position: "absolute", inset: 0, pointerEvents: "none", zIndex: 0,
+          background: `radial-gradient(ellipse 70% 50% at 30% 10%, rgba(212,175,55,0.10) 0%, transparent 70%),
+                       radial-gradient(ellipse 60% 40% at 80% 90%, rgba(212,175,55,0.06) 0%, transparent 70%)`,
         }} />
 
-        {/* 음식 이미지 (있을 때) */}
-        {foodImageUrl && (
-          <div style={{ position: "relative", height: 160, overflow: "hidden" }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
+        {/* ── 이미지 영역 ── */}
+        <div style={{ position: "relative", height: foodImageUrl ? 280 : 260, zIndex: 1 }}>
+          {/* 음식 이미지 (배경) */}
+          {foodImageUrl && (
+            /* eslint-disable-next-line @next/next/no-img-element */
             <img
               src={foodImageUrl}
-              alt="food"
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              crossOrigin="anonymous"
+              alt=""
+              style={{
+                position: "absolute", inset: 0,
+                width: "100%", height: "100%", objectFit: "cover",
+                filter: "brightness(0.45) saturate(0.8)",
+              }}
             />
-            <div style={{
-              position: "absolute", inset: 0,
-              background: "linear-gradient(to bottom, transparent 30%, #0a0a0a 100%)",
-            }} />
-          </div>
-        )}
-
-        {/* 음료 이미지 */}
-        <div style={{
-          position: "relative",
-          height: foodImageUrl ? 140 : 200,
-          overflow: "hidden",
-          marginTop: foodImageUrl ? -40 : 0,
-        }}>
+          )}
+          {/* 음료 이미지 */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={drink.image || "/placeholder.svg"}
-            alt={displayName}
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
-            crossOrigin="anonymous"
+            src={drink.image || ""}
+            alt={displayName || ""}
+            style={{
+              position: "absolute", inset: 0,
+              width: "100%", height: "100%", objectFit: "cover",
+              opacity: foodImageUrl ? 0.75 : 1,
+            }}
           />
+          {/* 그라디언트 오버레이 */}
           <div style={{
             position: "absolute", inset: 0,
-            background: "linear-gradient(to bottom, transparent 20%, #0a0a0a 100%)",
+            background: `linear-gradient(to bottom,
+              rgba(12,11,8,0.1) 0%,
+              rgba(12,11,8,0.0) 30%,
+              rgba(12,11,8,0.55) 70%,
+              rgba(12,11,8,1) 100%)`,
           }} />
+
+          {/* 상단 브랜드 */}
+          <div style={{
+            position: "absolute", top: 18, left: 22,
+            display: "flex", alignItems: "center", gap: 6,
+          }}>
+            <div style={{
+              width: 6, height: 6, borderRadius: "50%",
+              background: GOLD, boxShadow: `0 0 8px ${GOLD}`,
+            }} />
+            <span style={{
+              color: GOLD, fontSize: 13, fontWeight: 700,
+              letterSpacing: 3, textTransform: "uppercase",
+            }}>
+              PAIRÉ
+            </span>
+          </div>
+
+          {/* 점수 배지 */}
+          {drink.aiScore && (
+            <div style={{
+              position: "absolute", top: 14, right: 18,
+              background: "rgba(12,11,8,0.7)",
+              border: `1px solid ${GOLD_DIM}`,
+              borderRadius: 999,
+              padding: "3px 10px",
+              display: "flex", alignItems: "center", gap: 4,
+            }}>
+              <span style={{ color: GOLD, fontSize: 11 }}>★</span>
+              <span style={{ color: GOLD, fontSize: 11, fontWeight: 600 }}>{drink.aiScore}</span>
+            </div>
+          )}
+
+          {/* 이미지 하단 음료 이름 오버레이 */}
+          <div style={{
+            position: "absolute", bottom: 0, left: 0, right: 0,
+            padding: "0 22px 18px",
+          }}>
+            {/* 타입 뱃지 */}
+            <div style={{
+              display: "inline-block",
+              padding: "3px 10px",
+              borderRadius: 999,
+              background: "rgba(212,175,55,0.18)",
+              border: `1px solid ${GOLD_DIM}`,
+              color: GOLD,
+              fontSize: 10,
+              letterSpacing: 1.5,
+              textTransform: "uppercase",
+              marginBottom: 8,
+            }}>
+              {drink.type}
+            </div>
+            {/* 음료 이름 */}
+            <div style={{
+              color: "#f5f0e8",
+              fontSize: isKorean ? 22 : 24,
+              fontWeight: 700,
+              lineHeight: 1.2,
+              textShadow: "0 2px 12px rgba(0,0,0,0.8)",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}>
+              {displayName}
+            </div>
+          </div>
         </div>
 
-        {/* 콘텐츠 */}
-        <div style={{ padding: "20px 24px 24px" }}>
-          {/* 음료 타입 */}
-          <div style={{
-            display: "inline-block",
-            padding: "4px 12px",
-            borderRadius: 999,
-            border: "1px solid rgba(212,175,55,0.4)",
-            background: "rgba(212,175,55,0.1)",
-            color: "#d4af37",
-            fontSize: 11,
-            letterSpacing: 1,
-            marginBottom: 10,
-            textTransform: "uppercase",
-          }}>
-            {drink.type}
-          </div>
+        {/* ── 콘텐츠 영역 ── */}
+        <div style={{ padding: "18px 22px 22px", position: "relative", zIndex: 1 }}>
 
-          {/* 음료 이름 */}
+          {/* 가격 + 테이스팅 노트 한 줄 */}
           <div style={{
-            fontSize: isKorean ? 22 : 24,
-            fontWeight: 700,
-            color: "#f5f0e8",
-            marginBottom: 6,
-            lineHeight: 1.2,
+            display: "flex", alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: 16,
           }}>
-            {displayName}
-          </div>
-
-          {/* 가격 */}
-          <div style={{
-            fontSize: 18,
-            fontWeight: 600,
-            color: "#d4af37",
-            marginBottom: 14,
-          }}>
-            {formatPrice(drink.price)}
+            <span style={{ color: GOLD, fontSize: 20, fontWeight: 700 }}>
+              {formatPrice(drink.price)}
+            </span>
+            <div style={{ display: "flex", gap: 5 }}>
+              {notes.map((note) => (
+                <span key={note} style={{
+                  padding: "3px 9px",
+                  borderRadius: 999,
+                  background: "rgba(212,175,55,0.10)",
+                  border: `1px solid ${GOLD_DIM}`,
+                  color: GOLD,
+                  fontSize: 10,
+                  whiteSpace: "nowrap",
+                }}>
+                  {note}
+                </span>
+              ))}
+            </div>
           </div>
 
           {/* AI 추천 이유 */}
           {drink.aiReason && (
             <div style={{
-              background: "rgba(212,175,55,0.07)",
-              border: "1px solid rgba(212,175,55,0.2)",
-              borderRadius: 10,
-              padding: "10px 14px",
-              marginBottom: 14,
+              background: "rgba(212,175,55,0.06)",
+              border: `1px solid rgba(212,175,55,0.15)`,
+              borderRadius: 12,
+              padding: "12px 14px",
+              marginBottom: 18,
             }}>
-              <div style={{ color: "#d4af37", fontSize: 11, marginBottom: 5, letterSpacing: 0.5 }}>
-                ✨ {isKorean ? "페어리의 추천 이유" : "Why PAIRÉ recommends this"}
+              <div style={{
+                color: GOLD, fontSize: 10, letterSpacing: 1,
+                textTransform: "uppercase", marginBottom: 6,
+                display: "flex", alignItems: "center", gap: 5,
+              }}>
+                <span>✦</span>
+                <span>{isKorean ? "페어리의 추천" : "Fairy's Pick"}</span>
               </div>
               <div style={{
                 color: "#c8bfa8",
                 fontSize: isKorean ? 11 : 12,
-                lineHeight: 1.6,
+                lineHeight: 1.65,
+                overflow: "hidden",
                 display: "-webkit-box",
                 WebkitLineClamp: 3,
                 WebkitBoxOrient: "vertical",
-                overflow: "hidden",
               } as React.CSSProperties}>
                 {drink.aiReason}
               </div>
             </div>
           )}
 
-          {/* 테이스팅 노트 */}
-          {drink.tastingNotes.length > 0 && (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 18 }}>
-              {drink.tastingNotes.slice(0, 4).map((note) => (
-                <span key={note} style={{
-                  padding: "3px 10px",
-                  borderRadius: 999,
-                  background: "rgba(212,175,55,0.12)",
-                  color: "#d4af37",
-                  fontSize: 11,
-                  border: "1px solid rgba(212,175,55,0.25)",
-                }}>
-                  {note}
-                </span>
-              ))}
-            </div>
-          )}
-
           {/* 구분선 */}
           <div style={{
             height: 1,
-            background: "linear-gradient(to right, transparent, rgba(212,175,55,0.3), transparent)",
+            background: `linear-gradient(to right, transparent, ${GOLD_DIM}, transparent)`,
             marginBottom: 14,
           }} />
 
-          {/* 브랜드 */}
+          {/* 하단 푸터 */}
           <div style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
+            display: "flex", alignItems: "center", justifyContent: "space-between",
           }}>
-            <div style={{ color: "#d4af37", fontSize: 16, fontWeight: 700, letterSpacing: 2 }}>
-              PAIRÉ
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <div style={{
+                width: 4, height: 4, borderRadius: "50%",
+                background: GOLD, opacity: 0.6,
+              }} />
+              <span style={{ color: "#6b6050", fontSize: 10, letterSpacing: 0.5 }}>
+                {isKorean ? "나만의 음료 페어링" : "Your Personal Drink Pairing"}
+              </span>
             </div>
-            <div style={{ color: "#6b6050", fontSize: 10 }}>
-              {isKorean ? "나만의 음료 페어링" : "Your Personal Drink Pairing"}
-            </div>
+            <span style={{ color: "#3a3020", fontSize: 10 }}>paire.app</span>
           </div>
         </div>
       </div>
