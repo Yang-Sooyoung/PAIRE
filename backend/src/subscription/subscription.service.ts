@@ -81,6 +81,18 @@ export class SubscriptionService {
       throw new Error('이미 활성 구독이 있습니다.');
     }
 
+    // 첫 결제 실행 (빌링키로 즉시 결제)
+    const orderName = dto.interval === 'MONTHLY' ? 'PAIRÉ PREMIUM 월간 구독' : 'PAIRÉ PREMIUM 연간 구독';
+    const paymentResult = await this.tossService.billingPayment(
+      dto.billingKey,
+      dto.price,
+      orderName,
+    );
+
+    if (!paymentResult.success) {
+      throw new Error(`첫 결제에 실패했습니다: ${paymentResult.error || '알 수 없는 오류'}`);
+    }
+
     // 다음 갱신일 계산
     const nextBillingDate = new Date();
     if (dto.interval === 'MONTHLY') {

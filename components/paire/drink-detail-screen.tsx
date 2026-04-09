@@ -267,11 +267,26 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
   const getDescription = () => {
     if (isKorean) return drink.description
     if (drink.descriptionEn) return drink.descriptionEn
-    // descriptionEn 없고 한글이면 기본 영문 메시지
     if (/[가-힣]/.test(drink.description)) {
       return "This drink pairs perfectly with your dish, creating a harmonious balance of flavors."
     }
     return drink.description
+  }
+
+  const getAiReason = () => {
+    if (!drink.aiReason) return null
+    if (!isKorean && /[가-힣]/.test(drink.aiReason)) {
+      return "This drink was selected based on its exceptional compatibility with your dish and occasion, offering a perfectly balanced pairing experience."
+    }
+    return drink.aiReason
+  }
+
+  const getPairingNotes = () => {
+    if (!drink.pairingNotes) return null
+    if (!isKorean && /[가-힣]/.test(drink.pairingNotes)) {
+      return "The flavors complement each other beautifully, enhancing both the food and the drink in a harmonious way."
+    }
+    return drink.pairingNotes
   }
 
   const flavorProfile = calculateFlavorProfile()
@@ -452,7 +467,7 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
           className="space-y-6"
         >
           {/* AI 추천 이유 */}
-          {drink.aiReason && (
+          {getAiReason() && (
             <div className="bg-gradient-to-br from-gold/10 to-gold/5 border border-gold/30 rounded-xl p-5">
               <div className="flex items-start gap-3 mb-3">
                 <Sparkles className="w-5 h-5 text-gold flex-shrink-0 mt-1" />
@@ -467,7 +482,7 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
                 "text-foreground leading-relaxed mb-3",
                 isKorean && "font-[var(--font-noto-kr)] text-sm leading-relaxed"
               )}>
-                {drink.aiReason}
+                {getAiReason()}
               </p>
               {drink.aiScore && (
                 <div className="flex items-center gap-2 pt-3 border-t border-gold/20">
@@ -481,7 +496,7 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
           )}
 
           {/* 페어링 노트 */}
-          {drink.pairingNotes && (
+          {getPairingNotes() && (
             <div>
               <h3 className={cn(
                 "text-gold-light text-lg font-medium mb-3",
@@ -493,7 +508,7 @@ export function DrinkDetailScreen({ drink, foodContext, userPreferences, onBack 
                 "text-muted-foreground leading-relaxed",
                 isKorean && "font-[var(--font-noto-kr)] text-sm leading-relaxed"
               )}>
-                {drink.pairingNotes}
+                {getPairingNotes()}
               </p>
             </div>
           )}

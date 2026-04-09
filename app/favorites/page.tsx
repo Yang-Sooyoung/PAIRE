@@ -108,28 +108,28 @@ export default function FavoritesPage() {
   // FREE 사용자 화면
   if (user && user.membership === 'FREE') {
     return (
-      <div className="min-h-screen bg-background relative overflow-hidden">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gold/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-gold/3 rounded-full blur-3xl" />
-        </div>
+      <div className="min-h-screen bg-background relative">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gold/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-gold/3 rounded-full blur-3xl" />
+      </div>
 
-        <div className="bg-card/50 backdrop-blur-sm border-b border-border sticky top-0 z-10">
-          <div className="max-w-2xl mx-auto px-4 py-4 flex items-center gap-4">
-            <button
-              onClick={() => router.back()}
-              className="text-gold hover:text-gold-light transition"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </button>
-            <h1 className={cn(
-              "text-lg font-medium text-foreground tracking-wide",
-              isKorean && "font-[var(--font-noto-kr)] tracking-normal"
-            )}>
-              {isKorean ? '즐겨찾기' : 'Favorites'}
-            </h1>
-          </div>
+      <div className="bg-card/50 backdrop-blur-sm border-b border-border sticky top-0 z-10">
+        <div className="max-w-2xl mx-auto px-4 py-4 flex items-center gap-4">
+          <button
+            onClick={() => router.back()}
+            className="text-gold hover:text-gold-light transition"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <h1 className={cn(
+            "text-lg font-medium text-foreground tracking-wide",
+            isKorean && "font-[var(--font-noto-kr)] tracking-normal"
+          )}>
+            {isKorean ? '즐겨찾기' : 'Favorites'}
+          </h1>
         </div>
+      </div>
 
         <div className="max-w-2xl mx-auto px-4 py-12 relative z-10 flex flex-col items-center justify-center min-h-[60vh]">
           <motion.div
@@ -176,7 +176,7 @@ export default function FavoritesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
+    <div className="min-h-screen bg-background relative">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gold/5 rounded-full blur-3xl" />
         <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-gold/3 rounded-full blur-3xl" />
