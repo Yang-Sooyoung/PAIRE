@@ -188,16 +188,33 @@ export class StripeController {
                     : planId.includes('yearly') || planId.includes('annual') ? 'ANNUALLY'
                     : 'MONTHLY';
 
+                // CANCELLED 구독 잔여기간 계산
+                const cancelledSub = await this.prisma.subscription.findFirst({
+                    where: { userId, status: 'CANCELLED' },
+                    orderBy: { createdAt: 'desc' },
+                });
+                let remainingDays = 0;
+                if (cancelledSub?.nextBillingDate) {
+                    const now = new Date();
+                    const diff = new Date(cancelledSub.nextBillingDate).getTime() - now.getTime();
+                    remainingDays = Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24)));
+                }
+
                 const nextBillingDate = new Date();
                 if (interval === 'WEEKLY') nextBillingDate.setDate(nextBillingDate.getDate() + 7);
                 else if (interval === 'MONTHLY') nextBillingDate.setMonth(nextBillingDate.getMonth() + 1);
                 else nextBillingDate.setFullYear(nextBillingDate.getFullYear() + 1);
 
+                // 잔여기간 추가
+                if (remainingDays > 0) {
+                    nextBillingDate.setDate(nextBillingDate.getDate() + remainingDays);
+                }
+
                 const stripeCustomerId = typeof session.customer === 'object'
                     ? session.customer?.id
                     : session.customer as string | null;
 
-                await this.prisma.subscription.updateMany({ where: { userId, status: 'ACTIVE' }, data: { status: 'CANCELLED' } });
+                await this.prisma.subscription.updateMany({ where: { userId, status: { in: ['ACTIVE', 'CANCELLED'] } }, data: { status: 'FAILED' } });
                 await this.prisma.subscription.create({
                     data: {
                         userId, membership: 'PREMIUM', interval,
@@ -209,8 +226,8 @@ export class StripeController {
                 });
                 await this.prisma.user.update({ where: { id: userId }, data: { membership: 'PREMIUM' } });
 
-                console.log(`✅ User ${userId} upgraded to PREMIUM`);
-                return { success: true, membership: 'PREMIUM' };
+                console.log(`✅ User ${userId} upgraded to PREMIUM, remainingDays=${remainingDays}`);
+                return { success: true, membership: 'PREMIUM', remainingDays };
             }
 
             console.warn(`[confirm-session] Unknown type: ${type}`);
@@ -342,16 +359,33 @@ export class StripeController {
                 : planId.includes('yearly') || planId.includes('annual') ? 'ANNUALLY'
                 : 'MONTHLY';
 
+            // CANCELLED 구독 잔여기간 계산
+            const cancelledSub = await this.prisma.subscription.findFirst({
+                where: { userId, status: 'CANCELLED' },
+                orderBy: { createdAt: 'desc' },
+            });
+            let remainingDays = 0;
+            if (cancelledSub?.nextBillingDate) {
+                const now = new Date();
+                const diff = new Date(cancelledSub.nextBillingDate).getTime() - now.getTime();
+                remainingDays = Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24)));
+            }
+
             // 다음 결제일 계산
             const nextBillingDate = new Date();
             if (interval === 'WEEKLY') nextBillingDate.setDate(nextBillingDate.getDate() + 7);
             else if (interval === 'MONTHLY') nextBillingDate.setMonth(nextBillingDate.getMonth() + 1);
             else nextBillingDate.setFullYear(nextBillingDate.getFullYear() + 1);
 
-            // 기존 구독 취소 처리
+            // 잔여기간 추가
+            if (remainingDays > 0) {
+                nextBillingDate.setDate(nextBillingDate.getDate() + remainingDays);
+            }
+
+            // 기존 구독 아카이브
             await this.prisma.subscription.updateMany({
-                where: { userId, status: 'ACTIVE' },
-                data: { status: 'CANCELLED' },
+                where: { userId, status: { in: ['ACTIVE', 'CANCELLED'] } },
+                data: { status: 'FAILED' },
             });
 
             // 새 구독 생성
@@ -374,7 +408,7 @@ export class StripeController {
                 data: { membership: 'PREMIUM' },
             });
 
-            console.log(`✅ User ${userId} upgraded to PREMIUM`);
+            console.log(`✅ User ${userId} upgraded to PREMIUM, remainingDays=${remainingDays}`);
         }
     }
 

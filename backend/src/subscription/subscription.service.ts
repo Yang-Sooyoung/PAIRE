@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { TossService } from '@/toss/toss.service';
 
@@ -68,7 +68,7 @@ export class SubscriptionService {
     });
 
     if (existingActive) {
-      throw new Error('이미 활성 구독이 있습니다.');
+      throw new BadRequestException('이미 활성 구독이 있습니다.');
     }
 
     // 기존 CANCELLED 구독에서 남은 기간 계산 (재구독 보너스)
@@ -98,16 +98,22 @@ export class SubscriptionService {
 
     const intervalLabel = dto.interval === 'WEEKLY' ? '주간' : dto.interval === 'MONTHLY' ? '월간' : '연간';
     const orderName = `PAIRÉ PREMIUM ${intervalLabel} 구독`;
-    const paymentResult = await this.tossService.billingPayment(
-      dto.billingKey,
-      dto.price,
-      orderName,
-      undefined,
-      customerKey,
-    );
+
+    let paymentResult: any;
+    try {
+      paymentResult = await this.tossService.billingPayment(
+        dto.billingKey,
+        dto.price,
+        orderName,
+        undefined,
+        customerKey,
+      );
+    } catch (e: any) {
+      throw new BadRequestException(`결제 처리 중 오류가 발생했습니다: ${e.message}`);
+    }
 
     if (!paymentResult.success) {
-      throw new Error(`첫 결제에 실패했습니다: ${paymentResult.error || '알 수 없는 오류'}`);
+      throw new BadRequestException(`첫 결제에 실패했습니다: ${paymentResult.error || '알 수 없는 오류'}`);
     }
 
     // 다음 갱신일 계산 (기본 주기 + 남은 기간)

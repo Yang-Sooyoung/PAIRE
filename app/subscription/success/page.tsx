@@ -15,7 +15,7 @@ function SubscriptionSuccessContent() {
   const { language } = useI18n();
   const isKorean = language === 'ko';
   const [processing, setProcessing] = useState(true);
-  const bonusDays = parseInt(searchParams.get('bonus') || '0');
+  const [bonusDays, setBonusDays] = useState(parseInt(searchParams.get('bonus') || '0'));
 
   useEffect(() => {
     const confirm = async () => {
@@ -48,6 +48,12 @@ function SubscriptionSuccessContent() {
           }
           // 멤버십 반영을 위해 유저 정보 재갱신
           await initializeUser();
+          setProcessing(false);
+          // remainingDays가 있으면 bonus 파라미터와 함께 이동
+          const bonus = data?.remainingDays || 0;
+          if (bonus > 0) setBonusDays(bonus);
+          setTimeout(() => router.push('/user-info'), 3000);
+          return;
         } catch (e) {
           console.error('Confirm session error:', e);
         }
