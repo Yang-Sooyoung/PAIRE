@@ -107,9 +107,17 @@ export class SubscriptionService {
     }
 
     if (!paymentResult.success) {
-      // 빌링키 만료 또는 유효하지 않은 경우 결제수단 재등록 안내
       const errorMsg = paymentResult.error || '알 수 없는 오류';
-      const isBillingKeyError = errorMsg.includes('빌링키') || errorMsg.includes('billing') || errorMsg.includes('인증');
+      console.error(`[createSubscription] 결제 실패 userId=${userId}, error=${errorMsg}`);
+      // 토스 공식 빌링키 관련 에러 코드만 정확히 체크
+      const billingKeyErrorCodes = [
+        'INVALID_BILLING_KEY',
+        'EXPIRED_BILLING_KEY',
+        'NOT_FOUND_BILLING_KEY',
+        'INVALID_STOPPED_CARD',
+        'INVALID_CARD_EXPIRATION',
+      ];
+      const isBillingKeyError = billingKeyErrorCodes.some(code => errorMsg.includes(code));
       if (isBillingKeyError) {
         // 만료된 결제수단 DB에서 제거
         await this.prisma.paymentMethod.deleteMany({ where: { userId, billingKey: dto.billingKey } });

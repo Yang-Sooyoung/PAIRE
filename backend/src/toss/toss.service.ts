@@ -161,11 +161,11 @@ export class TossService {
       });
 
       if (!response.ok) {
-        const error = (await response.json()) as { message?: string };
+        const error = (await response.json()) as { message?: string; code?: string };
         console.error('자동 결제 실패:', error);
         return {
           success: false,
-          error: error.message || 'Unknown error',
+          error: error.code || error.message || 'Unknown error',
         };
       }
 
