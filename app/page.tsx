@@ -6,13 +6,13 @@ import { useUserStore } from "@/app/store/userStore"
 import { createRecommendation } from "@/app/api/recommendation"
 import { HomeScreen } from "@/components/paire/home-screen"
 import { CaptureScreen } from "@/components/paire/capture-screen"
-import { LoadingScreen } from "@/components/paire/loading-screen"
 import { PreferenceScreen } from "@/components/paire/preference-screen"
 import { RecommendationScreen } from "@/components/paire/recommendation-screen"
 import { DrinkDetailScreen } from "@/components/paire/drink-detail-screen"
 import { MenuInputScreen } from "@/components/paire/menu-input-screen"
 import { CustomDialog } from "@/components/ui/custom-dialog"
 import { Settings, LogOut, User, Crown } from "lucide-react"
+import { useI18n } from "@/lib/i18n/context"
 
 type Screen =
   | "home"
@@ -40,6 +40,7 @@ interface Drink {
 export default function PairePage() {
   const router = useRouter()
   const { user } = useUserStore()
+  const { t } = useI18n()
   const [screen, setScreen] = useState<Screen>("home")
   const [capturedImage, setCapturedImage] = useState<string>("")
   const [preferences, setPreferences] = useState<{ occasion: string; tastes: string[]; priceRange?: string }>({
@@ -92,11 +93,10 @@ export default function PairePage() {
       const guestUsageCount = parseInt(localStorage.getItem('guestRecommendationCount') || '0')
 
       if (guestUsageCount >= 1) {
-        // 비로그인 사용자는 1회만 가능
         setDialogConfig({
           type: 'confirm',
-          title: '회원가입 필요',
-          description: '비회원은 1회만 무료로 이용 가능합니다.\n회원가입하시면 매일 1회 무료로 이용할 수 있어요!',
+          title: t('home.guestLimitTitle'),
+          description: t('home.guestLimitDesc'),
           onConfirm: () => {
             setShowDialog(false)
             router.push('/signup')
@@ -141,24 +141,24 @@ export default function PairePage() {
       console.error('추천 생성 실패:', error)
 
       // 사용자 친화적 에러 메시지
-      let errorMessage = '추천을 생성하는데 실패했습니다.'
+      let errorMessage = t('home.recommendFailDesc')
       let showUpgradeOption = false
 
       if (error.message.includes('일일 추천 한도') || error.message.includes('limit')) {
         if (user && user.membership === 'FREE') {
-          errorMessage = '오늘의 무료 추천을 모두 사용했습니다.\nPREMIUM으로 업그레이드하시면 무제한으로 이용할 수 있어요!'
+          errorMessage = t('home.dailyLimitDesc')
           showUpgradeOption = true
         } else {
-          errorMessage = '오늘의 무료 추천을 모두 사용했습니다.'
+          errorMessage = t('home.dailyLimitDescBasic')
         }
       } else if (error.message.includes('로그인')) {
-        errorMessage = '로그인이 필요한 서비스입니다.'
+        errorMessage = t('home.loginRequired')
       }
 
       if (showUpgradeOption) {
         setDialogConfig({
           type: 'confirm',
-          title: 'PREMIUM 업그레이드',
+          title: t('home.premiumUpgradeTitle'),
           description: errorMessage,
           onConfirm: () => {
             setShowDialog(false)
@@ -168,7 +168,7 @@ export default function PairePage() {
       } else {
         setDialogConfig({
           type: 'error',
-          title: '추천 실패',
+          title: t('home.recommendFailTitle'),
           description: errorMessage,
         })
       }
@@ -314,8 +314,8 @@ export default function PairePage() {
         type={dialogConfig.type}
         title={dialogConfig.title}
         description={dialogConfig.description}
-        confirmText={dialogConfig.type === 'confirm' ? '확인' : undefined}
-        cancelText={dialogConfig.type === 'confirm' ? '취소' : undefined}
+        confirmText={dialogConfig.type === 'confirm' ? t('common.confirm') : undefined}
+        cancelText={dialogConfig.type === 'confirm' ? t('settings.cancel') : undefined}
         onConfirm={dialogConfig.onConfirm}
       />
     </div>
