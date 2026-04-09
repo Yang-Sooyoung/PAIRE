@@ -1,4 +1,4 @@
-import { Controller, Get, Post, UseGuards, Request, Body, Query, Res } from '@nestjs/common';
+import { Controller, Get, Post, UseGuards, Request, Body, Query, Res, Headers } from '@nestjs/common';
 import { Response } from 'express';
 import { SubscriptionService } from './subscription.service';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
@@ -42,5 +42,17 @@ export class SubscriptionController {
   @UseGuards(JwtAuthGuard)
   async registerPaymentMethod(@Request() req: any, @Body() dto: { billingAuthKey: string; customerKey: string }) {
     return this.subscriptionService.registerPaymentMethod(req.user.sub, dto.billingAuthKey, dto.customerKey);
+  }
+
+  /**
+   * 토스 웹훅 (서명 검증 후 구독 상태 업데이트)
+   * 토스 대시보드에서 웹훅 URL: https://your-domain/api/subscription/toss-webhook
+   */
+  @Post('toss-webhook')
+  async handleTossWebhook(
+    @Headers('x-toss-signature') signature: string,
+    @Body() body: any,
+  ) {
+    return this.subscriptionService.handleTossWebhook(signature, body);
   }
 }

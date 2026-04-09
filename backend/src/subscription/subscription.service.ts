@@ -345,4 +345,117 @@ export class SubscriptionService {
       }
     }
   }
+
+  /**
+   * 토스 웹훅 처리
+   * 이벤트: Billing.Done, Billing.Failed, Payment.Done, Payment.Canceled
+   * 토스 대시보드 웹훅 URL: https://your-domain/api/subscription/toss-webhook
+   */
+  async handleTossWebhook(signature: string, body: any) {
+    if (signature && process.env.TOSS_WEBHOOK_SECRET) {
+      const isValid = this.tossService.verifyWebhookSignature(signature, JSON.stringify(body));
+      if (!isValid) {
+        console.error('[Toss Webhook] Invalid signature');
+        return { success: false, message: 'Invalid signature' };
+      }
+    }
+
+    const { eventType, data } = body;
+    console.log(`[Toss Webhook] eventType=${eventType}`);
+
+    try {
+      switch (eventType) {
+        // 빌링 자동결제 성공
+        case 'Billing.Done': {
+          const { paymentKey, orderId } = data;
+          const subIdMatch = orderId?.match(/^renewal_([^_]+)_/);
+          if (!subIdMatch) break;
+
+          const subscription = await this.prisma.subscription.findUnique({
+            where: { id: subIdMatch[1] },
+          });
+          if (!subscription) break;
+
+          const nextBillingDate = new Date(subscription.nextBillingDate);
+          if (subscription.interval === 'WEEKLY') nextBillingDate.setDate(nextBillingDate.getDate() + 7);
+          else if (subscription.interval === 'MONTHLY') nextBillingDate.setMonth(nextBillingDate.getMonth() + 1);
+          else nextBillingDate.setFullYear(nextBillingDate.getFullYear() + 1);
+
+          await this.prisma.subscription.update({
+            where: { id: subIdMatch[1] },
+            data: { status: 'ACTIVE', nextBillingDate, lastPaymentKey: paymentKey, lastOrderId: orderId },
+          });
+          await this.prisma.user.update({
+            where: { id: subscription.userId },
+            data: { membership: 'PREMIUM' },
+          });
+          console.log(`[Toss Webhook] Billing.Done: subscription ${subIdMatch[1]} renewed`);
+          break;
+        }
+
+        // 빌링 자동결제 실패
+        case 'Billing.Failed': {
+          const { orderId } = data;
+          const subIdMatch = orderId?.match(/^renewal_([^_]+)_/);
+          if (!subIdMatch) break;
+
+          const subscription = await this.prisma.subscription.findUnique({
+            where: { id: subIdMatch[1] },
+          });
+          if (!subscription) break;
+
+          await this.prisma.subscription.update({
+            where: { id: subIdMatch[1] },
+            data: { status: 'FAILED' },
+          });
+          await this.prisma.user.update({
+            where: { id: subscription.userId },
+            data: { membership: 'FREE' },
+          });
+          console.log(`[Toss Webhook] Billing.Failed: subscription ${subIdMatch[1]} failed`);
+          break;
+        }
+
+        // 일반 결제 완료 (크레딧 구매)
+        case 'Payment.Done': {
+          const { paymentKey, orderId } = data;
+          if (orderId?.startsWith('credit_')) {
+            const purchase = await this.prisma.creditPurchase.findUnique({ where: { orderId } });
+            if (purchase && purchase.status !== 'COMPLETED') {
+              await this.prisma.creditPurchase.update({
+                where: { orderId },
+                data: { paymentKey, status: 'COMPLETED' },
+              });
+              await this.prisma.user.update({
+                where: { id: purchase.userId },
+                data: { credits: { increment: purchase.credits } },
+              });
+              console.log(`[Toss Webhook] Payment.Done: credit ${orderId} completed`);
+            }
+          }
+          break;
+        }
+
+        // 결제 취소
+        case 'Payment.Canceled': {
+          const { orderId } = data;
+          if (orderId?.startsWith('credit_')) {
+            await this.prisma.creditPurchase.updateMany({
+              where: { orderId, status: { not: 'COMPLETED' } },
+              data: { status: 'CANCELLED' },
+            });
+          }
+          break;
+        }
+
+        default:
+          console.log(`[Toss Webhook] Unhandled: ${eventType}`);
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error('[Toss Webhook] Error:', error);
+      return { success: false, message: error.message };
+    }
+  }
 }
