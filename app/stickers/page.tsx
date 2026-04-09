@@ -138,7 +138,7 @@ export default function StickersPage() {
       const allStickers = STICKERS.map((sticker) => ({
         ...sticker,
         unlocked: unlockedIds.has(sticker.id),
-        unlockedAt: unlockedMap.get(sticker.id),
+        unlockedAt: unlockedMap.get(sticker.id) as string | undefined,
       }));
 
       setStickers(allStickers);
@@ -249,34 +249,36 @@ export default function StickersPage() {
               )}
 
               {/* 이모지 */}
-              <div
-                className={cn(
-                  'text-5xl mb-3 text-center',
-                  !sticker.unlocked && 'grayscale opacity-30'
+              <div className="text-5xl mb-3 text-center">
+                {sticker.unlocked ? (
+                  sticker.emoji
+                ) : (
+                  <span className="inline-block w-12 h-12 rounded-full bg-secondary/80 blur-sm" />
                 )}
-              >
-                {sticker.emoji}
               </div>
 
               {/* 이름 */}
               <h3
                 className={cn(
-                  'text-center font-semibold text-foreground mb-2',
+                  'text-center font-semibold mb-2',
+                  sticker.unlocked ? 'text-foreground' : 'text-muted-foreground/40 blur-[3px] select-none',
                   isKorean && 'font-[var(--font-noto-kr)]'
                 )}
               >
                 {isKorean ? sticker.name : sticker.nameEn}
               </h3>
 
-              {/* 설명 */}
-              <p
-                className={cn(
-                  'text-xs text-center text-muted-foreground mb-2',
-                  isKorean && 'font-[var(--font-noto-kr)]'
-                )}
-              >
-                {isKorean ? sticker.description : sticker.descriptionEn}
-              </p>
+              {/* 설명 - 달성 시에만 표시 */}
+              {sticker.unlocked && (
+                <p
+                  className={cn(
+                    'text-xs text-center text-muted-foreground mb-2',
+                    isKorean && 'font-[var(--font-noto-kr)]'
+                  )}
+                >
+                  {isKorean ? sticker.description : sticker.descriptionEn}
+                </p>
+              )}
 
               {/* 조건 - 달성한 경우에만 표시 */}
               {sticker.unlocked && (
