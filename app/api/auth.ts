@@ -63,3 +63,11 @@ export async function getCurrentUser(accessToken?: string) {
   });
   return response.data;
 }
+
+/**
+ * 프로필 업데이트 (닉네임 등)
+ */
+export async function updateProfile(data: { nickname?: string }) {
+  const response = await apiClient.patch('/auth/me', data);
+  return response.data;
+}

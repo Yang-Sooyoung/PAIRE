@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, UseGuards, Request, Res, Req } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Body, UseGuards, Request, Res, Req } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
@@ -28,6 +28,12 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   async getCurrentUser(@Request() req: any) {
     return this.authService.getCurrentUser(req.user.sub);
+  }
+
+  @Patch('me')
+  @UseGuards(JwtAuthGuard)
+  async updateProfile(@Request() req: any, @Body() body: { nickname?: string }) {
+    return this.authService.updateProfile(req.user.sub, body);
   }
 
   // Google OAuth

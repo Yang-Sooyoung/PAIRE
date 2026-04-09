@@ -1,20 +1,52 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUserStore } from '@/app/store/userStore';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { motion } from 'framer-motion';
-import { ChevronRight, LogOut, Trash2, Mail, FileText, ArrowLeft } from 'lucide-react';
+import { ChevronRight, LogOut, Trash2, Mail, FileText, ArrowLeft, Pencil, Check, X } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils';
 import { LanguageToggle } from '@/components/paire/language-toggle';
+import { updateProfile } from '@/app/api/auth';
 
 export default function SettingsPage() {
   const router = useRouter();
-  const { user, logout } = useUserStore();
+  const { user, logout, setUser } = useUserStore();
   const { language, t } = useI18n();
   const isKorean = language === 'ko';
+
+  const [editingNickname, setEditingNickname] = useState(false);
+  const [nicknameInput, setNicknameInput] = useState('');
+  const [nicknameLoading, setNicknameLoading] = useState(false);
+  const [nicknameError, setNicknameError] = useState('');
+
+  const handleEditNickname = () => {
+    setNicknameInput(user?.nickname || user?.username || '');
+    setNicknameError('');
+    setEditingNickname(true);
+  };
+
+  const handleSaveNickname = async () => {
+    if (!nicknameInput.trim()) {
+      setNicknameError(isKorean ? '닉네임을 입력해주세요.' : 'Please enter a nickname.');
+      return;
+    }
+    setNicknameLoading(true);
+    setNicknameError('');
+    try {
+      const updated = await updateProfile({ nickname: nicknameInput.trim() });
+      setUser({ ...user!, nickname: updated.nickname });
+      setEditingNickname(false);
+    } catch (e: any) {
+      setNicknameError(e.message || (isKorean ? '저장 실패' : 'Failed to save'));
+    } finally {
+      setNicknameLoading(false);
+    }
+  };
 
   const handleLogout = () => {
     logout();
@@ -151,8 +183,47 @@ export default function SettingsPage() {
               )}>
                 {t('common.nickname')}
               </span>
-              <span className="text-foreground font-light">{user.nickname || user.username}</span>
+              {editingNickname ? (
+                <div className="flex items-center gap-2 flex-1 ml-4">
+                  <Input
+                    value={nicknameInput}
+                    onChange={(e) => setNicknameInput(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSaveNickname()}
+                    className="h-8 text-sm bg-background border-gold/40 focus:border-gold text-foreground"
+                    maxLength={20}
+                    autoFocus
+                  />
+                  <button
+                    onClick={handleSaveNickname}
+                    disabled={nicknameLoading}
+                    className="text-gold hover:text-gold-light transition shrink-0"
+                  >
+                    <Check className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => { setEditingNickname(false); setNicknameError(''); }}
+                    className="text-muted-foreground hover:text-foreground transition shrink-0"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <span className="text-foreground font-light">{user.nickname || user.username}</span>
+                  <button
+                    onClick={handleEditNickname}
+                    className="text-gold/60 hover:text-gold transition"
+                  >
+                    <Pencil className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
             </div>
+            {nicknameError && (
+              <p className={cn("text-xs text-destructive px-1", isKorean && "font-[var(--font-noto-kr)]")}>
+                {nicknameError}
+              </p>
+            )}
             <div className="flex justify-between items-center p-3 bg-secondary rounded-lg border border-border">
               <span className={cn(
                 "text-muted-foreground text-sm",

@@ -106,6 +106,16 @@ export class AuthService {
     return this.formatUser(user);
   }
 
+  async updateProfile(userId: string, data: { nickname?: string }) {
+    const user = await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        ...(data.nickname !== undefined && { nickname: data.nickname }),
+      },
+    });
+    return this.formatUser(user);
+  }
+
   /**
    * OAuth 사용자 검증 및 생성/업데이트
    */
