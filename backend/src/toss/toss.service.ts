@@ -65,40 +65,11 @@ export class TossService {
   }
 
   /**
-   * 결제 승인 (Billing Auth)
+   * 자동 결제 갱신 (빌링키로 재결제 - processAutoRenewal용)
+   * billingKey와 orderId, amount를 받아서 결제
    */
-  async authorizePayment(paymentKey: string, orderId: string, amount: number) {
-    try {
-      const response = await fetch(`${this.baseUrl}/payments/${paymentKey}`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Basic ${Buffer.from(`${this.secretKey}:`).toString('base64')}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          orderId,
-          amount,
-        }),
-      });
-
-      if (!response.ok) {
-        const error = (await response.json()) as { message?: string };
-        throw new Error(`결제 승인 실패: ${error.message || 'Unknown error'}`);
-      }
-
-      const data = (await response.json()) as TossPaymentResponse;
-      return {
-        success: true,
-        paymentKey: data.paymentKey,
-        orderId: data.orderId,
-        amount: data.totalAmount,
-        status: data.status,
-        approvedAt: data.approvedAt,
-      };
-    } catch (error) {
-      console.error('Toss 결제 승인 오류:', error);
-      throw error;
-    }
+  async authorizePayment(billingKey: string, orderId: string, amount: number) {
+    return this.billingPayment(billingKey, amount, 'PAIRÉ PREMIUM 구독 갱신', orderId);
   }
 
   /**
@@ -170,9 +141,9 @@ export class TossService {
   /**
    * 자동 결제 (빌링키 사용)
    */
-  async billingPayment(billingKey: string, amount: number, orderName: string) {
+  async billingPayment(billingKey: string, amount: number, orderName: string, customOrderId?: string) {
     try {
-      const orderId = `billing_${Date.now()}`;
+      const orderId = customOrderId || `billing_${Date.now()}`;
       
       const response = await fetch(`${this.baseUrl}/billing/${billingKey}`, {
         method: 'POST',

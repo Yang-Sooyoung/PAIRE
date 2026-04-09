@@ -128,7 +128,7 @@ export class SubscriptionService {
       nextBillingDate.setDate(nextBillingDate.getDate() + remainingDays);
     }
 
-    // 구독 생성
+    // 구독 생성 (첫 결제 paymentKey 저장)
     const subscription = await this.prisma.subscription.create({
       data: {
         userId,
@@ -136,6 +136,8 @@ export class SubscriptionService {
         interval: dto.interval,
         price: dto.price,
         billingKey: dto.billingKey,
+        lastPaymentKey: paymentResult.paymentKey || null,
+        lastOrderId: paymentResult.orderId || null,
         nextBillingDate,
         status: 'ACTIVE',
       },
@@ -298,17 +300,23 @@ export class SubscriptionService {
         );
 
         if (paymentResult.success) {
-          // 다음 갱신일 업데이트
+          // 다음 갱신일 업데이트 + paymentKey 저장
           const nextBillingDate = new Date(subscription.nextBillingDate);
           if (subscription.interval === 'MONTHLY') {
             nextBillingDate.setMonth(nextBillingDate.getMonth() + 1);
+          } else if (subscription.interval === 'WEEKLY') {
+            nextBillingDate.setDate(nextBillingDate.getDate() + 7);
           } else {
             nextBillingDate.setFullYear(nextBillingDate.getFullYear() + 1);
           }
 
           await this.prisma.subscription.update({
             where: { id: subscription.id },
-            data: { nextBillingDate },
+            data: {
+              nextBillingDate,
+              lastPaymentKey: paymentResult.paymentKey || null,
+              lastOrderId: paymentResult.orderId || null,
+            },
           });
 
           console.log(`구독 갱신 성공: userId=${subscription.userId}`);

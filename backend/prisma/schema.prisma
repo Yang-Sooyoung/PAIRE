@@ -56,7 +56,9 @@ model Subscription {
   membership Membership
   interval  BillingInterval
   price     Int
-  billingKey String?
+  billingKey String?          // 토스 빌링키 (자동결제용)
+  lastPaymentKey String?      // 마지막 결제의 paymentKey (환불/조회용)
+  lastOrderId    String?      // 마지막 결제의 orderId
   
   // Stripe 구독 정보
   stripeSubscriptionId String?
@@ -68,6 +70,7 @@ model Subscription {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
+  @@index([userId, status])
   @@map("subscriptions")
 }
 
