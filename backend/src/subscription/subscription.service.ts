@@ -72,14 +72,20 @@ export class SubscriptionService {
   }
 
   async createSubscription(userId: string, dto: any) {
-    // 기존 구독 확인
-    const existingSubscription = await this.prisma.subscription.findFirst({
+    // ACTIVE 구독 중복 체크
+    const existingActive = await this.prisma.subscription.findFirst({
       where: { userId, status: 'ACTIVE' },
     });
 
-    if (existingSubscription) {
+    if (existingActive) {
       throw new Error('이미 활성 구독이 있습니다.');
     }
+
+    // 기존 CANCELLED 구독이 있으면 만료 처리 (재구독 케이스)
+    await this.prisma.subscription.updateMany({
+      where: { userId, status: 'CANCELLED' },
+      data: { status: 'FAILED' }, // FAILED로 아카이브
+    });
 
     // 첫 결제 실행 (빌링키로 즉시 결제)
     const orderName = dto.interval === 'MONTHLY' ? 'PAIRÉ PREMIUM 월간 구독' : 'PAIRÉ PREMIUM 연간 구독';
@@ -97,6 +103,8 @@ export class SubscriptionService {
     const nextBillingDate = new Date();
     if (dto.interval === 'MONTHLY') {
       nextBillingDate.setMonth(nextBillingDate.getMonth() + 1);
+    } else if (dto.interval === 'WEEKLY') {
+      nextBillingDate.setDate(nextBillingDate.getDate() + 7);
     } else {
       nextBillingDate.setFullYear(nextBillingDate.getFullYear() + 1);
     }
