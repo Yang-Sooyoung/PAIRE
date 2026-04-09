@@ -224,10 +224,10 @@ export default function PairePage() {
   }
 
   return (
-    <main className="min-h-screen bg-background overflow-hidden">
-      {/* 헤더 (로그인 상태일 때만) */}
+    <div className="flex flex-col min-h-screen bg-background">
+      {/* 헤더 (로그인 + 홈 화면일 때만) */}
       {user && screen === "home" && (
-        <div className="bg-card/50 backdrop-blur-sm border-b border-border sticky-header">
+        <div className="sticky-header bg-card/50 backdrop-blur-sm border-b border-border shrink-0">
           <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <h1 className="text-lg font-light text-foreground tracking-widest">PAIRÉ</h1>
@@ -253,57 +253,59 @@ export default function PairePage() {
         </div>
       )}
 
-      {screen === "home" && (
-        <HomeScreen
-          onCaptureFood={handleCaptureFood}
-          onMenuInput={handleMenuInput}
-          user={user}
-          onLoginClick={() => router.push("/login")}
-          onSignupClick={() => router.push("/signup")}
-          hasHeader={!!(user)}
-        />
-      )}
+      <main className="flex-1 overflow-hidden">
+        {screen === "home" && (
+          <HomeScreen
+            onCaptureFood={handleCaptureFood}
+            onMenuInput={handleMenuInput}
+            user={user}
+            onLoginClick={() => router.push("/login")}
+            onSignupClick={() => router.push("/signup")}
+            hasHeader={!!(user)}
+          />
+        )}
 
-      {screen === "capture" && (
-        <CaptureScreen
-          onCapture={handleCapture}
-          onBack={goHome}
-        />
-      )}
+        {screen === "capture" && (
+          <CaptureScreen
+            onCapture={handleCapture}
+            onBack={goHome}
+          />
+        )}
 
-      {screen === "preference" && (
-        <PreferenceScreen
-          onSubmit={handlePreferenceSubmit}
-          onBack={() => menuText ? setScreen("menu-input") : setScreen("capture")}
-          isLoading={isLoadingRecommendation}
-        />
-      )}
+        {screen === "preference" && (
+          <PreferenceScreen
+            onSubmit={handlePreferenceSubmit}
+            onBack={() => menuText ? setScreen("menu-input") : setScreen("capture")}
+            isLoading={isLoadingRecommendation}
+          />
+        )}
 
-      {screen === "recommendation" && (
-        <RecommendationScreen
-          imageUrl={capturedImage}
-          preferences={preferences}
-          drinks={recommendedDrinks}
-          fairyMessage={fairyMessage}
-          onSelect={handleSelectDrink}
-          onBack={() => setScreen("preference")}
-          onRefresh={handleRefresh}
-        />
-      )}
+        {screen === "recommendation" && (
+          <RecommendationScreen
+            imageUrl={capturedImage}
+            preferences={preferences}
+            drinks={recommendedDrinks}
+            fairyMessage={fairyMessage}
+            onSelect={handleSelectDrink}
+            onBack={() => setScreen("preference")}
+            onRefresh={handleRefresh}
+          />
+        )}
 
-      {screen === "detail" && selectedDrink && (
-        <DrinkDetailScreen
-          drink={selectedDrink}
-          onBack={() => setScreen("recommendation")}
-        />
-      )}
+        {screen === "detail" && selectedDrink && (
+          <DrinkDetailScreen
+            drink={selectedDrink}
+            onBack={() => setScreen("recommendation")}
+          />
+        )}
 
-      {screen === "menu-input" && (
-        <MenuInputScreen
-          onSubmit={handleMenuSubmit}
-          onBack={goHome}
-        />
-      )}
+        {screen === "menu-input" && (
+          <MenuInputScreen
+            onSubmit={handleMenuSubmit}
+            onBack={goHome}
+          />
+        )}
+      </main>
 
       {/* Custom Dialog */}
       <CustomDialog
@@ -316,6 +318,6 @@ export default function PairePage() {
         cancelText={dialogConfig.type === 'confirm' ? '취소' : undefined}
         onConfirm={dialogConfig.onConfirm}
       />
-    </main>
+    </div>
   )
 }

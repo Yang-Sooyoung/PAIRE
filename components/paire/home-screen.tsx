@@ -57,10 +57,10 @@ export function HomeScreen({
 
   return (
     <div
-      className="bg-background flex flex-col items-center relative overflow-hidden"
+      className="bg-background flex flex-col items-center relative overflow-hidden h-full"
       style={{
-        minHeight: '100dvh',
-        paddingTop: hasHeader ? '16px' : '24px',
+        minHeight: hasHeader ? 'calc(100dvh - env(safe-area-inset-top, 0px) - 52px)' : '100dvh',
+        paddingTop: '16px',
         paddingBottom: '24px',
         paddingLeft: '24px',
         paddingRight: '24px',
