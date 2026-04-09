@@ -276,6 +276,11 @@ export default function SubscriptionPage() {
         billingKey,
       };
 
+      console.log('[handleSubscribe] POST /subscription/create', { 
+        baseURL: apiClient.defaults.baseURL,
+        payload 
+      });
+
       let res = await apiClient.post('/subscription/create', payload);
 
       if (res.data?.subscription || res.data?.success) {

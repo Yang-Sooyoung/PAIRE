@@ -41,20 +41,31 @@ export class SubscriptionService {
   }
 
   async registerPaymentMethod(userId: string, billingAuthKey: string, customerKey?: string) {
+    const resolvedCustomerKey = customerKey || `user_${userId}`;
+
+    // authKey → 실제 billingKey 발급
+    let realBillingKey: string;
+    try {
+      const issued = await this.tossService.issueBillingKey(billingAuthKey, resolvedCustomerKey);
+      realBillingKey = issued.billingKey;
+      console.log(`[registerPaymentMethod] billingKey issued for userId=${userId}`);
+    } catch (e: any) {
+      console.error(`[registerPaymentMethod] billingKey issue failed:`, e.message);
+      throw new BadRequestException(`빌링키 발급 실패: ${e.message}`);
+    }
+
     const existingMethod = await this.prisma.paymentMethod.findFirst({
       where: { userId },
     });
 
-    const resolvedCustomerKey = customerKey || `user_${userId}`;
-
     if (existingMethod) {
       await this.prisma.paymentMethod.update({
         where: { id: existingMethod.id },
-        data: { billingKey: billingAuthKey, customerKey: resolvedCustomerKey },
+        data: { billingKey: realBillingKey, customerKey: resolvedCustomerKey },
       });
     } else {
       await this.prisma.paymentMethod.create({
-        data: { userId, billingKey: billingAuthKey, customerKey: resolvedCustomerKey },
+        data: { userId, billingKey: realBillingKey, customerKey: resolvedCustomerKey },
       });
     }
 

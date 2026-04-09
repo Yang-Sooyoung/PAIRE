@@ -27,6 +27,38 @@ export class TossService {
   }
 
   /**
+   * 빌링키 발급 (authKey → billingKey)
+   * 토스 requestBillingAuth 성공 후 받은 authKey로 실제 빌링키 발급
+   */
+  async issueBillingKey(authKey: string, customerKey: string): Promise<{ billingKey: string; cardCompany?: string; cardNumber?: string }> {
+    const response = await fetch(`${this.baseUrl}/billing/authorizations/${authKey}`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Basic ${Buffer.from(`${this.secretKey}:`).toString('base64')}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ customerKey }),
+    });
+
+    if (!response.ok) {
+      const error = (await response.json()) as { message?: string; code?: string };
+      console.error('빌링키 발급 실패:', error);
+      throw new Error(error.message || '빌링키 발급에 실패했습니다.');
+    }
+
+    const data = (await response.json()) as {
+      billingKey: string;
+      card?: { company: string; number: string };
+    };
+
+    return {
+      billingKey: data.billingKey,
+      cardCompany: data.card?.company,
+      cardNumber: data.card?.number,
+    };
+  }
+
+  /**
    * 결제 승인 (일반 결제용)
    */
   async confirmPayment(paymentKey: string, orderId: string, amount: number) {
