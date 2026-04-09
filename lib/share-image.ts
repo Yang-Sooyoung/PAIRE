@@ -1,81 +1,41 @@
-// lib/share-image.ts
+// lib/share-image.ts - dom-to-image-more 기반 (html2canvas 대체)
 
 /**
- * 외부 이미지를 base64 dataURL로 변환 (CORS 우회)
- */
-async function toDataURL(src: string): Promise<string> {
-  try {
-    const res = await fetch(src, { mode: "cors" })
-    const blob = await res.blob()
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onload = () => resolve(reader.result as string)
-      reader.onerror = reject
-      reader.readAsDataURL(blob)
-    })
-  } catch {
-    return src // 실패 시 원본 URL 반환
-  }
-}
-
-/**
- * 요소 내 모든 img src를 base64로 교체 후 원복
- */
-async function replaceImagesWithBase64(element: HTMLElement): Promise<() => void> {
-  const imgs = Array.from(element.querySelectorAll("img")) as HTMLImageElement[]
-  const originals: { el: HTMLImageElement; src: string }[] = []
-
-  await Promise.all(
-    imgs.map(async (img) => {
-      const src = img.src
-      if (!src || src.startsWith("data:")) return
-      const dataUrl = await toDataURL(src)
-      originals.push({ el: img, src })
-      img.src = dataUrl
-    })
-  )
-
-  // 원복 함수 반환
-  return () => {
-    originals.forEach(({ el, src }) => { el.src = src })
-  }
-}
-
-/**
- * html2canvas로 캡처 → Blob 반환
+ * DOM 요소를 PNG Blob으로 캡처
  */
 export async function captureCardAsBlob(element: HTMLElement): Promise<Blob | null> {
   try {
-    // 이미지를 base64로 교체
-    const restore = await replaceImagesWithBase64(element)
+    const domtoimage = (await import("dom-to-image-more")).default
 
-    // 잠깐 대기 (이미지 렌더링 완료)
-    await new Promise(r => setTimeout(r, 100))
+    // 요소가 실제로 렌더링될 때까지 대기
+    await new Promise(r => setTimeout(r, 200))
 
-    const html2canvas = (await import("html2canvas")).default
-    const canvas = await html2canvas(element, {
-      backgroundColor: "#0a0a0a",
+    const blob = await domtoimage.toBlob(element, {
+      quality: 1,
       scale: 2,
-      useCORS: false,   // base64로 교체했으므로 불필요
-      allowTaint: true,
-      logging: false,
-      imageTimeout: 0,
+      bgcolor: "#0a0a0a",
+      style: {
+        // 캡처 시 폰트 강제 적용
+        fontFamily: "'Noto Sans KR', 'Playfair Display', Georgia, serif",
+      },
     })
-
-    restore()
-
-    return new Promise((resolve) => {
-      canvas.toBlob((blob) => resolve(blob), "image/png", 1.0)
-    })
+    return blob
   } catch (err) {
     console.error("captureCardAsBlob error:", err)
     return null
   }
 }
 
-export async function downloadCardImage(element: HTMLElement, filename = "paire-recommendation.png") {
+/**
+ * 이미지 저장
+ */
+export async function downloadCardImage(
+  element: HTMLElement,
+  filename = "paire-recommendation.png"
+): Promise<boolean> {
   const blob = await captureCardAsBlob(element)
   if (!blob) return false
+
   const url = URL.createObjectURL(blob)
   const a = document.createElement("a")
   a.href = url
@@ -93,9 +53,7 @@ export async function downloadCardImage(element: HTMLElement, filename = "paire-
 export async function copyImageToClipboard(blob: Blob): Promise<boolean> {
   try {
     if (!navigator.clipboard || !window.ClipboardItem) return false
-    await navigator.clipboard.write([
-      new ClipboardItem({ "image/png": blob }),
-    ])
+    await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })])
     return true
   } catch (err) {
     console.error("copyImageToClipboard error:", err)
@@ -112,7 +70,7 @@ export async function copyImageToClipboard(blob: Blob): Promise<boolean> {
 export async function shareCardImage(
   element: HTMLElement,
   text: string,
-  fallbackCopy: string
+  _fallbackCopy: string
 ): Promise<"shared" | "clipboard" | "downloaded" | "failed"> {
   const blob = await captureCardAsBlob(element)
   if (!blob) return "failed"
@@ -132,7 +90,7 @@ export async function shareCardImage(
   const copied = await copyImageToClipboard(blob)
   if (copied) return "clipboard"
 
-  // 3. 다운로드
+  // 3. 다운로드 fallback
   const url = URL.createObjectURL(blob)
   const a = document.createElement("a")
   a.href = url
