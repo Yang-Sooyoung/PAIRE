@@ -3,8 +3,14 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
+  // 이미 데이터가 있으면 스킵 (배포 환경에서 중복 실행 방지)
+  const existingCount = await prisma.drink.count();
+  if (existingCount > 0) {
+    console.log(`⏭️  Seed skipped: ${existingCount} drinks already exist.`);
+    return;
+  }
+
   console.log('🌱 Seeding drinks data...');
-  await prisma.drink.deleteMany();
 
   const drinks = [
     // 스파클링 와인 (15개)
