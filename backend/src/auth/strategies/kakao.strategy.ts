@@ -8,7 +8,7 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
   constructor(private authService: AuthService) {
     const clientID = process.env.KAKAO_CLIENT_ID;
     const clientSecret = process.env.KAKAO_CLIENT_SECRET;
-    const callbackURL = process.env.KAKAO_CALLBACK_URL || 'http://localhost:3001/api/auth/kakao/callback';
+    const callbackURL = process.env.KAKAO_CALLBACK_URL || 'https://paire.onrender.com/api/auth/kakao/callback';
     
     console.log('KakaoStrategy config:', {
       clientID: clientID ? `${clientID.substring(0, 10)}...` : 'NOT SET',

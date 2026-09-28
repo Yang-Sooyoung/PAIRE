@@ -16,7 +16,6 @@ async function bootstrap() {
   const allowedOrigins = [
     'http://localhost:3000',
     'https://drinkpaire.vercel.app',
-    'https://v0-paire.vercel.app',
     process.env.FRONTEND_URL,
   ].filter(Boolean);
 

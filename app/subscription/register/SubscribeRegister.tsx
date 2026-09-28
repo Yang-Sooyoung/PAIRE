@@ -35,7 +35,7 @@ export default function SubscribeRegister() {
       const price = getPlanPrice(selectedPlan);
       const interval = billingPeriod === 'monthly' ? 'MONTHLY' : 'ANNUALLY';
 
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:3001';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'https://paire.onrender.com';
       await tossPayments.requestBillingAuth("카드", {
         customerKey,
         successUrl: `${apiUrl}/api/subscription/billing-callback?plan=${selectedPlan.membership}&interval=${interval}&price=${price}`,

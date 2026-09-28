@@ -96,7 +96,7 @@ export default function CreditPage() {
         const currentToken = useUserStore.getState().token;
         if (!currentToken) return;
 
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://paire.onrender.com/api';
         const response = await fetch(`${API_URL}/credit/balance`, {
           headers: { Authorization: `Bearer ${currentToken}` },
         });
@@ -139,7 +139,7 @@ export default function CreditPage() {
         }
 
         // 백엔드에 /api prefix 없음 - BASE_URL 사용
-        const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api').replace(/\/api$/, '');
+      const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'https://paire.onrender.com/api').replace(/\/api$/, '');
         const response = await fetch(`${BASE_URL}/stripe/create-checkout-session`, {
           method: 'POST',
           headers: {
