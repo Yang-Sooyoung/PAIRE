@@ -3,7 +3,7 @@ services:
     name: paire-backend
     runtime: node
     buildCommand: npm ci --omit=dev && npm install --save-dev @nestjs/cli prisma rimraf ts-loader typescript ts-node tsconfig-paths && npx prisma generate && npm run build
-    startCommand: npx prisma migrate deploy && node dist/main
+    startCommand: npx prisma migrate deploy && npx ts-node -r tsconfig-paths/register prisma/seed.ts && node dist/main
     envVars:
       - key: NODE_ENV
         value: production
