@@ -2,34 +2,26 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-async function updateImages() {
-  const imageUpdates = [
-    { name: 'Shiraz Australia', image: 'https://images.unsplash.com/photo-1568213816046-0ee1c42bd559?w=400&h=600&fit=crop' },
-    { name: 'Pinotage South Africa', image: 'https://images.unsplash.com/photo-1543418219-44e30b057fea?w=400&h=600&fit=crop' },
-    { name: 'Douro Red Portugal', image: 'https://images.unsplash.com/photo-1504279577054-acfeccf8fc52?w=400&h=600&fit=crop' },
-    { name: 'Earl Grey', image: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400&h=600&fit=crop' },
-  ];
-
-  for (const update of imageUpdates) {
-    const result = await prisma.drink.updateMany({
-      where: { name: update.name },
-      data: { image: update.image },
-    });
-    console.log(`  Updated image for "${update.name}": ${result.count} record(s)`);
-  }
-  console.log('✅ Image update complete');
-}
-
 async function main() {
-  // 이미 데이터가 있으면 이미지만 업데이트
-  const existingCount = await prisma.drink.count();
-  if (existingCount > 0) {
-    console.log(`🔄 ${existingCount} drinks exist. Updating images only...`);
-    await updateImages();
-    return;
-  }
+  console.log('========================================');
+  console.log('🌱 STARTING SEED PROCESS 🌱');
+  console.log('========================================');
+  console.log(`⏰ Timestamp: ${new Date().toISOString()}`);
+  console.log(`📊 Database URL: ${process.env.DATABASE_URL?.split('@')[1] || 'NOT SET'}`);
 
-  console.log('🌱 Seeding drinks data...');
+  try {
+    // 이미 데이터가 있으면 이미지만 업데이트
+    const existingCount = await prisma.drink.count();
+    console.log(`\n📈 Current drink count: ${existingCount}`);
+    
+    if (existingCount > 0) {
+      console.log(`🔄 Drinks already exist. Updating images only...`);
+      await updateImages();
+      console.log('✅ Seed process completed (images updated)');
+      return;
+    }
+
+    console.log('\n🌱 Seeding drinks data...');
 
   const drinks = [
     // 스파클링 와인 (15개)
@@ -2033,9 +2025,12 @@ async function main() {
 
 main()
   .catch((e) => {
+    console.error('❌ SEED PROCESS FAILED:');
     console.error(e);
     process.exit(1);
   })
   .finally(async () => {
+    console.log('\n🔌 Disconnecting from database...');
     await prisma.$disconnect();
+    console.log('✅ Database connection closed');
   });
