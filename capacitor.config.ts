@@ -14,8 +14,8 @@ const config: CapacitorConfig = {
         androidScheme: 'http',
       }
     : {
-        // 프로덕션: Render 배포 URL 사용
-        url: 'https://your-frontend-render-url.onrender.com',
+        // 프로덕션: Vercel 배포 URL 사용
+        url: 'https://drinkpaire.vercel.app',
         androidScheme: 'https',
         iosScheme: 'https',
       },
