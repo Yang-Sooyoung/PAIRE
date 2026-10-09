@@ -316,11 +316,13 @@ export class RecommendationService {
       return fallbackDrinks.map((drink, i) => ({
         id: drink.id,
         name: drink.name,
+        nameEn: drink.name,
         type: drink.type,
         description: drink.description,
-        tastingNotes: drink.tastingNotes,
+        tastingNotes: drink.tastingNotes || [],
         image: this.getSafeImage(drink.image, drink.type, i),
-        price: drink.price,
+        price: drink.price || '',
+        purchaseUrl: `https://www.coupang.com/np/search?q=${encodeURIComponent(drink.name)}`,
       }));
     }
 

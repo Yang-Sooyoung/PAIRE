@@ -106,18 +106,20 @@ export class GeminiService {
   ): Promise<Omit<RecommendationResult, 'fromCache'>> {
     // 음료 필터링 및 제한 (최대 20개만 사용하여 토큰 절약)
     const filteredDrinks = this.filterDrinks(drinks, foodAnalysis, occasion, tastes, priceRange).slice(0, 20);
+    // filteredDrinks가 비었으면 전체 drinks에서 폴백
+    const fallbackPool = filteredDrinks.length > 0 ? filteredDrinks : drinks;
 
     // Gemini 클라이언트가 없으면 폴백
     if (!this.genAI) {
       this.logger.warn('Gemini client not initialized, using fallback');
-      return this.getFallbackRecommendation(filteredDrinks, foodAnalysis);
+      return this.getFallbackRecommendation(fallbackPool, foodAnalysis);
     }
 
     const prompt = this.buildPrompt(foodAnalysis, filteredDrinks, occasion, tastes, priceRange, language);
 
     try {
       const model = this.genAI.getGenerativeModel({
-        model: 'gemini-3.8-flash',
+        model: 'gemini-2.0-flash',
         generationConfig: {
           responseMimeType: 'application/json',
           temperature: 0.7,
@@ -134,7 +136,7 @@ export class GeminiService {
       return parsed;
     } catch (error) {
       this.logger.error('Gemini API error:', error);
-      return this.getFallbackRecommendation(filteredDrinks, foodAnalysis);
+      return this.getFallbackRecommendation(fallbackPool, foodAnalysis);
     }
   }
 
