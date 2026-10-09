@@ -117,27 +117,49 @@ export class GeminiService {
 
     const prompt = this.buildPrompt(foodAnalysis, filteredDrinks, occasion, tastes, priceRange, language);
 
-    try {
-      const model = this.genAI.getGenerativeModel({
-        model: 'gemini-3.8-flash',
-        generationConfig: {
-          responseMimeType: 'application/json',
-          temperature: 0.7,
-          maxOutputTokens: 2000,
-        },
-      });
+    const model = this.genAI.getGenerativeModel({
+      model: 'gemini-3.8-flash',
+      generationConfig: {
+        responseMimeType: 'application/json',
+        temperature: 0.7,
+        maxOutputTokens: 2000,
+      },
+    });
 
-      const result = await model.generateContent(prompt);
-      const text = result.response.text();
+    // 503 등 일시적 오류에 대한 retry (exponential backoff)
+    const MAX_RETRIES = 3;
+    const BASE_DELAY_MS = 1500;
 
-      this.logger.log('Gemini response received, parsing...');
+    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+      try {
+        const result = await model.generateContent(prompt);
+        const text = result.response.text();
 
-      const parsed = this.parseGeminiResponse(text);
-      return parsed;
-    } catch (error) {
-      this.logger.error('Gemini API error:', error);
-      return this.getFallbackRecommendation(fallbackPool, foodAnalysis);
+        this.logger.log('Gemini response received, parsing...');
+
+        const parsed = this.parseGeminiResponse(text);
+        return parsed;
+      } catch (error: any) {
+        const isRetryable =
+          error?.message?.includes('503') ||
+          error?.message?.includes('Service Unavailable') ||
+          error?.message?.includes('429') ||
+          error?.message?.includes('Too Many Requests');
+
+        if (isRetryable && attempt < MAX_RETRIES) {
+          const delay = BASE_DELAY_MS * Math.pow(2, attempt - 1); // 1.5s, 3s, 6s
+          this.logger.warn(`Gemini API temporary error (attempt ${attempt}/${MAX_RETRIES}), retrying in ${delay}ms...`);
+          await new Promise((resolve) => setTimeout(resolve, delay));
+          continue;
+        }
+
+        this.logger.error('Gemini API error:', error);
+        return this.getFallbackRecommendation(fallbackPool, foodAnalysis);
+      }
     }
+
+    // 모든 retry 소진
+    return this.getFallbackRecommendation(fallbackPool, foodAnalysis);
   }
 
   /**
