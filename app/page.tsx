@@ -140,18 +140,23 @@ export default function PairePage() {
     } catch (error: any) {
       console.error('추천 생성 실패:', error)
 
+      // Axios 에러에서 실제 메시지 추출
+      const serverMessage = error.response?.data?.message || error.message || ''
+      console.error('서버 에러 메시지:', serverMessage)
+      console.error('HTTP 상태:', error.response?.status)
+
       // 사용자 친화적 에러 메시지
       let errorMessage = t('home.recommendFailDesc')
       let showUpgradeOption = false
 
-      if (error.message.includes('일일 추천 한도') || error.message.includes('limit')) {
+      if (serverMessage.includes('일일 추천 한도') || serverMessage.includes('limit') || error.response?.status === 429) {
         if (user && user.membership === 'FREE') {
           errorMessage = t('home.dailyLimitDesc')
           showUpgradeOption = true
         } else {
           errorMessage = t('home.dailyLimitDescBasic')
         }
-      } else if (error.message.includes('로그인')) {
+      } else if (serverMessage.includes('로그인') || error.response?.status === 401) {
         errorMessage = t('home.loginRequired')
       }
 

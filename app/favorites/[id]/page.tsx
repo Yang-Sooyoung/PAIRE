@@ -1,11 +1,11 @@
 import FavoriteDetailClient from './FavoriteDetailClient';
 
-// output: export (mobile build) 대응
-export async function generateStaticParams() {
-  return [];
+// Capacitor static export: 런타임에 동적 경로를 처리하므로 빈 배열 반환
+// Next.js 16 버그 우회: 빈 배열 대신 placeholder 사용
+export function generateStaticParams() {
+  return [{ id: 'placeholder' }];
 }
 
-export default async function FavoriteDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  return <FavoriteDetailClient id={id} />;
+export default function FavoriteDetailPage({ params }: { params: { id: string } }) {
+  return <FavoriteDetailClient id={params.id} />;
 }

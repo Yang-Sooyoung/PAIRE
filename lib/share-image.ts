@@ -9,7 +9,17 @@ export async function captureCardAsBlob(element: HTMLElement): Promise<Blob | nu
 
     await new Promise(r => setTimeout(r, 300))
 
-    // 요소의 실제 scrollWidth/scrollHeight 사용 (잘림 방지)
+    // 캡처 전: 모든 자식 요소의 border/outline/box-shadow 제거
+    const allEls = [element, ...Array.from(element.querySelectorAll("*"))] as HTMLElement[]
+    const saved: { el: HTMLElement; border: string; outline: string; boxShadow: string }[] = []
+    allEls.forEach(el => {
+      const s = el.style
+      saved.push({ el, border: s.border, outline: s.outline, boxShadow: s.boxShadow })
+      s.border = "none"
+      s.outline = "none"
+      s.boxShadow = "none"
+    })
+
     const w = element.scrollWidth || element.offsetWidth
     const h = element.scrollHeight || element.offsetHeight
 
@@ -20,6 +30,14 @@ export async function captureCardAsBlob(element: HTMLElement): Promise<Blob | nu
       width: w,
       height: h,
     })
+
+    // 원복
+    saved.forEach(({ el, border, outline, boxShadow }) => {
+      el.style.border = border
+      el.style.outline = outline
+      el.style.boxShadow = boxShadow
+    })
+
     return blob
   } catch (err) {
     console.error("captureCardAsBlob error:", err)

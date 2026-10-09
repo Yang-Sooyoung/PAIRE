@@ -117,7 +117,7 @@ export class GeminiService {
 
     try {
       const model = this.genAI.getGenerativeModel({
-        model: 'gemini-2.0-flash',
+        model: 'gemini-3.8-flash',
         generationConfig: {
           responseMimeType: 'application/json',
           temperature: 0.7,
@@ -452,7 +452,13 @@ Recommend 3 drinks from the list. Return JSON only:
     const recommended = drinks.slice(0, 3).map((drink) => ({
       drinkId: drink.id,
       drinkName: drink.name,
+      drinkNameEn: drink.name,
       drinkType: drink.type,
+      // description과 tastingNotes를 채워줘야 enrichDrinkData에서 AI 경로로 처리됨
+      description: drink.description || `${drink.name}은(는) ${foodAnalysis.category} 요리와 잘 어울립니다.`,
+      tastingNotes: drink.tastingNotes && drink.tastingNotes.length > 0 ? drink.tastingNotes : ['부드러운', '균형잡힌'],
+      price: drink.price || '',
+      image: drink.image || '',
       reason: `${drink.name}은(는) ${foodAnalysis.category} 요리와 잘 어울립니다.`,
       score: 80,
       pairingNotes: drink.description || '',
