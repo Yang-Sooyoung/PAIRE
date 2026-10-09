@@ -120,10 +120,34 @@ function FavoritesContent() {
         const favoriteEntry = favoritesResponse.favorites?.find(
           (f: any) => f.drinkId === detailId
         );
-        if (drinkData && favoriteEntry?.drinkName) {
-          drinkData.nameKo = favoriteEntry.drinkName;
+
+        if (drinkData) {
+          // DB에서 찾은 경우: 저장된 한글명 보완, 이미지 없으면 스냅샷으로 보완
+          if (favoriteEntry?.drinkName) {
+            drinkData.nameKo = favoriteEntry.drinkName;
+          }
+          if (!drinkData.image && favoriteEntry?.drinkImage) {
+            drinkData.image = favoriteEntry.drinkImage;
+          }
+          setDrink(drinkData);
+        } else if (favoriteEntry) {
+          // DB에 없는 Gemini ephemeral 음료: favorites 스냅샷 + join된 drink 데이터로 구성
+          const snap = favoriteEntry;
+          setDrink({
+            id: snap.drinkId,
+            name: snap.drink?.name || snap.drinkName,
+            nameKo: snap.drinkName,
+            type: (snap.drinkType && snap.drinkType !== 'unknown') ? snap.drinkType : (snap.drink?.type || ''),
+            description: snap.drink?.description || '',
+            tastingNotes: snap.drink?.tastingNotes || [],
+            image: snap.drinkImage || snap.drink?.image || '',
+            price: snap.drink?.price || '',
+            purchaseUrl: snap.drink?.purchaseUrl,
+          });
+        } else {
+          toast.error(t('favorites.failedToLoad'));
+          router.push('/favorites');
         }
-        setDrink(drinkData);
       } catch (error) {
         console.error('Failed to fetch drink detail:', error);
         toast.error(t('favorites.failedToLoad'));
@@ -447,13 +471,25 @@ function FavoritesContent() {
               <motion.div key={favorite.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.1 }}
                 className="bg-card border border-border rounded-xl overflow-hidden hover:border-gold/30 transition">
                 <div className="relative aspect-square cursor-pointer" onClick={() => router.push(`/favorites?id=${favorite.drinkId}`)}>
-                  {favorite.drinkImage ? (
-                    <img src={favorite.drinkImage} alt={favorite.drinkName} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full bg-secondary flex items-center justify-center">
-                      <Heart className="w-12 h-12 text-gold/30" />
-                    </div>
-                  )}
+                  {/* 스냅샷 이미지 우선, 없으면 DB join 이미지, 둘 다 없으면 폴백 */}
+                  {(favorite.drinkImage || favorite.drink?.image) ? (
+                    <img
+                      src={(favorite.drinkImage || favorite.drink?.image) as string}
+                      alt={favorite.drinkName}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        const fallback = e.currentTarget.nextElementSibling as HTMLElement | null;
+                        if (fallback) fallback.style.display = 'flex';
+                      }}
+                    />
+                  ) : null}
+                  <div
+                    className="w-full h-full bg-secondary items-center justify-center"
+                    style={{ display: (favorite.drinkImage || favorite.drink?.image) ? 'none' : 'flex' }}
+                  >
+                    <Heart className="w-12 h-12 text-gold/30" />
+                  </div>
                   <button
                     onClick={(e) => { e.stopPropagation(); handleRemove(favorite.drinkId); }}
                     disabled={removingId === favorite.drinkId}
@@ -470,9 +506,17 @@ function FavoritesContent() {
                       ? (favorite.drinkName || favorite.drink?.name || '')
                       : (favorite.drink?.name || favorite.drinkName || '')}
                   </h3>
-                  <p className={cn("text-xs text-muted-foreground truncate", isKorean && "font-[var(--font-noto-kr)]")}>
-                    {translateDrinkType(favorite.drinkType, language)}
-                  </p>
+                  {/* 유효한 타입이 있을 때만 표시 */}
+                  {(() => {
+                    const type = (favorite.drinkType && favorite.drinkType !== 'unknown')
+                      ? favorite.drinkType
+                      : favorite.drink?.type;
+                    return type ? (
+                      <p className={cn("text-xs text-muted-foreground truncate", isKorean && "font-[var(--font-noto-kr)]")}>
+                        {translateDrinkType(type, language)}
+                      </p>
+                    ) : null;
+                  })()}
                 </div>
               </motion.div>
             ))}

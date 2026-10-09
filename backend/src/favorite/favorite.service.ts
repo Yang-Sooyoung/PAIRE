@@ -38,7 +38,9 @@ export class FavoriteService {
 
     // 한글 이름 우선: 클라이언트 전달값 > DB nameKo > DB name
     const savedName = drinkNameKo || (drink as any)?.nameKo || drink?.name || drinkId;
+    // 타입: DB 값이 있으면 우선, 없으면(Gemini ephemeral 음료) 클라이언트 전달값 사용
     const savedType = drink?.type || drinkInfo?.type || 'unknown';
+    // 이미지: DB 값 우선, 없으면 클라이언트 전달값(Gemini 추천 시 항상 전달됨) 사용
     const savedImage = drink?.image || drinkInfo?.image || null;
 
     // 즐겨찾기 추가
