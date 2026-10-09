@@ -9,6 +9,7 @@ const BASE_URL = API_URL.endsWith('/api') ? API_URL : `${API_URL.replace(/\/$/, 
 // Axios 인스턴스 생성
 export const apiClient = axios.create({
   baseURL: BASE_URL,
+  timeout: 60000, // 60초 타임아웃 (Render 무료 플랜 슬립 웨이크업 고려)
   headers: {
     'Content-Type': 'application/json',
   },

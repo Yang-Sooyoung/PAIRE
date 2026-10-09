@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, Logger } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { VisionService } from '@/vision/vision.service';
 import { StorageService } from '@/storage/storage.service';
@@ -17,6 +17,8 @@ import {
 
 @Injectable()
 export class RecommendationService {
+  private readonly logger = new Logger(RecommendationService.name);
+
   constructor(
     private prisma: PrismaService,
     private visionService: VisionService,
@@ -281,19 +283,19 @@ export class RecommendationService {
 
   private async enrichDrinkData(recommendations: any[]): Promise<any[]> {
     const enrichedDrinks = await Promise.all(
-      recommendations.map(async (rec) => {
+      recommendations.map(async (rec, index) => {
         // GPT가 생성한 음료 정보가 있으면 직접 사용
-        if (rec.description && rec.tastingNotes && rec.image) {
+        if (rec.description && rec.tastingNotes && rec.tastingNotes.length > 0) {
           return {
-            id: rec.drinkId,
-            name: rec.drinkName,
-            nameEn: rec.drinkNameEn || rec.drinkName, // AI 생성 결과에서만 사용
-            type: rec.drinkType || 'unknown',
+            id: rec.drinkId || `ai_drink_${index}`,
+            name: rec.drinkName || '추천 음료',
+            nameEn: rec.drinkNameEn || rec.drinkName || '',
+            type: rec.drinkType || 'cocktail',
             description: rec.description,
             tastingNotes: rec.tastingNotes || [],
-            image: this.getSafeImage(rec.image, rec.drinkType || 'default'),
-            price: rec.price,
-            purchaseUrl: `https://www.coupang.com/np/search?q=${encodeURIComponent(rec.drinkName)}`,
+            image: this.getSafeImage(rec.image, rec.drinkType || 'default', index),
+            price: rec.price || '가격 문의',
+            purchaseUrl: `https://www.coupang.com/np/search?q=${encodeURIComponent(rec.drinkName || '음료')}`,
             aiReason: rec.reason,
             aiScore: rec.score,
             pairingNotes: rec.pairingNotes,
@@ -305,7 +307,24 @@ export class RecommendationService {
       })
     );
 
-    return enrichedDrinks.filter(Boolean);
+    const filtered = enrichedDrinks.filter(Boolean);
+
+    // 결과가 없으면 DB에서 랜덤 음료로 폴백
+    if (filtered.length === 0) {
+      this.logger.warn('No drinks enriched, falling back to DB random picks');
+      const fallbackDrinks = await this.prisma.drink.findMany({ take: 3 });
+      return fallbackDrinks.map((drink, i) => ({
+        id: drink.id,
+        name: drink.name,
+        type: drink.type,
+        description: drink.description,
+        tastingNotes: drink.tastingNotes,
+        image: this.getSafeImage(drink.image, drink.type, i),
+        price: drink.price,
+      }));
+    }
+
+    return filtered;
   }
 
   /**
